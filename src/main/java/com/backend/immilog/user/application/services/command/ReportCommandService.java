@@ -1,6 +1,6 @@
 package com.backend.immilog.user.application.services.command;
 
-import com.backend.immilog.user.domain.model.Report;
+import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.repositories.ReportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

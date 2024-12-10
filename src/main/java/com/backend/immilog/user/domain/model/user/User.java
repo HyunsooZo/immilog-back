@@ -9,21 +9,21 @@ import lombok.Getter;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.Optional;
 
 @Getter
 public class User {
-    private Long seq;
+    private final Long seq;
     private String nickName;
-    private String email;
+    private final String email;
     private String password;
     private String imageUrl;
     private UserStatus userStatus;
-    private UserRole userRole;
+    private final UserRole userRole;
     private UserCountry interestCountry;
     private Location location;
-    private ReportInfo reportInfo;
-    private LocalDateTime createdAt;
+    private final ReportInfo reportInfo;
+    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
@@ -55,7 +55,6 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
-    // 정적 팩토리 메서드
     public static User of(
             UserSignUpCommand command,
             String encodedPassword
@@ -82,59 +81,52 @@ public class User {
     }
 
     public void changePassword(String encodedPassword) {
-        if (Objects.isNull(encodedPassword)) {
-            return;
-        }
-        this.password = encodedPassword;
-        updateTimestamp();
+        Optional.ofNullable(encodedPassword).ifPresent(password -> {
+            this.password = password;
+            updateTimestamp();
+        });
     }
 
     public void changeUserStatus(UserStatus userStatus) {
-        if (Objects.isNull(userStatus)) {
-            return;
-        }
-        this.userStatus = userStatus;
-        updateTimestamp();
+        Optional.ofNullable(userStatus).ifPresent(status -> {
+            this.userStatus = status;
+            updateTimestamp();
+        });
     }
 
     public void changeNickName(String nickName) {
-        if (Objects.isNull(nickName)) {
-            return;
-        }
-        this.nickName = nickName;
-        updateTimestamp();
+        Optional.ofNullable(nickName).ifPresent(name -> {
+            this.nickName = name;
+            updateTimestamp();
+        });
     }
 
     public void changeInterestCountry(UserCountry interestCountry) {
-        if (Objects.isNull(interestCountry)) {
-            return;
-        }
-        this.interestCountry = interestCountry;
-        updateTimestamp();
+        Optional.ofNullable(interestCountry).ifPresent(country -> {
+            this.interestCountry = country;
+            updateTimestamp();
+        });
     }
 
     public void changeImageUrl(String imageUrl) {
-        if (Objects.isNull(imageUrl)) {
-            return;
-        }
-        this.imageUrl = imageUrl;
-        updateTimestamp();
+        Optional.ofNullable(imageUrl).ifPresent(url -> {
+            this.imageUrl = url;
+            updateTimestamp();
+        });
     }
 
     public void changeRegion(String second) {
-        if (Objects.isNull(second)) {
-            return;
-        }
-        this.location = Location.of(this.location.getCountry(), second);
-        updateTimestamp();
+        Optional.ofNullable(second).ifPresent(region -> {
+            this.location = Location.of(this.location.getCountry(), region);
+            updateTimestamp();
+        });
     }
 
     public void changeCountry(UserCountry country) {
-        if (Objects.isNull(country)) {
-            return;
-        }
-        this.location = Location.of(country, this.location.getRegion());
-        updateTimestamp();
+        Optional.ofNullable(country).ifPresent(value -> {
+            this.location = Location.of(value, this.location.getRegion());
+            updateTimestamp();
+        });
     }
 
     private void updateTimestamp() {

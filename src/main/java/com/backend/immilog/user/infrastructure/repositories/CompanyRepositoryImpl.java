@@ -1,6 +1,6 @@
 package com.backend.immilog.user.infrastructure.repositories;
 
-import com.backend.immilog.user.domain.model.Company;
+import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.repositories.CompanyRepository;
 import com.backend.immilog.user.infrastructure.jpa.entity.CompanyEntity;
 import com.backend.immilog.user.infrastructure.jpa.repositories.CompanyJpaRepository;

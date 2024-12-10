@@ -1,6 +1,6 @@
 package com.backend.immilog.user.infrastructure.repositories;
 
-import com.backend.immilog.user.domain.model.Report;
+import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.repositories.ReportRepository;
 import com.backend.immilog.user.infrastructure.jpa.entity.ReportEntity;
 import com.backend.immilog.user.infrastructure.jpa.repositories.ReportJpaRepository;

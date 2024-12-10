@@ -1,6 +1,6 @@
 package com.backend.immilog.user.application.result;
 
-import com.backend.immilog.user.domain.model.Company;
+import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import lombok.Builder;
@@ -23,16 +23,16 @@ public record CompanyResult(
             Company company
     ) {
         return CompanyResult.builder()
-                .industry(company.industry())
-                .companyName(company.companyName())
-                .companyEmail(company.companyEmail())
-                .companyPhone(company.companyPhone())
-                .companyAddress(company.companyAddress())
-                .companyHomepage(company.companyHomepage())
-                .companyCountry(company.companyCountry())
-                .companyRegion(company.companyRegion())
-                .companyLogo(company.companyLogo())
-                .companyManagerUserSeq(company.companyManagerUserSeq())
+                .industry(company.getIndustry())
+                .companyName(company.getCompanyName())
+                .companyEmail(company.getCompanyEmail())
+                .companyPhone(company.getCompanyPhone())
+                .companyAddress(company.getCompanyAddress())
+                .companyHomepage(company.getCompanyHomepage())
+                .companyCountry(company.getCompanyCountry())
+                .companyRegion(company.getCompanyRegion())
+                .companyLogo(company.getCompanyLogo())
+                .companyManagerUserSeq(company.getCompanyManagerUserSeq())
                 .build();
     }
 

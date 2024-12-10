@@ -1,20 +1,15 @@
 package com.backend.immilog.user.infrastructure.jpa.entity;
 
 import com.backend.immilog.global.model.BaseDateEntity;
-import com.backend.immilog.user.domain.model.Report;
+import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.enums.ReportReason;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 
 import jakarta.persistence.*;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Entity
 public class ReportEntity extends BaseDateEntity {
@@ -28,14 +23,29 @@ public class ReportEntity extends BaseDateEntity {
     @Enumerated(EnumType.STRING)
     private ReportReason reason;
 
+    @Builder
+    ReportEntity(
+            Long seq,
+            Long reportedUserSeq,
+            Long reporterUserSeq,
+            String description,
+            ReportReason reason
+    ) {
+        this.seq = seq;
+        this.reportedUserSeq = reportedUserSeq;
+        this.reporterUserSeq = reporterUserSeq;
+        this.description = description;
+        this.reason = reason;
+    }
+
     public static ReportEntity from(
             Report report
     ) {
         return ReportEntity.builder()
-                .reportedUserSeq(report.reportedUserSeq())
-                .reporterUserSeq(report.reporterUserSeq())
-                .description(report.description())
-                .reason(report.reason())
+                .reportedUserSeq(report.getReportedUserSeq())
+                .reporterUserSeq(report.getReporterUserSeq())
+                .description(report.getDescription())
+                .reason(report.getReason())
                 .build();
     }
 

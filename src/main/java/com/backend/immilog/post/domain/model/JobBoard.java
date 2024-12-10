@@ -4,7 +4,7 @@ import com.backend.immilog.post.application.command.JobBoardUploadCommand;
 import com.backend.immilog.post.domain.model.enums.PostStatus;
 import com.backend.immilog.post.domain.vo.CompanyMetaData;
 import com.backend.immilog.post.domain.vo.PostMetaData;
-import com.backend.immilog.user.domain.model.Company;
+import com.backend.immilog.user.domain.model.company.Company;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -26,21 +26,21 @@ public record JobBoard(
         PostMetaData postMetaData = PostMetaData.of(
                 command.title(),
                 command.content(),
-                company.companyCountry(),
-                company.companyRegion()
+                company.getCompanyCountry(),
+                company.getCompanyRegion()
         );
         CompanyMetaData companyMetaData = CompanyMetaData.of(
-                company.seq(),
-                company.industry(),
+                company.getSeq(),
+                company.getIndustry(),
                 command.experience(),
                 command.deadline(),
                 command.salary(),
-                company.companyName(),
-                company.companyEmail(),
-                company.companyPhone(),
-                company.companyAddress(),
-                company.companyHomepage(),
-                company.companyLogo()
+                company.getCompanyName(),
+                company.getCompanyEmail(),
+                company.getCompanyPhone(),
+                company.getCompanyAddress(),
+                company.getCompanyHomepage(),
+                company.getCompanyLogo()
         );
         return JobBoard.builder()
                 .userSeq(userSeq)

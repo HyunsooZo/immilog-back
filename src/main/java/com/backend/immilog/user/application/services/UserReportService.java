@@ -6,7 +6,7 @@ import com.backend.immilog.user.application.services.command.ReportCommandServic
 import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.ReportQueryService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.domain.model.Report;
+import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
 import lombok.RequiredArgsConstructor;

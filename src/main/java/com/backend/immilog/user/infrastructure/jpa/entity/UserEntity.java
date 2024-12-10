@@ -13,9 +13,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import jakarta.persistence.*;
 
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @DynamicUpdate
 @Entity
 @Table(name = "user")
@@ -25,25 +23,20 @@ public class UserEntity extends BaseDateEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
-    @Setter
     private String nickName;
 
     private String email;
 
-    @Setter
     private String password;
 
-    @Setter
     private String imageUrl;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     private UserStatus userStatus;
 
     @Enumerated(EnumType.STRING)
     private UserRole userRole;
 
-    @Setter
     @Enumerated(EnumType.STRING)
     private UserCountry interestCountry;
 
@@ -52,6 +45,31 @@ public class UserEntity extends BaseDateEntity {
 
     @Embedded
     private ReportInfo reportInfo;
+
+    @Builder
+    UserEntity(
+            Long seq,
+            String nickName,
+            String email,
+            String password,
+            String imageUrl,
+            UserStatus userStatus,
+            UserRole userRole,
+            UserCountry interestCountry,
+            Location location,
+            ReportInfo reportInfo
+    ) {
+        this.seq = seq;
+        this.nickName = nickName;
+        this.email = email;
+        this.password = password;
+        this.imageUrl = imageUrl;
+        this.userStatus = userStatus;
+        this.userRole = userRole;
+        this.interestCountry = interestCountry;
+        this.location = location;
+        this.reportInfo = reportInfo;
+    }
 
     public static UserEntity from(User user) {
         return UserEntity.builder()
@@ -84,6 +102,5 @@ public class UserEntity extends BaseDateEntity {
                 .updatedAt(this.getUpdatedAt())
                 .build();
     }
-
 }
 
