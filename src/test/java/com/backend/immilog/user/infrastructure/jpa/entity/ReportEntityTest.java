@@ -1,11 +1,12 @@
 package com.backend.immilog.user.infrastructure.jpa.entity;
 
-import com.backend.immilog.user.domain.model.Report;
 import com.backend.immilog.user.domain.enums.ReportReason;
+import com.backend.immilog.user.domain.model.report.Report;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("ReportEntity 테스트")
 class ReportEntityTest {
@@ -21,10 +22,10 @@ class ReportEntityTest {
 
         ReportEntity reportEntity = ReportEntity.from(report);
 
-        assertThat(reportEntity.getReportedUserSeq()).isEqualTo(report.reportedUserSeq());
-        assertThat(reportEntity.getReporterUserSeq()).isEqualTo(report.reporterUserSeq());
-        assertThat(reportEntity.getDescription()).isEqualTo(report.description());
-        assertThat(reportEntity.getReason()).isEqualTo(report.reason());
+        assertThat(reportEntity.getReportedUserSeq()).isEqualTo(report.getReportedUserSeq());
+        assertThat(reportEntity.getReporterUserSeq()).isEqualTo(report.getReporterUserSeq());
+        assertThat(reportEntity.getDescription()).isEqualTo(report.getDescription());
+        assertThat(reportEntity.getReason()).isEqualTo(report.getReason());
     }
 
     @Test
@@ -40,11 +41,11 @@ class ReportEntityTest {
 
         Report report = reportEntity.toDomain();
 
-        assertThat(report.seq()).isEqualTo(reportEntity.getSeq());
-        assertThat(report.reportedUserSeq()).isEqualTo(reportEntity.getReportedUserSeq());
-        assertThat(report.reporterUserSeq()).isEqualTo(reportEntity.getReporterUserSeq());
-        assertThat(report.description()).isEqualTo(reportEntity.getDescription());
-        assertThat(report.reason()).isEqualTo(reportEntity.getReason());
+        assertThat(report.getSeq()).isEqualTo(reportEntity.getSeq());
+        assertThat(report.getReportedUserSeq()).isEqualTo(reportEntity.getReportedUserSeq());
+        assertThat(report.getReporterUserSeq()).isEqualTo(reportEntity.getReporterUserSeq());
+        assertThat(report.getDescription()).isEqualTo(reportEntity.getDescription());
+        assertThat(report.getReason()).isEqualTo(reportEntity.getReason());
     }
 
     @Test
@@ -63,10 +64,10 @@ class ReportEntityTest {
 
         Report report = reportEntity.toDomain();
 
-        assertThat(report.seq()).isNull();
-        assertThat(report.reportedUserSeq()).isNull();
-        assertThat(report.reporterUserSeq()).isNull();
-        assertThat(report.description()).isNull();
-        assertThat(report.reason()).isNull();
+        assertThat(report.getSeq()).isNull();
+        assertThat(report.getReportedUserSeq()).isNull();
+        assertThat(report.getReporterUserSeq()).isNull();
+        assertThat(report.getDescription()).isNull();
+        assertThat(report.getReason()).isNull();
     }
 }

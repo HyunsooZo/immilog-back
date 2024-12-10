@@ -82,7 +82,7 @@ class PostControllerTest {
         );
 
         // then
-        verify(postUploadService).uploadPost(user.seq(), postUploadRequest.toCommand());
+        verify(postUploadService).uploadPost(user.getSeq(), postUploadRequest.toCommand());
         assertThat(response.getStatusCode()).isEqualTo(ResponseEntity.status(CREATED).build().getStatusCode());
     }
 

@@ -8,22 +8,21 @@ import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
 import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
-import com.backend.immilog.user.application.services.UserInformationService;
-import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.user.Location;
+import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static com.backend.immilog.post.domain.model.enums.PostType.POST;
@@ -34,29 +33,21 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("PostUploadService 테스트")
 class PostUploadServiceTest {
-    @Mock
-    private PostRepository postRepository;
-    @Mock
-    private UserInformationService userInformationService;
-    @Mock
-    private BulkInsertRepository bulkInsertRepository;
-    @Mock
-    private DataSource dataSource;
-    @Mock
-    private Connection connection;
-    @Mock
-    private PreparedStatement preparedStatement;
+    private final PostRepository postRepository = mock(PostRepository.class);
+    private final UserQueryService userQueryService = mock(UserQueryService.class);
+    private final BulkInsertRepository bulkInsertRepository = mock(BulkInsertRepository.class);
+    private final DataSource dataSource = mock(DataSource.class);
+    private final Connection connection = mock(Connection.class);
+    private final PreparedStatement preparedStatement = mock(PreparedStatement.class);
 
-    private PostUploadService postUploadService;
+    private final PostUploadService postUploadService = new PostUploadService(
+            postRepository,
+            userQueryService,
+            bulkInsertRepository
+    );
 
     @BeforeEach
     void setUp() throws SQLException {
-        MockitoAnnotations.openMocks(this);
-        postUploadService = new PostUploadService(
-                postRepository,
-                userInformationService,
-                bulkInsertRepository
-        );
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
     }
@@ -84,7 +75,7 @@ class PostUploadServiceTest {
                 .build();
         Post post = Post.builder().seq(1L).build();
 
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
         doNothing().when(preparedStatement).setLong(eq(1), anyLong());
@@ -92,8 +83,7 @@ class PostUploadServiceTest {
         doNothing().when(preparedStatement).setString(eq(3), anyString());
         doNothing().when(preparedStatement).setString(eq(4), anyString());
 
-        ArgumentCaptor<BiConsumer<PreparedStatement, PostResource>> captor =
-                ArgumentCaptor.forClass(BiConsumer.class);
+        ArgumentCaptor<BiConsumer<PreparedStatement, PostResource>> captor = ArgumentCaptor.forClass(BiConsumer.class);
 
         // when
         postUploadService.uploadPost(userSeq, postUploadRequest.toCommand());
@@ -140,7 +130,7 @@ class PostUploadServiceTest {
                 .build();
         Post post = Post.builder().seq(1L).build();
 
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(postRepository.save(any(Post.class))).thenReturn(post);
 
         // when
@@ -171,7 +161,7 @@ class PostUploadServiceTest {
                 .seq(userSeq)
                 .location(location)
                 .build();
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(postRepository.save(any(Post.class))).thenReturn(Post.builder().seq(1L).build());
         doThrow(new SQLException("Mock SQL Exception"))
                 .when(preparedStatement).setLong(anyInt(), anyLong());
@@ -183,9 +173,7 @@ class PostUploadServiceTest {
         }).when(bulkInsertRepository).saveAll(anyList(), anyString(), any(BiConsumer.class));
 
         // when & then
-        assertThatThrownBy(() ->
-                postUploadService.uploadPost(userSeq, postUploadRequest.toCommand())
-        )
+        assertThatThrownBy(() -> postUploadService.uploadPost(userSeq, postUploadRequest.toCommand()))
                 .isInstanceOf(PostException.class)
                 .hasMessage(FAILED_TO_SAVE_POST.getMessage());
 

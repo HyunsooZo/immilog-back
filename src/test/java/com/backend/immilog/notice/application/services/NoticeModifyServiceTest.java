@@ -6,7 +6,7 @@ import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.repositories.NoticeRepository;
 import com.backend.immilog.notice.exception.NoticeException;
-import com.backend.immilog.user.application.services.UserInformationService;
+import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
@@ -26,10 +26,10 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("공지사항 수정 서비스 테스트")
 class NoticeModifyServiceTest {
-    private final UserInformationService userInformationService = mock(UserInformationService.class);
+    private final UserQueryService userQueryService = mock(UserQueryService.class);
     private final NoticeRepository noticeRepository = mock(NoticeRepository.class);
     private final NoticeModifyService noticeModifyService = new NoticeModifyService(
-            userInformationService,
+            userQueryService,
             noticeRepository
     );
 
@@ -40,8 +40,8 @@ class NoticeModifyServiceTest {
         Long noticeSeq = 1L;
         NoticeModifyCommand command = mock(NoticeModifyCommand.class);
         User user = mock(User.class);
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
-        when(user.userRole()).thenReturn(UserRole.ROLE_USER);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        when(user.getUserRole()).thenReturn(UserRole.ROLE_USER);
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(userSeq, noticeSeq, command));
     }
 
@@ -52,8 +52,8 @@ class NoticeModifyServiceTest {
         Long noticeSeq = 1L;
         NoticeModifyCommand command = mock(NoticeModifyCommand.class);
         User user = mock(User.class);
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
-        when(user.userRole()).thenReturn(UserRole.ROLE_ADMIN);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
         when(noticeRepository.getNotice(noticeSeq)).thenReturn(Optional.empty());
 
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(userSeq, noticeSeq, command));
@@ -67,8 +67,8 @@ class NoticeModifyServiceTest {
         NoticeModifyCommand command = mock(NoticeModifyCommand.class);
         User user = mock(User.class);
         Notice notice = mock(Notice.class);
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
-        when(user.userRole()).thenReturn(UserRole.ROLE_ADMIN);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
         when(noticeRepository.getNotice(noticeSeq)).thenReturn(Optional.of(notice));
         when(notice.status()).thenReturn(DELETED);
 
@@ -81,22 +81,21 @@ class NoticeModifyServiceTest {
         Long userSeq = 1L;
         Long noticeSeq = 1L;
         NoticeModifyCommand command = mock(NoticeModifyCommand.class);
-        User user = new User(
-                userSeq,
-                "email",
-                "name",
-                "password",
-                "country",
-                UserStatus.ACTIVE,
-                UserRole.ROLE_ADMIN,
-                UserCountry.SOUTH_KOREA,
-                new Location(UserCountry.SOUTH_KOREA, "seoul"),
-                ReportInfo.of(0L, Date.valueOf(LocalDate.now())),
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        User user = User.builder()
+                .seq(userSeq)
+                .email("email")
+                .nickName("name")
+                .password("password")
+                .interestCountry(UserCountry.SOUTH_KOREA)
+                .userStatus(UserStatus.ACTIVE)
+                .userRole(UserRole.ROLE_ADMIN)
+                .location(Location.builder().country(UserCountry.SOUTH_KOREA).region("seoul").build())
+                .reportInfo(ReportInfo.of(0L, Date.valueOf(LocalDate.now())))
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
         Notice notice = mock(Notice.class);
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(noticeRepository.getNotice(noticeSeq)).thenReturn(Optional.of(notice));
         when(notice.status()).thenReturn(mock(NoticeStatus.class));
 

@@ -5,7 +5,7 @@ import com.backend.immilog.notice.application.services.NoticeInquiryService;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import com.backend.immilog.notice.domain.repositories.NoticeRepository;
-import com.backend.immilog.user.application.services.UserInformationService;
+import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.user.Location;
@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.backend.immilog.notice.domain.model.enums.NoticeCountry.SOUTH_KOREA;
 import static com.backend.immilog.notice.domain.model.enums.NoticeStatus.NORMAL;
@@ -26,11 +27,11 @@ import static org.mockito.Mockito.when;
 @DisplayName("공지사항 조회 테스트")
 class NoticeInquiryServiceTest {
     private final NoticeRepository noticeRepository = mock(NoticeRepository.class);
-    private final UserInformationService userInformationService = mock(UserInformationService.class);
+    private final UserQueryService userQueryService = mock(UserQueryService.class);
 
     private final NoticeInquiryService noticeInquiryService = new NoticeInquiryService(
             noticeRepository,
-            userInformationService
+            userQueryService
     );
 
     @Test
@@ -107,7 +108,7 @@ class NoticeInquiryServiceTest {
 
         when(noticeRepository.areUnreadNoticesExist(SOUTH_KOREA, userSeq))
                 .thenReturn(true);
-        when(userInformationService.getUser(userSeq)).thenReturn(user);
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
 
         // when
         boolean result = noticeInquiryService.isUnreadNoticeExist(userSeq);

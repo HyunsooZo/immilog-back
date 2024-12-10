@@ -4,19 +4,16 @@ import com.backend.immilog.global.application.RedisService;
 import com.backend.immilog.global.enums.GlobalCountry;
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.global.security.TokenProvider;
+import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.UserSignInService;
+import com.backend.immilog.user.application.services.query.UserQueryService;
+import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
-import com.backend.immilog.user.application.result.UserSignInResult;
-import com.backend.immilog.user.domain.repositories.UserRepository;
-import com.backend.immilog.user.domain.model.user.Location;
-import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.presentation.request.UserSignInRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -24,9 +21,9 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.backend.immilog.global.enums.UserRole.ROLE_USER;
-import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 import static com.backend.immilog.user.domain.enums.UserCountry.MALAYSIA;
 import static com.backend.immilog.user.domain.enums.UserCountry.SOUTH_KOREA;
+import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,29 +32,18 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("사용자 로그인 서비스 테스트")
 class UserSignInServiceTest {
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private PasswordEncoder passwordEncoder;
-    @Mock
-    private TokenProvider tokenProvider;
-    @Mock
-    private RedisService redisService;
-    @Mock
-    private CompletableFuture<Pair<String, String>> country;
+    private final UserQueryService userQueryService = mock(UserQueryService.class);
+    private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
+    private final TokenProvider tokenProvider = mock(TokenProvider.class);
+    private final RedisService redisService = mock(RedisService.class);
+    private final CompletableFuture<Pair<String, String>> country = mock(CompletableFuture.class);
 
-    private com.backend.immilog.user.application.services.UserSignInService userSignInService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        userSignInService = new UserSignInService(
-                userRepository,
-                passwordEncoder,
-                tokenProvider,
-                redisService
-        );
-    }
+    private final UserSignInService userSignInService = new UserSignInService(
+            userQueryService,
+            passwordEncoder,
+            tokenProvider,
+            redisService
+    );
 
     @Test
     @DisplayName("로그인 성공")
@@ -84,9 +70,9 @@ class UserSignInServiceTest {
                 .location(location)
                 .build();
 
-        when(userRepository.getByEmail(userSignInRequest.email()))
+        when(userQueryService.getUserByEmail(userSignInRequest.email()))
                 .thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(userSignInRequest.password(), user.password()))
+        when(passwordEncoder.matches(userSignInRequest.password(), user.getPassword()))
                 .thenReturn(true);
         when(tokenProvider.issueAccessToken(
                 anyLong(),
@@ -104,7 +90,7 @@ class UserSignInServiceTest {
                 userSignInService.signIn(userSignInRequest.toCommand(), country);
 
         // then
-        assertThat(userSignInResult.userSeq()).isEqualTo(user.seq());
+        assertThat(userSignInResult.userSeq()).isEqualTo(user.getSeq());
         assertThat(userSignInResult.accessToken()).isEqualTo("accessToken");
         verify(tokenProvider, times(1)).issueAccessToken(
                 anyLong(),
@@ -166,7 +152,7 @@ class UserSignInServiceTest {
                 .build();
 
         Pair<String, String> country = Pair.of("South Korea", "Seoul");
-        when(userRepository.getById(userSeq)).thenReturn(Optional.of(user));
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(tokenProvider.issueAccessToken(
                 anyLong(),
                 anyString(),
@@ -179,7 +165,7 @@ class UserSignInServiceTest {
         UserSignInResult result = userSignInService.getUserSignInDTO(userSeq, country);
         // then
         verify(redisService, times(1)).saveKeyAndValue(
-                "Refresh: refreshToken", user.email(), 5 * 29 * 24 * 60
+                "Refresh: refreshToken", user.getEmail(), 5 * 29 * 24 * 60
         );
         assertThat(result.userSeq()).isEqualTo(userSeq);
     }
@@ -202,7 +188,7 @@ class UserSignInServiceTest {
                 .build();
 
         Pair<String, String> country = Pair.of("South Korea", "Seoul");
-        when(userRepository.getById(userSeq)).thenReturn(Optional.of(user));
+        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(tokenProvider.issueAccessToken(
                 anyLong(),
                 anyString(),
@@ -215,7 +201,7 @@ class UserSignInServiceTest {
         UserSignInResult result = userSignInService.getUserSignInDTO(userSeq, country);
         // then
         verify(redisService, times(1)).saveKeyAndValue(
-                "Refresh: refreshToken", user.email(), 5 * 29 * 24 * 60
+                "Refresh: refreshToken", user.getEmail(), 5 * 29 * 24 * 60
         );
         assertThat(result.userSeq()).isEqualTo(userSeq);
     }

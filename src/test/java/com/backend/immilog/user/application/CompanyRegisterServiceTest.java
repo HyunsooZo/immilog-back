@@ -2,7 +2,9 @@ package com.backend.immilog.user.application;
 
 import com.backend.immilog.user.application.command.CompanyRegisterCommand;
 import com.backend.immilog.user.application.services.CompanyRegisterService;
-import com.backend.immilog.user.domain.model.Company;
+import com.backend.immilog.user.application.services.command.CompanyCommandService;
+import com.backend.immilog.user.application.services.query.CompanyQueryService;
+import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.repositories.CompanyRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -15,21 +17,16 @@ import java.util.Optional;
 
 import static com.backend.immilog.user.domain.enums.UserCountry.SOUTH_KOREA;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DisplayName("CompanyRegisterService 테스트")
 class CompanyRegisterServiceTest {
-    @Mock
-    private CompanyRepository companyRepository;
-
-    private CompanyRegisterService companyRegisterService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        companyRegisterService = new CompanyRegisterService(companyRepository);
-    }
+    private final CompanyQueryService companyQueryService = mock(CompanyQueryService.class);
+    private final CompanyCommandService companyCommandService = mock(CompanyCommandService.class);
+    private final CompanyRegisterService companyRegisterService = new CompanyRegisterService(
+            companyQueryService,
+            companyCommandService
+    );
 
     @Test
     @DisplayName("회사정보 등록 - 성공 : 신규")
@@ -50,7 +47,7 @@ class CompanyRegisterServiceTest {
         // when
         companyRegisterService.registerOrEditCompany(userSeq, command);
         // then
-        verify(companyRepository).saveEntity(any());
+        verify(companyCommandService).save(any());
     }
 
     @Test
@@ -70,12 +67,11 @@ class CompanyRegisterServiceTest {
                 .companyLogo("로고")
                 .build();
         Company company = Company.of(userSeq, command);
-        when(companyRepository.getByCompanyManagerUserSeq(userSeq)).thenReturn(Optional.of(company));
+        when(companyQueryService.getByCompanyManagerUserSeq(userSeq)).thenReturn(Optional.of(company));
         // when
         companyRegisterService.registerOrEditCompany(userSeq, command);
         // then
-        verify(companyRepository).saveEntity(any());
+        verify(companyCommandService).save(any());
     }
-
 
 }
