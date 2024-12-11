@@ -1,8 +1,8 @@
 package com.backend.immilog.user.domain.model.user;
 
+import jakarta.persistence.Embeddable;
 import lombok.*;
 
-import jakarta.persistence.Embeddable;
 import java.sql.Date;
 
 @Getter(AccessLevel.PROTECTED)

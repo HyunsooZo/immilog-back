@@ -1,6 +1,6 @@
 package com.backend.immilog.user.presentation.controller;
 
-import com.backend.immilog.global.security.ExtractUserId;
+import com.backend.immilog.global.aop.ExtractUserId;
 import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
 import com.backend.immilog.user.application.services.CompanyRegisterService;

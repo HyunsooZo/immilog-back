@@ -2,12 +2,11 @@ package com.backend.immilog.user.presentation.request;
 
 import com.backend.immilog.user.application.command.UserSignUpCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 
 @Builder
 @Schema(description = "사용자 회원가입 요청 DTO")

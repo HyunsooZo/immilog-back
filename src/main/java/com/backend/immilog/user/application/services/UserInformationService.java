@@ -1,12 +1,12 @@
 package com.backend.immilog.user.application.services;
 
-import com.backend.immilog.global.application.ImageService;
+import com.backend.immilog.image.application.service.ImageService;
 import com.backend.immilog.user.application.command.UserInfoUpdateCommand;
 import com.backend.immilog.user.application.command.UserPasswordChangeCommand;
 import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

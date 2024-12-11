@@ -1,8 +1,8 @@
 package com.backend.immilog.user.application.result;
 
-import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.user.domain.model.company.Company;
 import lombok.Builder;
 
 @Builder

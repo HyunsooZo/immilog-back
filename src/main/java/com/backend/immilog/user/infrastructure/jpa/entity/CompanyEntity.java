@@ -1,12 +1,14 @@
 package com.backend.immilog.user.infrastructure.jpa.entity;
 
-import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
-import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
-
+import com.backend.immilog.user.domain.model.company.Company;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

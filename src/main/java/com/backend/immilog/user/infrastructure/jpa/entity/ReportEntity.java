@@ -1,12 +1,14 @@
 package com.backend.immilog.user.infrastructure.jpa.entity;
 
 import com.backend.immilog.global.model.BaseDateEntity;
-import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.enums.ReportReason;
-import lombok.*;
-import org.hibernate.annotations.DynamicUpdate;
-
+import com.backend.immilog.user.domain.model.report.Report;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
