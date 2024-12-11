@@ -1,14 +1,14 @@
-package com.backend.immilog.global.application;
+package com.backend.immilog.image.application.service;
 
-import com.backend.immilog.global.infrastructure.storage.FileStorageHandler;
+import com.backend.immilog.image.infrastructure.gateway.FileStorageHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class ImageService {
     private final FileStorageHandler fileStorageHandler;
 
@@ -17,7 +17,9 @@ public class ImageService {
             String imagePath
     ) {
         return multipartFiles.stream()
-                .map(multipartFile -> fileStorageHandler.uploadFile(multipartFile, imagePath))
+                .map(multipartFile ->
+                        fileStorageHandler.uploadFile(multipartFile, imagePath)
+                )
                 .toList();
     }
 

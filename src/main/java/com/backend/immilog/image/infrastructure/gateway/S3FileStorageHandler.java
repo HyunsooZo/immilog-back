@@ -1,4 +1,4 @@
-package com.backend.immilog.global.infrastructure.storage;
+package com.backend.immilog.image.infrastructure.gateway;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;

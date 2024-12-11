@@ -25,17 +25,13 @@ public class RedisDataRepository implements DataRepository {
     }
 
     @Override
-    public String findByKey(
-            String refreshToken
-    ) {
+    public String findByKey(String refreshToken) {
         ValueOperations<String, String> ops = stringRedisTemplate.opsForValue();
         return ops.get(refreshToken);
     }
 
     @Override
-    public void deleteByKey(
-            String refreshToken
-    ) {
+    public void deleteByKey(String refreshToken) {
         stringRedisTemplate.delete(refreshToken);
     }
 

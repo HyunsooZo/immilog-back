@@ -19,15 +19,11 @@ public class RedisService {
         dataRepository.save(key, value, expireTime);
     }
 
-    public String getValueByKey(
-            String key
-    ) {
+    public String getValueByKey(String key) {
         return dataRepository.findByKey(key);
     }
 
-    public void deleteValueByKey(
-            String key
-    ) {
+    public void deleteValueByKey(String key) {
         dataRepository.deleteByKey(key);
     }
 }

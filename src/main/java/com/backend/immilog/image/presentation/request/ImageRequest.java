@@ -1,4 +1,4 @@
-package com.backend.immilog.global.presentation.request;
+package com.backend.immilog.image.presentation.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

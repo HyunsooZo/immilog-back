@@ -7,13 +7,9 @@ public interface DataRepository {
             int expireTime
     );
 
-    String findByKey(
-            String key
-    );
+    String findByKey(String key);
 
-    void deleteByKey(
-            String key
-    );
+    void deleteByKey(String key);
 
     Boolean saveIfAbsent(
             String key,

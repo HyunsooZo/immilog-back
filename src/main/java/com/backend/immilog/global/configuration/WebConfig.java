@@ -17,7 +17,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .allowedHeaders("*");
 
         registry.addMapping("/**")
-                .allowedOrigins("http://localhost:5173","https://ko-meet-front.vercel.app/")
+                .allowedOrigins("http://localhost:5173", "https://ko-meet-front.vercel.app/")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);

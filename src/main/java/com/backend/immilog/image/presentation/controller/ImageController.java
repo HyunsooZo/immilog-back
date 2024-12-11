@@ -1,8 +1,8 @@
-package com.backend.immilog.global.presentation.controller;
+package com.backend.immilog.image.presentation.controller;
 
-import com.backend.immilog.global.application.ImageService;
-import com.backend.immilog.global.presentation.request.ImageRequest;
-import com.backend.immilog.global.presentation.response.GlobalApiResponse;
+import com.backend.immilog.global.model.GlobalApiResponse;
+import com.backend.immilog.image.application.service.ImageService;
+import com.backend.immilog.image.presentation.request.ImageRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;

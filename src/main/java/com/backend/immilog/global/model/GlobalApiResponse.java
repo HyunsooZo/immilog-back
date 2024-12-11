@@ -1,4 +1,4 @@
-package com.backend.immilog.global.presentation.response;
+package com.backend.immilog.global.model;
 
 import lombok.Builder;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.backend.immilog.global.security;
+package com.backend.immilog.global.aop;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
