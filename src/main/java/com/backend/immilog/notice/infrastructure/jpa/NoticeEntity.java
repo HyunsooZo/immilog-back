@@ -61,14 +61,14 @@ public class NoticeEntity {
             Notice notice
     ) {
         return NoticeEntity.builder()
-                .seq(notice.seq())
-                .userSeq(notice.userSeq())
-                .title(notice.title())
-                .content(notice.content())
-                .type(notice.type())
-                .status(notice.status())
-                .targetCountries(notice.targetCountries())
-                .readUsers(notice.readUsers())
+                .seq(notice.getSeq())
+                .userSeq(notice.getUserSeq())
+                .title(notice.getTitle())
+                .content(notice.getContent())
+                .type(notice.getType())
+                .status(notice.getStatus())
+                .targetCountries(notice.getTargetCountries())
+                .readUsers(notice.getReadUsers())
                 .build();
     }
 

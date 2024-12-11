@@ -18,18 +18,18 @@ public class NoticeJdbcRepository {
             long offset
     ) {
         String sql = """
-                     SELECT n.*
-                     FROM notice n
-                     LEFT JOIN notice_entity_target_countries ntc ON n.seq = ntc.notice_entity_seq
-                     LEFT JOIN user u ON u.country = ntc.target_countries 
-                     LEFT JOIN notice_entity_read_users nru ON n.seq = nru.notice_entity_seq
-                     WHERE (u.country = ntc.target_countries
-                        OR ntc.target_countries = 'ALL')
-                        AND n.status = 'NORMAL'
-                        AND (nru.read_users IS NULL OR nru.read_users != ?)
-                     ORDER BY n.created_at DESC
-                     LIMIT ? OFFSET ?
-                     """;
+                SELECT n.*
+                FROM notice n
+                LEFT JOIN notice_entity_target_countries ntc ON n.seq = ntc.notice_entity_seq
+                LEFT JOIN user u ON u.country = ntc.target_countries 
+                LEFT JOIN notice_entity_read_users nru ON n.seq = nru.notice_entity_seq
+                WHERE (u.country = ntc.target_countries
+                   OR ntc.target_countries = 'ALL')
+                   AND n.status = 'NORMAL'
+                   AND (nru.read_users IS NULL OR nru.read_users != ?)
+                ORDER BY n.created_at DESC
+                LIMIT ? OFFSET ?
+                """;
 
         return jdbcClient.sql(sql)
                 .param(userSeq)
@@ -43,16 +43,16 @@ public class NoticeJdbcRepository {
             Long userSeq
     ) {
         String sql = """
-                     SELECT n.*
-                     FROM notice n
-                     LEFT JOIN notice_entity_target_countries ntc ON n.seq = ntc.notice_entity_seq
-                     LEFT JOIN user u ON u.country = ntc.target_countries 
-                     LEFT JOIN notice_entity_read_users nru ON n.seq = nru.notice_entity_seq
-                     WHERE (u.country = ntc.target_countries
-                        OR ntc.target_countries = 'ALL')
-                        AND n.status = 'NORMAL'
-                        AND (nru.read_users IS NULL OR nru.read_users != ?)
-                     """;
+                SELECT n.*
+                FROM notice n
+                LEFT JOIN notice_entity_target_countries ntc ON n.seq = ntc.notice_entity_seq
+                LEFT JOIN user u ON u.country = ntc.target_countries 
+                LEFT JOIN notice_entity_read_users nru ON n.seq = nru.notice_entity_seq
+                WHERE (u.country = ntc.target_countries
+                   OR ntc.target_countries = 'ALL')
+                   AND n.status = 'NORMAL'
+                   AND (nru.read_users IS NULL OR nru.read_users != ?)
+                """;
         return jdbcClient.sql(sql)
                 .param(userSeq)
                 .query((rs, rowNum) -> rs.getLong(1))

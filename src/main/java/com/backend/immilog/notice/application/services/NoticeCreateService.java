@@ -1,12 +1,11 @@
 package com.backend.immilog.notice.application.services;
 
 import com.backend.immilog.notice.application.command.NoticeUploadCommand;
+import com.backend.immilog.notice.application.services.command.NoticeCommandService;
 import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.repositories.NoticeRepository;
 import com.backend.immilog.notice.exception.NoticeException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Objects;
 
@@ -15,16 +14,15 @@ import static com.backend.immilog.notice.exception.NoticeErrorCode.NOT_AN_ADMIN_
 @Service
 @RequiredArgsConstructor
 public class NoticeCreateService {
-    private final NoticeRepository noticeRepository;
+    private final NoticeCommandService noticeCommandService;
 
-    @Transactional
     public void registerNotice(
             Long userSeq,
             String userRole,
             NoticeUploadCommand command
     ) {
         validateAdminUser(userRole);
-        noticeRepository.saveEntity(Notice.of(userSeq, command));
+        noticeCommandService.save(Notice.of(userSeq, command));
     }
 
     private static void validateAdminUser(

@@ -30,15 +30,15 @@ public record NoticeResult(
             Notice notice
     ) {
         return NoticeResult.builder()
-                .seq(notice.seq())
-                .authorUserSeq(notice.userSeq())
-                .title(notice.title())
-                .content(notice.content())
-                .type(notice.type())
-                .status(notice.status())
-                .targetCountries(notice.targetCountries())
-                .readUsers(notice.readUsers())
-                .createdAt(notice.createdAt())
+                .seq(notice.getSeq())
+                .authorUserSeq(notice.getUserSeq())
+                .title(notice.getTitle())
+                .content(notice.getContent())
+                .type(notice.getType())
+                .status(notice.getStatus())
+                .targetCountries(notice.getTargetCountries())
+                .readUsers(notice.getReadUsers())
+                .createdAt(notice.getCreatedAt())
                 .build();
     }
 

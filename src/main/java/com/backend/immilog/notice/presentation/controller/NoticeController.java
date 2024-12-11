@@ -1,7 +1,7 @@
 package com.backend.immilog.notice.presentation.controller;
 
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.global.security.ExtractUserId;
+import com.backend.immilog.global.aop.ExtractUserId;
 import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.application.services.NoticeCreateService;
 import com.backend.immilog.notice.application.services.NoticeInquiryService;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.HttpStatus.*;
 
-@Tag(name = "Notice API", description = "공지사항 관련 API")  
+@Tag(name = "Notice API", description = "공지사항 관련 API")
 @RequestMapping("/api/v1/notices")
 @RequiredArgsConstructor
 @RestController
@@ -38,9 +38,7 @@ public class NoticeController {
         Long userSeq = (Long) request.getAttribute("userSeq");
         String userRole = ((UserRole) request.getAttribute("userRole")).name();
         noticeRegisterService.registerNotice(userSeq, userRole, noticeRegisterRequest.toCommand());
-        return ResponseEntity
-                .status(CREATED)
-                .body(NoticeApiResponse.of(true));
+        return ResponseEntity.status(CREATED).body(NoticeApiResponse.of(true));
     }
 
     @GetMapping
@@ -87,5 +85,18 @@ public class NoticeController {
         noticeModifyService.modifyNotice(userSeq, noticeSeq, param.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
+
+    @PatchMapping("/{noticeSeq}")
+    @ExtractUserId
+    @Operation(summary = "공지사항 읽음처리", description = "공지사항을 읽음 처리합니다.")
+    public ResponseEntity<Void> readNotice(
+            HttpServletRequest request,
+            @PathVariable("noticeSeq") Long noticeSeq
+    ) {
+        Long userSeq = (Long) request.getAttribute("userSeq");
+        noticeModifyService.readNotice(userSeq, noticeSeq);
+        return ResponseEntity.status(NO_CONTENT).build();
+    }
+
 
 }

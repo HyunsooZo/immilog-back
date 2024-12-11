@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -22,7 +21,6 @@ import java.util.Optional;
 public class NoticeRepositoryImpl implements NoticeRepository {
     private final NoticeJdbcRepository noticeJdbcRepository;
     private final NoticeJpaRepository noticeJpaRepository;
-    private final JdbcClient jdbcClient;
 
     @Override
     public Page<NoticeResult> getNotices(
@@ -39,7 +37,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public void saveEntity(Notice notice) {
+    public void save(Notice notice) {
         noticeJpaRepository.save(NoticeEntity.from(notice));
     }
 
@@ -60,9 +58,7 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public Optional<Notice> getNotice(
-            Long noticeSeq
-    ) {
+    public Optional<Notice> getNotice(Long noticeSeq) {
         return noticeJpaRepository.findById(noticeSeq).map(NoticeEntity::toDomain);
     }
 }

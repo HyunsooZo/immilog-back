@@ -11,11 +11,11 @@ public record NoticeModifyRequest(
         NoticeStatus status
 ) {
     public NoticeModifyCommand toCommand() {
-        return new NoticeModifyCommand(
-                title,
-                content,
-                type,
-                status
-        );
+        return NoticeModifyCommand.builder()
+                .title(title)
+                .content(content)
+                .type(type)
+                .status(status)
+                .build();
     }
 }

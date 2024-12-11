@@ -14,7 +14,7 @@ public interface NoticeRepository {
             Pageable pageable
     );
 
-    void saveEntity(Notice notice);
+    void save(Notice notice);
 
     Optional<Notice> findBySeq(Long noticeSeq);
 
