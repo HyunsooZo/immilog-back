@@ -1,7 +1,7 @@
 package com.backend.immilog.notice.presentation.controller;
 
-import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.global.aop.ExtractUserId;
+import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.application.services.NoticeCreateService;
 import com.backend.immilog.notice.application.services.NoticeInquiryService;
