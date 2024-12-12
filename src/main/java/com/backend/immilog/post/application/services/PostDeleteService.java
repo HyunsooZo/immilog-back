@@ -1,9 +1,10 @@
 package com.backend.immilog.post.application.services;
 
+import com.backend.immilog.post.application.services.command.PostCommandService;
+import com.backend.immilog.post.application.services.command.PostResourceCommandService;
+import com.backend.immilog.post.application.services.query.PostQueryService;
+import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.exception.PostException;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.repositories.PostRepository;
-import com.backend.immilog.post.domain.repositories.PostResourceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,14 +14,14 @@ import java.util.Objects;
 
 import static com.backend.immilog.post.exception.PostErrorCode.NO_AUTHORITY;
 import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
-import static com.backend.immilog.post.domain.model.enums.PostStatus.DELETED;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class PostDeleteService {
-    private final PostRepository postRepository;
-    private final PostResourceRepository postResourceRepository;
+    private final PostCommandService postCommandService;
+    private final PostQueryService postQueryService;
+    private final PostResourceCommandService postResourceCommandService;
 
     @Transactional
     public void deletePost(
@@ -32,17 +33,14 @@ public class PostDeleteService {
         deletePostAndResources(post);
     }
 
-    private void deletePostAndResources(
-            Post post
-    ) {
-        post.postMetaData().setStatus(DELETED);
-        postResourceRepository.deleteAllByPostSeq(post.seq());
+    private void deletePostAndResources(Post post) {
+        post.delete();
+        postCommandService.save(post);
+        postResourceCommandService.deleteAllByPostSeq(post.getSeq());
     }
 
-    private Post getPost(
-            Long postSeq
-    ) {
-        return postRepository.getById(postSeq)
+    private Post getPost(Long postSeq) {
+        return postQueryService.getPostById(postSeq)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
     }
 
@@ -50,7 +48,7 @@ public class PostDeleteService {
             Long userId,
             Post post
     ) {
-        if (!Objects.equals(post.postUserData().getUserSeq(), userId)) {
+        if (!Objects.equals(post.getUserSeq(), userId)) {
             throw new PostException(NO_AUTHORITY);
         }
     }

@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.command;
 
-import com.backend.immilog.post.domain.model.enums.Experience;
+import com.backend.immilog.post.domain.enums.Experience;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

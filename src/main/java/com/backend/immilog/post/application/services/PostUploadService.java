@@ -1,10 +1,10 @@
 package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.post.application.command.PostUploadCommand;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.model.PostResource;
-import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
-import com.backend.immilog.post.domain.repositories.PostRepository;
+import com.backend.immilog.post.application.services.command.BulkCommandService;
+import com.backend.immilog.post.application.services.command.PostCommandService;
+import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.model.user.User;
@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static com.backend.immilog.post.domain.model.enums.PostType.POST;
-import static com.backend.immilog.post.domain.model.enums.ResourceType.ATTACHMENT;
-import static com.backend.immilog.post.domain.model.enums.ResourceType.TAG;
+import static com.backend.immilog.post.domain.enums.PostType.POST;
+import static com.backend.immilog.post.domain.enums.ResourceType.ATTACHMENT;
+import static com.backend.immilog.post.domain.enums.ResourceType.TAG;
 import static com.backend.immilog.post.exception.PostErrorCode.FAILED_TO_SAVE_POST;
 import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 
@@ -28,9 +28,9 @@ import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 @RequiredArgsConstructor
 @Service
 public class PostUploadService {
-    private final PostRepository postRepository;
+    private final PostCommandService postCommandService;
     private final UserQueryService userQueryService;
-    private final BulkInsertRepository bulkInsertRepository;
+    private final BulkCommandService bulkInsertRepository;
 
     @Transactional
     public void uploadPost(
@@ -39,8 +39,8 @@ public class PostUploadService {
     ) {
         User user = userQueryService.getUserById(userSeq)
                 .orElseThrow(() -> new PostException(USER_NOT_FOUND));
-        Post post = postRepository.save(Post.of(postUploadCommand, user));
-        Long postSeq = post.seq();
+        Post post = postCommandService.save(Post.of(postUploadCommand, user));
+        Long postSeq = post.getSeq();
         insertAllPostResources(postUploadCommand, postSeq);
     }
 
@@ -64,10 +64,10 @@ public class PostUploadService {
                         """,
                 (ps, postResource) -> {
                     try {
-                        ps.setLong(1, postResource.postSeq());
-                        ps.setString(2, postResource.postType().name());
-                        ps.setString(3, postResource.resourceType().name());
-                        ps.setString(4, postResource.content());
+                        ps.setLong(1, postResource.getPostSeq());
+                        ps.setString(2, postResource.getPostType().name());
+                        ps.setString(3, postResource.getResourceType().name());
+                        ps.setString(4, postResource.getContent());
                     } catch (SQLException e) {
                         log.error("Failed to save post resource: {}", e.getMessage());
                         throw new PostException(FAILED_TO_SAVE_POST);

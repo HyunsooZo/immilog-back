@@ -1,11 +1,11 @@
 package com.backend.immilog.post.infrastructure.repositories;
 
-import com.backend.immilog.post.domain.model.PostResource;
-import com.backend.immilog.post.domain.model.enums.PostType;
-import com.backend.immilog.post.domain.model.enums.ResourceType;
+import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.domain.repositories.PostResourceRepository;
 import com.backend.immilog.post.infrastructure.jdbc.PostResourceJdbcRepository;
-import com.backend.immilog.post.infrastructure.jpa.PostResourceJpaRepository;
+import com.backend.immilog.post.infrastructure.jpa.repository.PostResourceJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

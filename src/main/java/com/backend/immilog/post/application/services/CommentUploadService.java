@@ -1,11 +1,13 @@
 package com.backend.immilog.post.application.services;
 
-import com.backend.immilog.post.exception.PostException;
-import com.backend.immilog.post.domain.model.Comment;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.model.enums.ReferenceType;
-import com.backend.immilog.post.domain.repositories.CommentRepository;
+import com.backend.immilog.post.application.services.command.CommentCommandService;
+import com.backend.immilog.post.application.services.command.PostCommandService;
+import com.backend.immilog.post.application.services.query.PostQueryService;
+import com.backend.immilog.post.domain.enums.ReferenceType;
+import com.backend.immilog.post.domain.model.comment.Comment;
+import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.repositories.PostRepository;
+import com.backend.immilog.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,9 @@ import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
 @Service
 @RequiredArgsConstructor
 public class CommentUploadService {
-    private final CommentRepository commentRepository;
-    private final PostRepository postRepository;
+    private final CommentCommandService commentCommandService;
+    private final PostQueryService postQueryService;
+    private final PostCommandService postCommandService;
 
     @Transactional
     public void uploadComment(
@@ -28,18 +31,18 @@ public class CommentUploadService {
             String content
     ) {
         Post post = getPost(postSeq);
-        post = post.copyWithNewCommentCount(post.commentCount() + 1);
+        post.updateCommentCount();
         ReferenceType reference = ReferenceType.getByString(referenceType);
         Comment comment = Comment.of(userId, postSeq, content, reference);
-        postRepository.save(post);
-        commentRepository.saveEntity(comment);
+        postCommandService.save(post);
+        commentCommandService.save(comment);
     }
 
     private Post getPost(
             Long postSeq
     ) {
-        return postRepository
-                .getById(postSeq)
+        return postQueryService
+                .getPostById(postSeq)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
     }
 }

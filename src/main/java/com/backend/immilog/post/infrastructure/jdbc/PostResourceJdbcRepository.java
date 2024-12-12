@@ -1,7 +1,7 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
-import com.backend.immilog.post.domain.model.enums.PostType;
-import com.backend.immilog.post.domain.model.enums.ResourceType;
+import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.domain.enums.ResourceType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -25,12 +25,12 @@ public class PostResourceJdbcRepository {
                 .collect(Collectors.joining(", "));
 
         String sql = """
-                     DELETE FROM post_resource_entity
-                     WHERE post_seq = ?
-                     AND post_type = ?
-                     AND resource_type = ?
-                     AND resource_name IN (%s)
-                     """.formatted(inClause);
+                DELETE FROM post_resource_entity
+                WHERE post_seq = ?
+                AND post_type = ?
+                AND resource_type = ?
+                AND resource_name IN (%s)
+                """.formatted(inClause);
 
         jdbcClient.sql(sql)
                 .param(postSeq)
@@ -40,15 +40,11 @@ public class PostResourceJdbcRepository {
                 .update();
     }
 
-    public void deleteAllByPostSeq(
-            Long seq
-    ) {
-        String sql = """
-                     DELETE FROM post_resource_entity
-                     WHERE post_seq = ?
-                     """;
-
-        jdbcClient.sql(sql)
+    public void deleteAllByPostSeq(Long seq) {
+        jdbcClient.sql("""
+                        DELETE FROM post_resource_entity
+                        WHERE post_seq = ?
+                        """)
                 .param(seq)
                 .update();
     }

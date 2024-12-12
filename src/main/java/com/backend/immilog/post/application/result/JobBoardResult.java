@@ -1,11 +1,11 @@
 package com.backend.immilog.post.application.result;
 
-import com.backend.immilog.post.domain.model.JobBoard;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.Experience;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
-import com.backend.immilog.post.domain.vo.CompanyMetaData;
-import com.backend.immilog.post.domain.vo.PostMetaData;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.Experience;
+import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.domain.model.post.JobBoard;
+import com.backend.immilog.post.domain.model.post.JobBoardCompany;
+import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.user.domain.enums.Industry;
 import lombok.Builder;
 
@@ -41,7 +41,7 @@ public record JobBoardResult(
         LocalDateTime createdAt
 ) {
     public JobBoard toDomain() {
-        PostMetaData postMetaData = PostMetaData.builder()
+        PostInfo postInfo = PostInfo.builder()
                 .title(this.title)
                 .content(this.content)
                 .viewCount(this.viewCount)
@@ -51,7 +51,7 @@ public record JobBoardResult(
                 .region(this.region)
                 .build();
 
-        CompanyMetaData companyMetaData = CompanyMetaData.builder()
+        JobBoardCompany jobBoardCompany = JobBoardCompany.builder()
                 .companySeq(this.companySeq)
                 .industry(this.industry)
                 .experience(this.experience)
@@ -68,8 +68,8 @@ public record JobBoardResult(
         return JobBoard.builder()
                 .seq(this.seq)
                 .userSeq(this.companyManagerUserSeq())
-                .companyMetaData(companyMetaData)
-                .postMetaData(postMetaData)
+                .jobBoardCompany(jobBoardCompany)
+                .postInfo(postInfo)
                 .build();
     }
 }

@@ -1,7 +1,7 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
+import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.infrastructure.result.CommentEntityResult;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.enums.UserCountry;
@@ -26,18 +26,18 @@ public class CommentJdbcRepository {
             Long postSeq
     ) {
         String sql = """
-                         SELECT c.*, u.*, cc.*, cu.*
-                         FROM comment c
-                         LEFT JOIN user u ON c.user_seq = u.seq
-                         LEFT JOIN comment cc ON cc.post_seq = ?
-                                             AND cc.parent_seq = c.seq
-                                             AND cc.reference_type = 'COMMENT'
-                         LEFT JOIN user cu ON cc.user_seq = cu.seq
-                         WHERE c.post_seq = ?
-                             AND c.parent_seq IS NULL
-                             AND c.reference_type = 'POST'
-                         ORDER BY c.created_at DESC
-                     """;
+                SELECT c.*, u.*, cc.*, cu.*
+                FROM comment c
+                LEFT JOIN user u ON c.user_seq = u.seq
+                LEFT JOIN comment cc ON cc.post_seq = ?
+                                    AND cc.parent_seq = c.seq
+                                AND cc.reference_type = 'COMMENT'
+                LEFT JOIN user cu ON cc.user_seq = cu.seq
+                WHERE c.post_seq = ?
+                    AND c.parent_seq IS NULL
+                    AND c.reference_type = 'POST'
+                ORDER BY c.created_at DESC
+                """;
 
         return jdbcClient.sql(sql)
                 .param(postSeq)

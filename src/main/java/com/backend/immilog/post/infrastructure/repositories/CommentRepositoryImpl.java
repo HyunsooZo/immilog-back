@@ -1,11 +1,11 @@
 package com.backend.immilog.post.infrastructure.repositories;
 
 import com.backend.immilog.post.application.result.CommentResult;
-import com.backend.immilog.post.domain.model.Comment;
+import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
 import com.backend.immilog.post.infrastructure.jdbc.CommentJdbcRepository;
-import com.backend.immilog.post.infrastructure.jpa.CommentEntity;
-import com.backend.immilog.post.infrastructure.jpa.CommentJpaRepository;
+import com.backend.immilog.post.infrastructure.jpa.entity.CommentEntity;
+import com.backend.immilog.post.infrastructure.jpa.repository.CommentJpaRepository;
 import com.backend.immilog.post.infrastructure.result.CommentEntityResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -19,9 +19,7 @@ public class CommentRepositoryImpl implements CommentRepository {
     private final CommentJpaRepository commentJpaRepository;
 
     @Override
-    public List<CommentResult> getComments(
-            Long postSeq
-    ) {
+    public List<CommentResult> getComments(Long postSeq) {
         return commentJdbcRepository
                 .getComments(postSeq)
                 .stream()
@@ -30,9 +28,7 @@ public class CommentRepositoryImpl implements CommentRepository {
     }
 
     @Override
-    public void saveEntity(
-            Comment comment
-    ) {
+    public void save(Comment comment) {
         commentJpaRepository.save(CommentEntity.from(comment));
     }
 }

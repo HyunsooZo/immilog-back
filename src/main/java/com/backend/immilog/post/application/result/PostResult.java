@@ -1,7 +1,7 @@
 package com.backend.immilog.post.application.result;
 
-import com.backend.immilog.post.domain.model.enums.Categories;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
+import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.PostStatus;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 

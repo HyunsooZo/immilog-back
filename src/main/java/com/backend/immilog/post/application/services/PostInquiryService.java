@@ -1,13 +1,13 @@
 package com.backend.immilog.post.application.services;
 
-import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.model.enums.Categories;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.SortingMethods;
-import com.backend.immilog.post.domain.repositories.CommentRepository;
-import com.backend.immilog.post.domain.repositories.PostRepository;
+import com.backend.immilog.post.application.services.query.CommentQueryService;
+import com.backend.immilog.post.application.services.query.PostQueryService;
+import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,10 +25,9 @@ import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
 @Service
 @RequiredArgsConstructor
 public class PostInquiryService {
-    private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
+    private final PostQueryService postQueryService;
+    private final CommentQueryService commentQueryService;
 
-    @Transactional(readOnly = true)
     public Page<PostResult> getPosts(
             Countries country,
             SortingMethods sortingMethod,
@@ -37,8 +36,7 @@ public class PostInquiryService {
             Integer page
     ) {
         Pageable pageable = PageRequest.of(page, 10);
-
-        return postRepository.getPosts(
+        return postQueryService.getPosts(
                 country,
                 sortingMethod,
                 isPublic,
@@ -52,18 +50,17 @@ public class PostInquiryService {
             Long postSeq
     ) {
         PostResult postResult = getPostDTO(postSeq);
-        List<CommentResult> comments = commentRepository.getComments(postSeq);
+        List<CommentResult> comments = commentQueryService.getComments(postSeq);
         postResult = postResult.copyWithNewComments(comments);
         return postResult;
     }
 
-    @Transactional(readOnly = true)
     public Page<PostResult> searchKeyword(
             String keyword,
             Integer page
     ) {
         PageRequest pageRequest = PageRequest.of(page, 10);
-        List<PostResult> postResults = postRepository.getPostsByKeyword(keyword, pageRequest)
+        List<PostResult> postResults = postQueryService.getPostsByKeyword(keyword, pageRequest)
                 .getContent()
                 .stream()
                 .map(postResult -> postResult.copyWithKeyword(keyword))
@@ -71,19 +68,18 @@ public class PostInquiryService {
         return new PageImpl<>(postResults, pageRequest, postResults.size());
     }
 
-    @Transactional(readOnly = true)
     public Page<PostResult> getUserPosts(
             Long userSeq,
             Integer page
     ) {
         Pageable pageable = PageRequest.of(page, 10);
-        return postRepository.getPostsByUserSeq(userSeq, pageable);
+        return postQueryService.getPostsByUserSeq(userSeq, pageable);
     }
 
     private PostResult getPostDTO(
             Long postSeq
     ) {
-        return postRepository
+        return postQueryService
                 .getPost(postSeq)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
     }

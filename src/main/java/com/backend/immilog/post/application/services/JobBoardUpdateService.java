@@ -2,14 +2,16 @@ package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.post.application.command.JobBoardUpdateCommand;
 import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.domain.model.JobBoard;
-import com.backend.immilog.post.domain.model.enums.PostType;
-import com.backend.immilog.post.domain.model.enums.ResourceType;
+import com.backend.immilog.post.application.services.command.BulkCommandService;
+import com.backend.immilog.post.application.services.command.JobBoardCommandService;
+import com.backend.immilog.post.application.services.command.PostResourceCommandService;
+import com.backend.immilog.post.application.services.query.JobBoardQueryService;
+import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.post.JobBoard;
+import com.backend.immilog.post.domain.model.post.JobBoardCompany;
+import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
-import com.backend.immilog.post.domain.repositories.JobBoardRepository;
-import com.backend.immilog.post.domain.repositories.PostResourceRepository;
-import com.backend.immilog.post.domain.vo.CompanyMetaData;
-import com.backend.immilog.post.domain.vo.PostMetaData;
 import com.backend.immilog.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +28,10 @@ import static com.backend.immilog.post.exception.PostErrorCode.*;
 @Service
 @RequiredArgsConstructor
 public class JobBoardUpdateService {
-    private final JobBoardRepository jobBoardRepository;
-    private final PostResourceRepository postResourceRepository;
-    private final BulkInsertRepository bulkInsertRepository;
+    private final JobBoardQueryService jobBoardQueryService;
+    private final JobBoardCommandService jobBoardCommandService;
+    private final PostResourceCommandService postResourceCommandService;
+    private final BulkCommandService bulkInsertRepository;
 
     @Transactional
     public void updateJobBoard(
@@ -39,7 +42,7 @@ public class JobBoardUpdateService {
         JobBoardResult jobBoard = getJobBoard(jobBoardSeq);
         verifyIfUserIsOwner(userSeq, jobBoard);
         JobBoard updatedJobBoard = createUpdatedJobBoard(userSeq, command, jobBoard);
-        jobBoardRepository.saveEntity(updatedJobBoard);
+        jobBoardCommandService.save(updatedJobBoard);
     }
 
     @Transactional
@@ -47,24 +50,20 @@ public class JobBoardUpdateService {
             Long userSeq,
             Long jobBoardSeq
     ) {
-        JobBoardResult jobBoard = getJobBoard(jobBoardSeq);
-        verifyIfUserIsOwner(userSeq, jobBoard);
-        JobBoard deletedJobBoard = createDeletedJobBoard(jobBoard);
-        jobBoardRepository.saveEntity(deletedJobBoard);
+        JobBoardResult jobBoardResult = getJobBoard(jobBoardSeq);
+        verifyIfUserIsOwner(userSeq, jobBoardResult);
+        JobBoard jobBoard = jobBoardResult.toDomain();
+        jobBoard.toDeleteDomain();
+        jobBoardCommandService.save(jobBoard);
     }
 
-    private JobBoard createDeletedJobBoard(
-            JobBoardResult jobBoard
-    ) {
-        return jobBoard.toDomain().toDeleteDomain();
-    }
 
     private JobBoard createUpdatedJobBoard(
             Long userSeq,
             JobBoardUpdateCommand command,
             JobBoardResult jobBoard
     ) {
-        PostMetaData postMetaData = PostMetaData.builder()
+        PostInfo postInfo = PostInfo.builder()
                 .title(command.title() != null ? command.title() : jobBoard.title())
                 .content(command.content() != null ? command.content() : jobBoard.content())
                 .viewCount(jobBoard.viewCount())
@@ -80,9 +79,9 @@ public class JobBoardUpdateService {
         return JobBoard.builder()
                 .seq(jobBoard.seq())
                 .userSeq(userSeq)
-                .postMetaData(postMetaData)
-                .companyMetaData(
-                        CompanyMetaData.of(
+                .postInfo(postInfo)
+                .jobBoardCompany(
+                        JobBoardCompany.of(
                                 jobBoard.companySeq(),
                                 jobBoard.industry(),
                                 command.experience() != null ? command.experience() : jobBoard.experience(),
@@ -108,7 +107,7 @@ public class JobBoardUpdateService {
                 .filter(attachment -> command.deleteAttachments().contains(attachment))
                 .toList();
 
-        postResourceRepository.deleteAllEntities(
+        postResourceCommandService.deleteAllEntities(
                 jobBoard.seq(),
                 PostType.JOB_BOARD,
                 ResourceType.ATTACHMENT,
@@ -132,7 +131,7 @@ public class JobBoardUpdateService {
                 .filter(tag -> command.deleteAttachments().contains(tag))
                 .toList();
 
-        postResourceRepository.deleteAllEntities(
+        postResourceCommandService.deleteAllEntities(
                 jobBoard.seq(),
                 PostType.JOB_BOARD,
                 ResourceType.TAG,
@@ -156,13 +155,13 @@ public class JobBoardUpdateService {
         bulkInsertRepository.saveAll(
                 postResources,
                 """
-                INSERT INTO post_resource (
-                    post_seq,
-                    post_type,
-                    resource_type,
-                    content
-                ) VALUES (?, ?, ?, ?)
-                """,
+                        INSERT INTO post_resource (
+                            post_seq,
+                            post_type,
+                            resource_type,
+                            content
+                        ) VALUES (?, ?, ?, ?)
+                        """,
                 (ps, postResource) -> {
                     try {
                         ps.setLong(1, postSeq);
@@ -189,7 +188,7 @@ public class JobBoardUpdateService {
     private JobBoardResult getJobBoard(
             Long jobBoardSeq
     ) {
-        return jobBoardRepository
+        return jobBoardQueryService
                 .getJobBoardBySeq(jobBoardSeq)
                 .orElseThrow(() -> new PostException(JOB_BOARD_NOT_FOUND));
     }

@@ -1,10 +1,10 @@
 package com.backend.immilog.post.domain.repositories;
 
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.model.enums.Categories;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.SortingMethods;
+import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.domain.model.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -20,9 +20,7 @@ public interface PostRepository {
             Pageable pageable
     );
 
-    Optional<PostResult> getPost(
-            Long postSeq
-    );
+    Optional<PostResult> getPost(Long postSeq);
 
     Page<PostResult> getPostsByKeyword(
             String keyword,
@@ -34,11 +32,7 @@ public interface PostRepository {
             Pageable pageable
     );
 
-    Optional<Post> getById(
-            Long postSeq
-    );
+    Optional<Post> getById(Long postSeq);
 
-    Post save(
-            Post postEntity
-    );
+    Post save(Post postEntity);
 }

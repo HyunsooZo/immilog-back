@@ -1,6 +1,6 @@
 package com.backend.immilog.post.presentation.controller;
 
-import com.backend.immilog.global.security.ExtractUserId;
+import com.backend.immilog.global.aop.ExtractUserId;
 import com.backend.immilog.post.application.services.InteractionCreationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

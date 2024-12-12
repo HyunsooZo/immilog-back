@@ -1,8 +1,6 @@
 package com.backend.immilog.post.exception;
 
 import com.backend.immilog.global.exception.ErrorCode;
-import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;

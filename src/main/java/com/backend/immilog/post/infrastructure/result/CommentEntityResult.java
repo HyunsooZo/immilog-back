@@ -1,8 +1,8 @@
 package com.backend.immilog.post.infrastructure.result;
 
 import com.backend.immilog.post.application.result.CommentResult;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
-import com.backend.immilog.post.domain.model.Comment;
+import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.model.user.User;
 import lombok.AllArgsConstructor;
@@ -40,15 +40,15 @@ public class CommentEntityResult {
             User user
     ) {
         return CommentEntityResult.builder()
-                .seq(comment.seq())
+                .seq(comment.getSeq())
                 .user(UserInfoResult.from(user))
-                .content(comment.content())
+                .content(comment.getContent())
                 .replies(new ArrayList<>())
-                .upVotes(comment.likeCount())
-                .replyCount(comment.replyCount())
-                .likeUsers(comment.likeUsers())
-                .status(comment.status())
-                .createdAt(comment.createdAt())
+                .upVotes(comment.getLikeCount())
+                .replyCount(comment.getReplyCount())
+                .likeUsers(comment.getLikeUsers())
+                .status(comment.getStatus())
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 

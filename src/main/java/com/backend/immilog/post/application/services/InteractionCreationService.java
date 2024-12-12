@@ -1,10 +1,11 @@
 package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.global.infrastructure.lock.RedisDistributedLock;
-import com.backend.immilog.post.domain.model.InteractionUser;
-import com.backend.immilog.post.domain.model.enums.InteractionType;
-import com.backend.immilog.post.domain.model.enums.PostType;
-import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
+import com.backend.immilog.post.application.services.command.InteractionUserCommandService;
+import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
+import com.backend.immilog.post.domain.enums.InteractionType;
+import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -17,7 +18,8 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class InteractionCreationService {
-    private final InteractionUserRepository interactionUserRepository;
+    private final InteractionUserCommandService interactionUserCommandService;
+    private final InteractionUserQueryService interactionUserQueryService;
     private final RedisDistributedLock redisDistributedLock;
     final String LIKE_LOCK_KEY = "interaction : ";
 
@@ -37,7 +39,7 @@ public class InteractionCreationService {
                 () -> {
                     getInteractionUser(postSeq, userSeq, postType, interactionType)
                             .ifPresentOrElse(
-                                    interactionUserRepository::deleteEntity,
+                                    interactionUserCommandService::delete,
                                     () -> {
                                         InteractionUser interactionUser = createInteractionUser(
                                                 userSeq,
@@ -45,7 +47,7 @@ public class InteractionCreationService {
                                                 postType,
                                                 interactionType
                                         );
-                                        interactionUserRepository.saveEntity(interactionUser);
+                                        interactionUserCommandService.save(interactionUser);
                                     }
                             );
                 }
@@ -87,7 +89,7 @@ public class InteractionCreationService {
             PostType postType,
             InteractionType interactionType
     ) {
-        return interactionUserRepository.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
+        return interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
                 postSeq,
                 userSeq,
                 postType,

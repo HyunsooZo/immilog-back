@@ -1,9 +1,9 @@
 package com.backend.immilog.post.infrastructure.result;
 
 import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.domain.model.enums.*;
-import com.backend.immilog.post.infrastructure.jpa.InteractionUserEntity;
-import com.backend.immilog.post.infrastructure.jpa.PostResourceEntity;
+import com.backend.immilog.post.domain.enums.*;
+import com.backend.immilog.post.infrastructure.jpa.entity.InteractionUserEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
 import com.backend.immilog.user.domain.enums.Industry;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,10 +11,10 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.backend.immilog.post.domain.model.enums.InteractionType.BOOKMARK;
-import static com.backend.immilog.post.domain.model.enums.InteractionType.LIKE;
-import static com.backend.immilog.post.domain.model.enums.ResourceType.ATTACHMENT;
-import static com.backend.immilog.post.domain.model.enums.ResourceType.TAG;
+import static com.backend.immilog.post.domain.enums.InteractionType.BOOKMARK;
+import static com.backend.immilog.post.domain.enums.InteractionType.LIKE;
+import static com.backend.immilog.post.domain.enums.ResourceType.ATTACHMENT;
+import static com.backend.immilog.post.domain.enums.ResourceType.TAG;
 
 @Getter
 @Setter

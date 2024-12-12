@@ -1,6 +1,6 @@
 package com.backend.immilog.post.presentation.controller;
 
-import com.backend.immilog.global.security.ExtractUserId;
+import com.backend.immilog.global.aop.ExtractUserId;
 import com.backend.immilog.post.application.services.CommentUploadService;
 import com.backend.immilog.post.presentation.request.CommentUploadRequest;
 import com.backend.immilog.post.presentation.response.PostApiResponse;

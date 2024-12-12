@@ -1,19 +1,17 @@
 package com.backend.immilog.post.domain.repositories;
 
 import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.domain.model.JobBoard;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.Experience;
-import com.backend.immilog.post.domain.model.enums.Industry;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.Experience;
+import com.backend.immilog.post.domain.enums.Industry;
+import com.backend.immilog.post.domain.model.post.JobBoard;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Optional;
 
 public interface JobBoardRepository {
-    void saveEntity(
-            JobBoard jobBoard
-    );
+    void save(JobBoard jobBoard);
 
     Page<JobBoardResult> getJobBoards(
             Countries country,
@@ -23,7 +21,5 @@ public interface JobBoardRepository {
             Pageable pageable
     );
 
-    Optional<JobBoardResult> getJobBoardBySeq(
-            Long jobBoardSeq
-    );
+    Optional<JobBoardResult> getJobBoardBySeq(Long jobBoardSeq);
 }

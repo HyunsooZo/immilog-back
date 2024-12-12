@@ -1,15 +1,14 @@
 package com.backend.immilog.post.infrastructure.result;
 
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.model.enums.Categories;
-import com.backend.immilog.post.domain.model.enums.InteractionType;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
-import com.backend.immilog.post.domain.model.enums.ResourceType;
-import com.backend.immilog.post.domain.vo.PostMetaData;
-import com.backend.immilog.post.domain.vo.PostUserData;
-import com.backend.immilog.post.infrastructure.jpa.InteractionUserEntity;
-import com.backend.immilog.post.infrastructure.jpa.PostEntity;
-import com.backend.immilog.post.infrastructure.jpa.PostResourceEntity;
+import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.InteractionType;
+import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.infrastructure.jpa.entity.InteractionUserEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.PostEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,10 +17,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.backend.immilog.post.domain.model.enums.InteractionType.BOOKMARK;
-import static com.backend.immilog.post.domain.model.enums.InteractionType.LIKE;
-import static com.backend.immilog.post.domain.model.enums.ResourceType.ATTACHMENT;
-import static com.backend.immilog.post.domain.model.enums.ResourceType.TAG;
+import static com.backend.immilog.post.domain.enums.InteractionType.BOOKMARK;
+import static com.backend.immilog.post.domain.enums.InteractionType.LIKE;
+import static com.backend.immilog.post.domain.enums.ResourceType.ATTACHMENT;
+import static com.backend.immilog.post.domain.enums.ResourceType.TAG;
 
 @Getter
 @Setter
@@ -49,14 +48,13 @@ public class PostEntityResult {
     private String createdAt;
 
     public PostEntityResult(
-            PostEntity post,
+            PostEntity postEntity,
             List<InteractionUserEntity> interactionUsers,
             List<PostResourceEntity> postResources
     ) {
         interactionUsers = interactionUsers != null ? interactionUsers : List.of();
         postResources = postResources != null ? postResources : List.of();
-        PostMetaData postMetaData = post.getPostMetaData();
-        PostUserData postUserData = post.getPostUserData();
+        Post post = postEntity.toDomain();
 
         List<Long> likeUsers = getLongs(interactionUsers, LIKE);
         List<Long> bookmarkUsers = getLongs(interactionUsers, BOOKMARK);
@@ -64,15 +62,15 @@ public class PostEntityResult {
         List<String> attachments = getStrings(postResources, ATTACHMENT);
 
         this.seq = post.getSeq();
-        this.title = postMetaData.getTitle();
-        this.content = postMetaData.getContent();
-        this.userSeq = postUserData.getUserSeq();
-        this.userProfileUrl = postUserData.getProfileImage();
-        this.userNickName = postUserData.getNickname();
-        this.country = postMetaData.getCountry().getCountryName();
-        this.region = postMetaData.getRegion();
-        this.viewCount = postMetaData.getViewCount();
-        this.likeCount = postMetaData.getLikeCount();
+        this.title = post.getTitle();
+        this.content = post.getContent();
+        this.userSeq = post.getUserSeq();
+        this.userProfileUrl = post.getUserProfileImage();
+        this.userNickName = post.getUserNickname();
+        this.country = post.getCountryName();
+        this.region = post.getRegion();
+        this.viewCount = post.getViewCount();
+        this.likeCount = post.getLikeCount();
         this.commentCount = post.getCommentCount();
         this.comments = new ArrayList<>();
         this.likeUsers = likeUsers;
@@ -80,7 +78,7 @@ public class PostEntityResult {
         this.tags = tags;
         this.attachments = attachments;
         this.isPublic = post.getIsPublic();
-        this.status = postMetaData.getStatus();
+        this.status = post.getStatus();
         this.category = post.getCategory();
         this.createdAt = post.getCreatedAt().toString();
     }

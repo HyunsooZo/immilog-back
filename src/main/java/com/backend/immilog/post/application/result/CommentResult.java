@@ -1,7 +1,7 @@
 package com.backend.immilog.post.application.result;
 
-import com.backend.immilog.post.domain.model.Comment;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
+import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.model.user.User;
 import lombok.Builder;
@@ -29,15 +29,15 @@ public record CommentResult(
             User user
     ) {
         return CommentResult.builder()
-                .seq(comment.seq())
+                .seq(comment.getSeq())
                 .user(UserInfoResult.from(user))
-                .content(comment.content())
+                .content(comment.getContent())
                 .replies(new ArrayList<>())
-                .upVotes(comment.likeCount())
-                .replyCount(comment.replyCount())
-                .likeUsers(comment.likeUsers())
-                .status(comment.status())
-                .createdAt(comment.createdAt())
+                .upVotes(comment.getLikeCount())
+                .replyCount(comment.getReplyCount())
+                .likeUsers(comment.getLikeUsers())
+                .status(comment.getStatus())
+                .createdAt(comment.getCreatedAt())
                 .build();
     }
 
@@ -53,7 +53,7 @@ public record CommentResult(
                 .map(reply -> {
                     return replyUsers.stream()
                             .filter(Objects::nonNull)
-                            .filter(u -> u.getSeq().equals(reply.userSeq()))
+                            .filter(u -> u.getSeq().equals(reply.getUserSeq()))
                             .findFirst()
                             .map(replyUser -> CommentResult.of(reply, replyUser))
                             .orElse(null);
