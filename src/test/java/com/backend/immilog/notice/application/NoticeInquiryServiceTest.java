@@ -28,7 +28,6 @@ import static org.mockito.Mockito.when;
 class NoticeInquiryServiceTest {
     private final NoticeQueryService noticeQueryService = mock(NoticeQueryService.class);
     private final UserQueryService userQueryService = mock(UserQueryService.class);
-
     private final NoticeInquiryService noticeInquiryService = new NoticeInquiryService(
             noticeQueryService,
             userQueryService

@@ -59,7 +59,6 @@ class NoticeModifyServiceTest {
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
         when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.empty());
-
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(userSeq, noticeSeq, command));
     }
 
@@ -75,7 +74,6 @@ class NoticeModifyServiceTest {
         when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
         when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.of(notice));
         when(notice.getStatus()).thenReturn(DELETED);
-
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(userSeq, noticeSeq, command));
     }
 
