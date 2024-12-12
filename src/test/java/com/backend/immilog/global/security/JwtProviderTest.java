@@ -10,8 +10,6 @@ import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -25,20 +23,16 @@ import static org.mockito.Mockito.*;
 @DisplayName("JwtProvider 클래스")
 class JwtProviderTest {
 
-    @Mock
-    private UserDetailsServiceImpl userDetailsService;
+    private final UserDetailsServiceImpl userDetailsService = mock(UserDetailsServiceImpl.class);
 
-    private TokenProvider tokenProvider;
+    private final TokenProvider tokenProvider = new JwtProvider(userDetailsService);
 
     private SecretKey secretKey;
 
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
-        String key =
-                "c2VjcmV0S2V5U3RyaW5nc2VjcmV0S2V5U3RyaW5nc2VjcmV0S2V5U3RyaW5nc2VjcmV0S2V5U3RyaW5n";  // Base64로 인코딩된 문자열
+        String key = "c2VjcmV0S2V5U3RyaW5nc2VjcmV0S2V5U3RyaW5nc2VjcmV0S2V5U3RyaW5nc2VjcmV0S2V5U3RyaW5n";  // Base64로 인코딩된 문자열
         secretKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(key));
-        tokenProvider = new JwtProvider(userDetailsService);
         ReflectionTestUtils.setField(tokenProvider, "issuer", "issuer");
         ReflectionTestUtils.setField(tokenProvider, "secretKey", secretKey);
         ReflectionTestUtils.setField(tokenProvider, "secretKeyString", key);

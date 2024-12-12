@@ -13,15 +13,8 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("InteractionController 테스트")
 class InteractionControllerTest {
-    @Mock
-    private InteractionCreationService interactionCreationService;
-    private InteractionController interactionController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        interactionController = new InteractionController(interactionCreationService);
-    }
+    private final InteractionCreationService interactionCreationService = mock(InteractionCreationService.class);
+    private final InteractionController interactionController = new InteractionController(interactionCreationService);
 
     @Test
     @DisplayName("인터랙션 등록")

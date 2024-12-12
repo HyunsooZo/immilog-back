@@ -23,20 +23,12 @@ import static org.springframework.http.HttpStatus.OK;
 
 @DisplayName("인증 컨트롤러 테스트")
 class AuthControllerTest {
-    @Mock
-    private LocationService locationService;
-    @Mock
-    private UserSignInService userSignInService;
-    private AuthController authController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        authController = new AuthController(
-                locationService,
-                userSignInService
-        );
-    }
+    private final LocationService locationService = mock(LocationService.class);
+    private final UserSignInService userSignInService = mock(UserSignInService.class);
+    private final AuthController authController = new AuthController(
+            locationService,
+            userSignInService
+    );
 
     @Test
     @DisplayName("사용자 정보 조회")

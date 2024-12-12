@@ -1,11 +1,11 @@
 package com.backend.immilog.post.application;
 
 import com.backend.immilog.post.application.services.PostUploadService;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.model.PostResource;
-import com.backend.immilog.post.domain.model.enums.Categories;
-import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
-import com.backend.immilog.post.domain.repositories.PostRepository;
+import com.backend.immilog.post.application.services.command.BulkCommandService;
+import com.backend.immilog.post.application.services.command.PostCommandService;
+import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
 import com.backend.immilog.user.application.services.query.UserQueryService;
@@ -25,25 +25,25 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
-import static com.backend.immilog.post.domain.model.enums.PostType.POST;
-import static com.backend.immilog.post.domain.model.enums.ResourceType.ATTACHMENT;
+import static com.backend.immilog.post.domain.enums.PostType.POST;
+import static com.backend.immilog.post.domain.enums.ResourceType.ATTACHMENT;
 import static com.backend.immilog.post.exception.PostErrorCode.FAILED_TO_SAVE_POST;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @DisplayName("PostUploadService 테스트")
 class PostUploadServiceTest {
-    private final PostRepository postRepository = mock(PostRepository.class);
+    private final PostCommandService postCommandService = mock(PostCommandService.class);
     private final UserQueryService userQueryService = mock(UserQueryService.class);
-    private final BulkInsertRepository bulkInsertRepository = mock(BulkInsertRepository.class);
+    private final BulkCommandService bulkCommandService = mock(BulkCommandService.class);
     private final DataSource dataSource = mock(DataSource.class);
     private final Connection connection = mock(Connection.class);
     private final PreparedStatement preparedStatement = mock(PreparedStatement.class);
 
     private final PostUploadService postUploadService = new PostUploadService(
-            postRepository,
+            postCommandService,
             userQueryService,
-            bulkInsertRepository
+            bulkCommandService
     );
 
     @BeforeEach
@@ -76,7 +76,7 @@ class PostUploadServiceTest {
         Post post = Post.builder().seq(1L).build();
 
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(postRepository.save(any(Post.class))).thenReturn(post);
+        when(postCommandService.save(any(Post.class))).thenReturn(post);
 
         doNothing().when(preparedStatement).setLong(eq(1), anyLong());
         doNothing().when(preparedStatement).setString(eq(2), anyString());
@@ -89,8 +89,8 @@ class PostUploadServiceTest {
         postUploadService.uploadPost(userSeq, postUploadRequest.toCommand());
 
         // then
-        verify(postRepository).save(any(Post.class));
-        verify(bulkInsertRepository).saveAll(
+        verify(postCommandService).save(any(Post.class));
+        verify(bulkCommandService).saveAll(
                 anyList(),
                 anyString(),
                 captor.capture()
@@ -103,10 +103,10 @@ class PostUploadServiceTest {
                 .content("attachment")
                 .build();
         captor.getValue().accept(preparedStatement, capturedPostResource);
-        verify(preparedStatement).setLong(1, capturedPostResource.postSeq());
-        verify(preparedStatement).setString(2, capturedPostResource.postType().name());
-        verify(preparedStatement).setString(3, capturedPostResource.resourceType().name());
-        verify(preparedStatement).setString(4, capturedPostResource.content());
+        verify(preparedStatement).setLong(1, capturedPostResource.getPostSeq());
+        verify(preparedStatement).setString(2, capturedPostResource.getPostType().name());
+        verify(preparedStatement).setString(3, capturedPostResource.getResourceType().name());
+        verify(preparedStatement).setString(4, capturedPostResource.getContent());
     }
 
     @Test
@@ -131,13 +131,13 @@ class PostUploadServiceTest {
         Post post = Post.builder().seq(1L).build();
 
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(postRepository.save(any(Post.class))).thenReturn(post);
+        when(postCommandService.save(any(Post.class))).thenReturn(post);
 
         // when
         postUploadService.uploadPost(userSeq, postUploadRequest.toCommand());
 
         // then
-        verify(postRepository).save(any(Post.class));
+        verify(postCommandService).save(any(Post.class));
     }
 
     @Test
@@ -162,7 +162,7 @@ class PostUploadServiceTest {
                 .location(location)
                 .build();
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(postRepository.save(any(Post.class))).thenReturn(Post.builder().seq(1L).build());
+        when(postCommandService.save(any(Post.class))).thenReturn(Post.builder().seq(1L).build());
         doThrow(new SQLException("Mock SQL Exception"))
                 .when(preparedStatement).setLong(anyInt(), anyLong());
 
@@ -170,13 +170,13 @@ class PostUploadServiceTest {
             BiConsumer<PreparedStatement, PostResource> consumer = invocation.getArgument(2);
             consumer.accept(preparedStatement, PostResource.builder().postSeq(1L).build());
             return null;
-        }).when(bulkInsertRepository).saveAll(anyList(), anyString(), any(BiConsumer.class));
+        }).when(bulkCommandService).saveAll(anyList(), anyString(), any(BiConsumer.class));
 
         // when & then
         assertThatThrownBy(() -> postUploadService.uploadPost(userSeq, postUploadRequest.toCommand()))
                 .isInstanceOf(PostException.class)
                 .hasMessage(FAILED_TO_SAVE_POST.getMessage());
 
-        verify(bulkInsertRepository).saveAll(anyList(), anyString(), any(BiConsumer.class));
+        verify(bulkCommandService).saveAll(anyList(), anyString(), any(BiConsumer.class));
     }
 }

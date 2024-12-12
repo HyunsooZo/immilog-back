@@ -1,6 +1,6 @@
 package com.backend.immilog.user.application;
 
-import com.backend.immilog.global.application.ImageService;
+import com.backend.immilog.image.application.service.ImageService;
 import com.backend.immilog.user.application.command.UserPasswordChangeCommand;
 import com.backend.immilog.user.application.services.UserInformationService;
 import com.backend.immilog.user.application.services.command.UserCommandService;

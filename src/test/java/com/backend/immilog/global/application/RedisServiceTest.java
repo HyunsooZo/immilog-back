@@ -12,15 +12,8 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("Redis 키/값 테스트")
 class RedisServiceTest {
-    @Mock
-    private DataRepository dataRepository;
-    private RedisService redisService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        redisService = new RedisService(dataRepository);
-    }
+    private final DataRepository dataRepository = mock(DataRepository.class);
+    private final RedisService redisService = new RedisService(dataRepository);
 
     @Test
     @DisplayName("키/값 저장")

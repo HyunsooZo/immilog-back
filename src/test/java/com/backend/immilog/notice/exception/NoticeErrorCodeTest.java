@@ -12,7 +12,7 @@ class NoticeErrorCodeTest {
 
     @Test
     @DisplayName("Enum NoticeErrorCode의 getStatus() 메서드 테스트")
-    void getStatus_returnsCorrectHttpStatus() {
+    void getStatus_returnsCorrectHttpGetStatus() {
         Assertions.assertThat(BAD_REQUEST).isEqualTo(NoticeErrorCode.NOT_AN_ADMIN_USER.getStatus());
         Assertions.assertThat(NOT_FOUND).isEqualTo(NoticeErrorCode.NOTICE_NOT_FOUND.getStatus());
     }

@@ -1,16 +1,13 @@
 package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.Experience;
-import com.backend.immilog.post.domain.model.enums.Industry;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
-import com.backend.immilog.post.domain.repositories.JobBoardRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.post.application.services.query.JobBoardQueryService;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.Experience;
+import com.backend.immilog.post.domain.enums.Industry;
+import com.backend.immilog.post.domain.enums.PostStatus;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,19 +18,13 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @DisplayName("JobBoardInquiryService 테스트")
 class JobBoardInquiryServiceTest {
-    @Mock
-    private JobBoardRepository jobBoardRepository;
-    private JobBoardInquiryService jobBoardInquiryService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        jobBoardInquiryService = new JobBoardInquiryService(jobBoardRepository);
-    }
+    private final JobBoardQueryService jobBoardQueryService = mock(JobBoardQueryService.class);
+    private final JobBoardInquiryService jobBoardInquiryService = new JobBoardInquiryService(jobBoardQueryService);
 
     @Test
     @DisplayName("구인구직 게시글 조회 성공")
@@ -73,7 +64,7 @@ class JobBoardInquiryServiceTest {
                 .createdAt(now)
                 .build();
 
-        when(jobBoardRepository.getJobBoards(
+        when(jobBoardQueryService.getJobBoards(
                 Countries.valueOf(country),
                 sortingMethod,
                 Industry.valueOf(industry),

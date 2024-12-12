@@ -20,14 +20,12 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 
 @DisplayName("위치 서비스 테스트")
 class LocationServiceTest {
-    private LocationService locationService;
-    private MockRestServiceServer mockServer;
+    private final RestTemplate restTemplate = new RestTemplate();
+    private final LocationService locationService = new LocationService(restTemplate);
+    private final MockRestServiceServer mockServer = MockRestServiceServer.bindTo(restTemplate).build();
 
     @BeforeEach
     void setUp() {
-        RestTemplate restTemplate = new RestTemplate();
-        locationService = new LocationService(restTemplate);
-        mockServer = MockRestServiceServer.bindTo(restTemplate).build();
         ReflectionTestUtils.setField(locationService, "geocoderUrl", "https://example.com/geocode?lat=%f&lng=%f&key=%s");
         ReflectionTestUtils.setField(locationService, "geocoderKey", "fake-key");
     }
@@ -42,12 +40,12 @@ class LocationServiceTest {
         // Mock 서버에서 반환할 올바른 JSON 응답 설정
         mockServer.expect(MockRestRequestMatchers.anything())
                 .andRespond(withSuccess("""
-                                        {
-                                        "plus_code": {
-                                            "compound_code": "HX8H+H6R 대한민국 서울특별시",
-                                            "global_code": "8Q98HX8H+H6R"
-                                        }
-                                        }""".trim(), MediaType.APPLICATION_JSON));
+                        {
+                        "plus_code": {
+                            "compound_code": "HX8H+H6R 대한민국 서울특별시",
+                            "global_code": "8Q98HX8H+H6R"
+                        }
+                        }""".trim(), MediaType.APPLICATION_JSON));
 
         // when
         CompletableFuture<Pair<String, String>> resultFuture =
@@ -105,8 +103,8 @@ class LocationServiceTest {
         // Mock 서버에서 반환할 올바른 JSON 응답 설정
         mockServer.expect(MockRestRequestMatchers.anything())
                 .andRespond(withSuccess("""
-                                        }{
-                                        """.trim(), MediaType.APPLICATION_JSON));
+                        }{
+                        """.trim(), MediaType.APPLICATION_JSON));
 
         // when
         CompletableFuture<Pair<String, String>> resultFuture =

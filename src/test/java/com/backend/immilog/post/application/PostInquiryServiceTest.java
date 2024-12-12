@@ -2,16 +2,13 @@ package com.backend.immilog.post.application;
 
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.PostInquiryService;
-import com.backend.immilog.post.domain.model.enums.Categories;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.SortingMethods;
-import com.backend.immilog.post.domain.repositories.CommentRepository;
-import com.backend.immilog.post.domain.repositories.PostRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.post.application.services.query.CommentQueryService;
+import com.backend.immilog.post.application.services.query.PostQueryService;
+import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.SortingMethods;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,26 +17,17 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @DisplayName("PostInquiryService 테스트")
 class PostInquiryServiceTest {
-    @Mock
-    private PostRepository postRepository;
-
-    @Mock
-    private CommentRepository commentRepository;
-
-    private PostInquiryService postInquiryService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        postInquiryService = new PostInquiryService(
-                postRepository,
-                commentRepository
-        );
-    }
+    private final PostQueryService postQueryService = mock(PostQueryService.class);
+    private final CommentQueryService commentQueryService = mock(CommentQueryService.class);
+    private final PostInquiryService postInquiryService = new PostInquiryService(
+            postQueryService,
+            commentQueryService
+    );
 
     @Test
     @DisplayName("게시물 조회 - 성공")
@@ -53,7 +41,7 @@ class PostInquiryServiceTest {
         Pageable pageable = PageRequest.of(page, 10);
         PostResult postResult = PostResult.builder().build();
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
-        when(postRepository.getPosts(
+        when(postQueryService.getPosts(
                 country,
                 sortingMethod,
                 isPublic,
@@ -78,8 +66,8 @@ class PostInquiryServiceTest {
         // given
         Long postSeq = 1L;
         PostResult postResult = PostResult.builder().build();
-        when(postRepository.getPost(postSeq)).thenReturn(java.util.Optional.of(postResult));
-        when(commentRepository.getComments(postSeq)).thenReturn(List.of());
+        when(postQueryService.getPost(postSeq)).thenReturn(java.util.Optional.of(postResult));
+        when(commentQueryService.getComments(postSeq)).thenReturn(List.of());
         // when
         PostResult result = postInquiryService.getPost(postSeq);
         // then
@@ -99,7 +87,7 @@ class PostInquiryServiceTest {
                 .tags(List.of("tag1", "tag2"))
                 .build();
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
-        when(postRepository.getPostsByKeyword(keyword, pageable)).thenReturn(posts);
+        when(postQueryService.getPostsByKeyword(keyword, (PageRequest) pageable)).thenReturn(posts);
         // when
         Page<PostResult> result = postInquiryService.searchKeyword(keyword, page);
         // then
@@ -115,7 +103,7 @@ class PostInquiryServiceTest {
         Pageable pageable = PageRequest.of(page, 10);
         PostResult postResult = PostResult.builder().build();
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
-        when(postRepository.getPostsByUserSeq(userSeq, pageable)).thenReturn(posts);
+        when(postQueryService.getPostsByUserSeq(userSeq, pageable)).thenReturn(posts);
         // when
         Page<PostResult> result = postInquiryService.getUserPosts(userSeq, page);
         // then

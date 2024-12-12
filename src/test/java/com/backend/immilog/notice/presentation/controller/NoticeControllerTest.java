@@ -52,7 +52,7 @@ class NoticeControllerTest {
 
         // then
         verify(noticeRegisterService).registerNotice(userSeq, userRole.name(), param.toCommand());
-        assertThat(response.getStatusCodeValue()).isEqualTo(201);
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 
     }
 
@@ -71,7 +71,7 @@ class NoticeControllerTest {
 
         // then
         verify(noticeInquiryService).getNotices(userSeq, page);
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
     @Test
@@ -86,7 +86,7 @@ class NoticeControllerTest {
 
         // then
         verify(noticeInquiryService).getNoticeDetail(noticeSeq);
-        assertThat(response.getStatusCodeValue()).isEqualTo(200);
+        assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
     @Test

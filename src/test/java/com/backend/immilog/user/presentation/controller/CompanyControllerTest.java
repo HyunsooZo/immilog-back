@@ -22,20 +22,12 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("CompanyController 테스트")
 class CompanyControllerTest {
-    @Mock
-    private CompanyRegisterService companyRegisterService;
-    @Mock
-    private CompanyInquiryService companyInquiryService;
-    private CompanyController companyController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        companyController = new CompanyController(
-                companyRegisterService,
-                companyInquiryService
-        );
-    }
+    private final CompanyRegisterService companyRegisterService = mock(CompanyRegisterService.class);
+    private final CompanyInquiryService companyInquiryService = mock(CompanyInquiryService.class);
+    private final CompanyController companyController = new CompanyController(
+            companyRegisterService,
+            companyInquiryService
+    );
 
     @Test
     @DisplayName("회사정보 등록 - 성공")

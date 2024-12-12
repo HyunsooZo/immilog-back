@@ -5,25 +5,22 @@ import com.backend.immilog.post.application.services.PostDeleteService;
 import com.backend.immilog.post.application.services.PostInquiryService;
 import com.backend.immilog.post.application.services.PostUpdateService;
 import com.backend.immilog.post.application.services.PostUploadService;
-import com.backend.immilog.post.domain.model.enums.Categories;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.SortingMethods;
+import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
 import com.backend.immilog.post.presentation.response.PostApiResponse;
-import com.backend.immilog.user.domain.model.user.User;
-import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.enums.UserCountry;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.user.domain.model.user.Location;
+import com.backend.immilog.user.domain.model.user.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,26 +30,16 @@ import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("PostController 테스트")
 class PostControllerTest {
-    @Mock
-    private PostUploadService postUploadService;
-    @Mock
-    private PostUpdateService postUpdateService;
-    @Mock
-    private PostDeleteService postDeleteService;
-    @Mock
-    private PostInquiryService postInquiryService;
-    private PostController postController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        postController = new PostController(
-                postUploadService,
-                postUpdateService,
-                postDeleteService,
-                postInquiryService
-        );
-    }
+    private final PostUploadService postUploadService = mock(PostUploadService.class);
+    private final PostUpdateService postUpdateService = mock(PostUpdateService.class);
+    private final PostDeleteService postDeleteService = mock(PostDeleteService.class);
+    private final PostInquiryService postInquiryService = mock(PostInquiryService.class);
+    private final PostController postController = new PostController(
+            postUploadService,
+            postUpdateService,
+            postDeleteService,
+            postInquiryService
+    );
 
     @Test
     @DisplayName("게시물 작성")

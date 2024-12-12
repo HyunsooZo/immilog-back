@@ -2,13 +2,13 @@ package com.backend.immilog.notice.application;
 
 import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.application.services.NoticeInquiryService;
+import com.backend.immilog.notice.application.services.query.NoticeQueryService;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
-import com.backend.immilog.notice.domain.repositories.NoticeRepository;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.user.Location;
+import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -26,11 +26,11 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("공지사항 조회 테스트")
 class NoticeInquiryServiceTest {
-    private final NoticeRepository noticeRepository = mock(NoticeRepository.class);
+    private final NoticeQueryService noticeQueryService = mock(NoticeQueryService.class);
     private final UserQueryService userQueryService = mock(UserQueryService.class);
 
     private final NoticeInquiryService noticeInquiryService = new NoticeInquiryService(
-            noticeRepository,
+            noticeQueryService,
             userQueryService
     );
 
@@ -49,7 +49,7 @@ class NoticeInquiryServiceTest {
                 .status(NORMAL)
                 .build();
 
-        when(noticeRepository.getNotices(userSeq, PageRequest.of(page, 10)))
+        when(noticeQueryService.getNotices(userSeq, PageRequest.of(page, 10)))
                 .thenReturn(new PageImpl<>(List.of(NoticeResult.from(notice))));
         // when
         Page<NoticeResult> notices = noticeInquiryService.getNotices(userSeq, page);
@@ -87,7 +87,7 @@ class NoticeInquiryServiceTest {
                 .status(NORMAL)
                 .build();
 
-        when(noticeRepository.findBySeq(noticeSeq))
+        when(noticeQueryService.getNoticeBySeq(noticeSeq))
                 .thenReturn(java.util.Optional.of(notice));
         // when
         NoticeResult noticeDTO = noticeInquiryService.getNoticeDetail(noticeSeq);
@@ -106,7 +106,7 @@ class NoticeInquiryServiceTest {
                 .location(Location.of(UserCountry.SOUTH_KOREA, "서울"))
                 .build();
 
-        when(noticeRepository.areUnreadNoticesExist(SOUTH_KOREA, userSeq))
+        when(noticeQueryService.areUnreadNoticesExist(SOUTH_KOREA, userSeq))
                 .thenReturn(true);
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
 

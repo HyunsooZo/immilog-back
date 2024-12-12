@@ -18,21 +18,14 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.backend.immilog.global.enums.GlobalCountry.SOUTH_KOREA;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.HttpStatus.OK;
 
 @DisplayName("LocationController 테스트")
 class LocationControllerTest {
-    @Mock
-    private LocationService locationService;
-
-    private LocationController locationController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        locationController = new LocationController(locationService);
-    }
+    private final LocationService locationService = mock(LocationService.class);
+    private final LocationController locationController = new LocationController(locationService);
 
     @Test
     @DisplayName("위치 정보 가져오기")

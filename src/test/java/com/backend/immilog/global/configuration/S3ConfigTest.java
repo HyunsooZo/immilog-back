@@ -1,6 +1,7 @@
 package com.backend.immilog.global.configuration;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.backend.immilog.image.config.S3Config;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

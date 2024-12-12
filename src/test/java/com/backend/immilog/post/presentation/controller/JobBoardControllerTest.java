@@ -4,22 +4,19 @@ import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.application.services.JobBoardInquiryService;
 import com.backend.immilog.post.application.services.JobBoardUpdateService;
 import com.backend.immilog.post.application.services.JobBoardUploadService;
-import com.backend.immilog.post.domain.model.enums.Countries;
-import com.backend.immilog.post.domain.model.enums.Experience;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
+import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.Experience;
+import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.presentation.request.JobBoardUpdateRequest;
 import com.backend.immilog.post.presentation.request.JobBoardUploadRequest;
 import com.backend.immilog.post.presentation.response.PostApiResponse;
 import com.backend.immilog.user.domain.enums.Industry;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -30,24 +27,15 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("JobBoardController 테스트")
 class JobBoardControllerTest {
-    @Mock
-    private JobBoardUploadService jobBoardUploadService;
-    @Mock
-    private JobBoardInquiryService jobBoardInquiryService;
-    @Mock
-    private JobBoardUpdateService jobBoardUpdateService;
+    private final JobBoardUploadService jobBoardUploadService = mock(JobBoardUploadService.class);
+    private final JobBoardInquiryService jobBoardInquiryService = mock(JobBoardInquiryService.class);
+    private final JobBoardUpdateService jobBoardUpdateService = mock(JobBoardUpdateService.class);
 
-    private JobBoardController jobBoardController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        jobBoardController = new JobBoardController(
-                jobBoardUploadService,
-                jobBoardInquiryService,
-                jobBoardUpdateService
-        );
-    }
+    private final JobBoardController jobBoardController = new JobBoardController(
+            jobBoardUploadService,
+            jobBoardInquiryService,
+            jobBoardUpdateService
+    );
 
     @Test
     @DisplayName("구인구직 게시글 업로드 : 성공")

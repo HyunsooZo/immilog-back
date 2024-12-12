@@ -1,42 +1,27 @@
 package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.post.application.command.JobBoardUploadCommand;
-import com.backend.immilog.post.domain.model.enums.Experience;
-import com.backend.immilog.post.domain.model.enums.PostStatus;
-import com.backend.immilog.post.domain.repositories.JobBoardRepository;
+import com.backend.immilog.post.application.services.command.JobBoardCommandService;
+import com.backend.immilog.post.domain.enums.Experience;
+import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
-import com.backend.immilog.user.application.services.UserInformationService;
-import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.domain.enums.UserCountry;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @DisplayName("JobBoardUploadService 테스트")
 class JobBoardUploadServiceTest {
-    @Mock
-    private JobBoardRepository jobBoardRepository;
-    @Mock
-    private CompanyInquiryService companyInquiryService;
-    @Mock
-    private UserInformationService userInformationService;
-    private JobBoardUploadService jobBoardUploadService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        jobBoardUploadService = new JobBoardUploadService(jobBoardRepository, companyInquiryService);
-    }
+    private final JobBoardCommandService jobBoardCommandService = mock(JobBoardCommandService.class);
+    private final CompanyInquiryService companyInquiryService = mock(CompanyInquiryService.class);
+    private final JobBoardUploadService jobBoardUploadService = new JobBoardUploadService(jobBoardCommandService, companyInquiryService);
 
     @Test
     @DisplayName("구인구직 업로드 : 성공")
@@ -77,6 +62,6 @@ class JobBoardUploadServiceTest {
         jobBoardUploadService.uploadJobBoard(userSeq, command);
 
         // then
-        verify(jobBoardRepository).saveEntity(any());
+        verify(jobBoardCommandService).save(any());
     }
 }

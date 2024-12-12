@@ -6,15 +6,12 @@ import com.backend.immilog.user.application.services.*;
 import com.backend.immilog.user.enums.EmailComponents;
 import com.backend.immilog.user.presentation.request.*;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
@@ -28,33 +25,20 @@ import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("사용자 컨트롤러 테스트")
 class UserControllerTest {
-    @Mock
-    private UserSignUpService userSignUpService;
-    @Mock
-    private UserSignInService userSignInService;
-    @Mock
-    private LocationService locationService;
-    @Mock
-    private UserInformationService userInformationService;
-    @Mock
-    private UserReportService userReportService;
-
-    @Mock
-    private EmailService emailService;
-    private UserController userController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        userController = new UserController(
-                userSignUpService,
-                userSignInService,
-                userInformationService,
-                userReportService,
-                locationService,
-                emailService
-        );
-    }
+    private final UserSignUpService userSignUpService = mock(UserSignUpService.class);
+    private final UserSignInService userSignInService = mock(UserSignInService.class);
+    private final LocationService locationService = mock(LocationService.class);
+    private final UserInformationService userInformationService = mock(UserInformationService.class);
+    private final UserReportService userReportService = mock(UserReportService.class);
+    private final EmailService emailService = mock(EmailService.class);
+    private final UserController userController = new UserController(
+            userSignUpService,
+            userSignInService,
+            userInformationService,
+            userReportService,
+            locationService,
+            emailService
+    );
 
     @Test
     @DisplayName("회원가입")

@@ -1,6 +1,6 @@
 package com.backend.immilog.global.security;
 
-import com.backend.immilog.global.enums.UserRole;
+import com.backend.immilog.global.aop.UserIdExtractionAspect;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ class UserIdExtractionAspectTest {
     @DisplayName("Authorization 헤더가 없는 경우 extractUserId가 예외를 던지지 않는지 테스트")
     void extractUserIdDoesNotThrowExceptionWhenAuthorizationHeaderIsMissing() {
         when(request.getHeader("Authorization")).thenReturn(null);
-        userIdExtractionAspect.extractUserId();
+        userIdExtractionAspect.extractUserDetails();
         assertNull(request.getAttribute("userSeq"));
     }
 
@@ -32,7 +32,7 @@ class UserIdExtractionAspectTest {
     @DisplayName("Authorization 헤더가 없는 경우 extractUserRole이 예외를 던지지 않는지 테스트")
     void extractUserRoleDoesNotThrowExceptionWhenAuthorizationHeaderIsMissing() {
         when(request.getHeader("Authorization")).thenReturn(null);
-        userIdExtractionAspect.extractUserRole();
+        userIdExtractionAspect.extractUserDetails();
         assertNull(request.getAttribute("userRole"));
     }
 }

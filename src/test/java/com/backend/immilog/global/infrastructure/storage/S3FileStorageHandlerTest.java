@@ -2,6 +2,7 @@ package com.backend.immilog.global.infrastructure.storage;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.backend.immilog.global.exception.CustomException;
+import com.backend.immilog.image.infrastructure.gateway.S3FileStorageHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +11,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URISyntaxException;
 
 import static com.backend.immilog.global.exception.CommonErrorCode.IMAGE_UPLOAD_FAILED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -47,7 +50,11 @@ class S3FileStorageHandlerTest {
         when(multipartFile.getSize()).thenReturn(100L);
         when(multipartFile.getContentType()).thenReturn("image/png");
         when(multipartFile.getInputStream()).thenReturn(mock(InputStream.class));
-        when(amazonS3.getUrl(anyString(), anyString())).thenReturn(new java.net.URL(expectedUrl));
+        try {
+            when(amazonS3.getUrl(anyString(), anyString())).thenReturn(new URI(expectedUrl).toURL());
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
 
         String actualUrl = s3FileStorageHandler.uploadFile(multipartFile, imagePath);
 

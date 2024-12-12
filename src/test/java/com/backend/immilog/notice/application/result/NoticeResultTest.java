@@ -24,15 +24,15 @@ class NoticeResultTest {
     @DisplayName("Notice 객체를 NoticeResult 객체로 변환")
     void fromNoticeToNoticeResult() {
         Notice notice = mock(Notice.class);
-        when(notice.seq()).thenReturn(1L);
-        when(notice.userSeq()).thenReturn(2L);
-        when(notice.title()).thenReturn("Title");
-        when(notice.content()).thenReturn("Content");
-        when(notice.type()).thenReturn(NoticeType.NOTICE);
-        when(notice.status()).thenReturn(NoticeStatus.NORMAL);
-        when(notice.targetCountries()).thenReturn(List.of(NoticeCountry.SOUTH_KOREA));
-        when(notice.readUsers()).thenReturn(List.of(3L));
-        when(notice.createdAt()).thenReturn(LocalDateTime.of(2023, 1, 1, 0, 0));
+        when(notice.getSeq()).thenReturn(1L);
+        when(notice.getUserSeq()).thenReturn(2L);
+        when(notice.getTitle()).thenReturn("Title");
+        when(notice.getContent()).thenReturn("Content");
+        when(notice.getType()).thenReturn(NoticeType.NOTICE);
+        when(notice.getStatus()).thenReturn(NoticeStatus.NORMAL);
+        when(notice.getTargetCountries()).thenReturn(List.of(NoticeCountry.SOUTH_KOREA));
+        when(notice.getReadUsers()).thenReturn(List.of(3L));
+        when(notice.getCreatedAt()).thenReturn(LocalDateTime.of(2023, 1, 1, 0, 0));
 
         NoticeResult result = NoticeResult.from(notice);
 

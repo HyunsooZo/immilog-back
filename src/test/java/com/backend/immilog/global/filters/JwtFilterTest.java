@@ -1,7 +1,9 @@
 package com.backend.immilog.global.filters;
 
 import com.backend.immilog.global.security.JwtProvider;
-import org.junit.jupiter.api.BeforeEach;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -9,9 +11,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -19,22 +18,15 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("JwtFilter 클래스")
 class JwtFilterTest {
-
-    private JwtFilter jwtFilter;
-    private JwtProvider jwtProvider;
-
-    @BeforeEach
-    void setUp() {
-        jwtProvider = mock(JwtProvider.class);
-        jwtFilter = new JwtFilter(jwtProvider);
-    }
+    private final JwtProvider jwtProvider = mock(JwtProvider.class);
+    private final JwtFilter jwtFilter = new JwtFilter(jwtProvider);
 
     @Test
     @DisplayName("화이트리스트에 있는 URI인 경우 필터링을 건너뛴다")
     void shouldNotFilterIfRequestIsInWhiteList() throws ServletException, IOException {
         // given
         MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setRequestURI("/api/v1/users/login"); // WhiteList에 있는 URI
+        request.setRequestURI("/api/v1/users/login");
 
         MockHttpServletResponse response = new MockHttpServletResponse();
         FilterChain filterChain = mock(FilterChain.class);

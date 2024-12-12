@@ -1,16 +1,16 @@
 package com.backend.immilog.post.application;
 
 import com.backend.immilog.post.application.services.CommentUploadService;
+import com.backend.immilog.post.application.services.command.CommentCommandService;
+import com.backend.immilog.post.application.services.command.PostCommandService;
+import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
 import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.backend.immilog.post.exception.PostException;
-import com.backend.immilog.post.domain.model.Post;
+import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.presentation.request.CommentUploadRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
@@ -21,20 +21,14 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("CommentUploadService 테스트")
 class CommentUploadServiceTest {
-    @Mock
-    private CommentRepository commentRepository;
-    @Mock
-    private PostRepository postRepository;
-    private CommentUploadService commentUploadService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        commentUploadService = new CommentUploadService(
-                commentRepository,
-                postRepository
-        );
-    }
+    private final CommentCommandService commentCommandService = mock(CommentCommandService.class);
+    private final PostQueryService postQueryService = mock(PostQueryService.class);
+    private final PostCommandService postCommandService = mock(PostCommandService.class);
+    private final CommentUploadService commentUploadService = new CommentUploadService(
+            commentCommandService,
+            postQueryService,
+            postCommandService
+    );
 
     @Test
     @DisplayName("댓글 업로드 - 성공")
@@ -46,7 +40,7 @@ class CommentUploadServiceTest {
         CommentUploadRequest commentUploadRequest =
                 new CommentUploadRequest("content");
         Post post = Post.builder().commentCount(0L).build();
-        when(postRepository.getById(postSeq)).thenReturn(Optional.of(post));
+        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         // when
         commentUploadService.uploadComment(
                 userId,
@@ -55,8 +49,8 @@ class CommentUploadServiceTest {
                 commentUploadRequest.content()
         );
         // then
-        verify(postRepository, times(1)).getById(postSeq);
-        verify(commentRepository, times(1)).saveEntity(any());
+        verify(postQueryService, times(1)).getPostById(postSeq);
+        verify(commentCommandService, times(1)).save(any());
     }
 
     @Test
@@ -68,7 +62,7 @@ class CommentUploadServiceTest {
         String referenceType = "posts";
         CommentUploadRequest commentUploadRequest =
                 new CommentUploadRequest("content");
-        when(postRepository.getById(postSeq)).thenReturn(Optional.empty());
+        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.empty());
         // when & then
         assertThatThrownBy(() -> commentUploadService.uploadComment(
                 userId,
@@ -90,7 +84,7 @@ class CommentUploadServiceTest {
         CommentUploadRequest commentUploadRequest =
                 new CommentUploadRequest("content");
         Post post = Post.builder().commentCount(0L).build();
-        when(postRepository.getById(postSeq)).thenReturn(Optional.of(post));
+        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         // when & then
         assertThatThrownBy(() -> commentUploadService.uploadComment(
                 userId,

@@ -1,13 +1,11 @@
 package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.global.infrastructure.lock.RedisDistributedLock;
-import com.backend.immilog.post.domain.model.InteractionUser;
-import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.post.application.services.command.InteractionUserCommandService;
+import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 
@@ -16,21 +14,14 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("InteractionCreationService 테스트")
 class InteractionCreationServiceTest {
-
-    @Mock
-    private InteractionUserRepository interactionUserRepository;
-    @Mock
-    private RedisDistributedLock redisDistributedLock;
-    private InteractionCreationService interactionCreationService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        interactionCreationService = new InteractionCreationService(
-                interactionUserRepository,
-                redisDistributedLock
-        );
-    }
+    private final InteractionUserCommandService interactionUserCommandService = mock(InteractionUserCommandService.class);
+    private final InteractionUserQueryService interactionUserQueryService = mock(InteractionUserQueryService.class);
+    private final RedisDistributedLock redisDistributedLock = mock(RedisDistributedLock.class);
+    private final InteractionCreationService interactionCreationService = new InteractionCreationService(
+            interactionUserCommandService,
+            interactionUserQueryService,
+            redisDistributedLock
+    );
 
     @Test
     @DisplayName("인터랙션 생성 - 성공 : 이미 등록된 인터랙션")
@@ -42,14 +33,14 @@ class InteractionCreationServiceTest {
         String interaction = "like";
         InteractionUser interactionUser = InteractionUser.builder().build();
         when(redisDistributedLock.tryAcquireLock(any(), any())).thenReturn(true);
-        when(interactionUserRepository.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
+        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
                 any(), any(), any(), any()
         )).thenReturn(Optional.of(interactionUser));
         // when
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);
 
         // then
-        verify(interactionUserRepository).deleteEntity(any());
+        verify(interactionUserCommandService).delete(any());
         verify(redisDistributedLock).releaseLock(any(), any());
     }
 
@@ -62,14 +53,14 @@ class InteractionCreationServiceTest {
         String post = "post";
         String interaction = "like";
         when(redisDistributedLock.tryAcquireLock(any(), any())).thenReturn(true);
-        when(interactionUserRepository.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
+        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
                 any(), any(), any(), any()
         )).thenReturn(Optional.empty());
         // when
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);
 
         // then
-        verify(interactionUserRepository).saveEntity(any());
+        verify(interactionUserCommandService).save(any());
         verify(redisDistributedLock).releaseLock(any(), any());
     }
 
@@ -89,8 +80,8 @@ class InteractionCreationServiceTest {
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);
 
         // then
-        verify(interactionUserRepository, never()).saveEntity(any());
-        verify(interactionUserRepository, never()).deleteEntity(any());
+        verify(interactionUserCommandService, never()).save(any());
+        verify(interactionUserCommandService, never()).delete(any());
         verify(redisDistributedLock, never()).releaseLock(any(), any());
     }
 

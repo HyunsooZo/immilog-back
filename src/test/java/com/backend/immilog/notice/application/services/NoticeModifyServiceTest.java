@@ -2,6 +2,8 @@ package com.backend.immilog.notice.application.services;
 
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.notice.application.command.NoticeModifyCommand;
+import com.backend.immilog.notice.application.services.command.NoticeCommandService;
+import com.backend.immilog.notice.application.services.query.NoticeQueryService;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.repositories.NoticeRepository;
@@ -27,10 +29,12 @@ import static org.mockito.Mockito.*;
 @DisplayName("공지사항 수정 서비스 테스트")
 class NoticeModifyServiceTest {
     private final UserQueryService userQueryService = mock(UserQueryService.class);
-    private final NoticeRepository noticeRepository = mock(NoticeRepository.class);
+    private final NoticeQueryService noticeQueryService = mock(NoticeQueryService.class);
+    private final NoticeCommandService noticeCommandService = mock(NoticeCommandService.class);
     private final NoticeModifyService noticeModifyService = new NoticeModifyService(
             userQueryService,
-            noticeRepository
+            noticeQueryService,
+            noticeCommandService
     );
 
     @Test
@@ -54,7 +58,7 @@ class NoticeModifyServiceTest {
         User user = mock(User.class);
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
-        when(noticeRepository.getNotice(noticeSeq)).thenReturn(Optional.empty());
+        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.empty());
 
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(userSeq, noticeSeq, command));
     }
@@ -69,8 +73,8 @@ class NoticeModifyServiceTest {
         Notice notice = mock(Notice.class);
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
-        when(noticeRepository.getNotice(noticeSeq)).thenReturn(Optional.of(notice));
-        when(notice.status()).thenReturn(DELETED);
+        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.of(notice));
+        when(notice.getStatus()).thenReturn(DELETED);
 
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(userSeq, noticeSeq, command));
     }
@@ -96,11 +100,11 @@ class NoticeModifyServiceTest {
                 .build();
         Notice notice = mock(Notice.class);
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(noticeRepository.getNotice(noticeSeq)).thenReturn(Optional.of(notice));
-        when(notice.status()).thenReturn(mock(NoticeStatus.class));
+        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.of(notice));
+        when(notice.getStatus()).thenReturn(mock(NoticeStatus.class));
 
         noticeModifyService.modifyNotice(userSeq, noticeSeq, command);
 
-        verify(noticeRepository).saveEntity(notice);
+        verify(noticeCommandService).save(notice);
     }
 }

@@ -1,11 +1,9 @@
 package com.backend.immilog.global.application;
 
-import com.backend.immilog.global.infrastructure.storage.FileStorageHandler;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.image.infrastructure.gateway.FileStorageHandler;
+import com.backend.immilog.image.application.service.ImageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -15,17 +13,8 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("이미지 서비스 테스트")
 class ImageServiceTest {
-
-    @Mock
-    private FileStorageHandler fileStorageHandler;
-
-    private ImageService imageService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        imageService = new ImageService(fileStorageHandler);
-    }
+    private final FileStorageHandler fileStorageHandler = mock(FileStorageHandler.class);
+    private final ImageService imageService = new ImageService(fileStorageHandler);
 
     @Test
     @DisplayName("이미지 업로드")

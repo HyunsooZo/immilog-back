@@ -21,15 +21,8 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("이메일 서비스 테스트")
 class EmailServiceTest {
-    @Mock
-    private JavaMailSender javaMailSender;
-    private EmailService emailService;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        emailService = new EmailService(javaMailSender);
-    }
+    private final JavaMailSender javaMailSender = mock(JavaMailSender.class);
+    private final EmailService emailService = new EmailService(javaMailSender);
 
     @Test
     @DisplayName("이메일 발송 - 성공")

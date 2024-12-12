@@ -1,13 +1,11 @@
 package com.backend.immilog.global.presentation.controller;
 
-import com.backend.immilog.global.application.ImageService;
-import com.backend.immilog.global.presentation.request.ImageRequest;
-import com.backend.immilog.global.presentation.response.GlobalApiResponse;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.image.application.service.ImageService;
+import com.backend.immilog.image.presentation.request.ImageRequest;
+import com.backend.immilog.global.model.GlobalApiResponse;
+import com.backend.immilog.image.presentation.controller.ImageController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,15 +19,8 @@ import static org.springframework.http.HttpStatus.OK;
 
 @DisplayName("이미지 컨트롤러 테스트")
 class ImageControllerTest {
-    @Mock
-    private ImageService imageService;
-    private ImageController imageController;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        imageController = new ImageController(imageService);
-    }
+    private final ImageService imageService = mock(ImageService.class);
+    private final ImageController imageController = new ImageController(imageService);
 
     @Test
     @DisplayName("이미지 업로드")

@@ -2,16 +2,16 @@ package com.backend.immilog.post.application;
 
 import com.backend.immilog.global.infrastructure.lock.RedisDistributedLock;
 import com.backend.immilog.post.application.services.PostUpdateService;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.model.PostResource;
-import com.backend.immilog.post.domain.model.enums.PostType;
-import com.backend.immilog.post.domain.model.enums.ResourceType;
-import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
-import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
-import com.backend.immilog.post.domain.repositories.PostRepository;
-import com.backend.immilog.post.domain.repositories.PostResourceRepository;
-import com.backend.immilog.post.domain.vo.PostMetaData;
-import com.backend.immilog.post.domain.vo.PostUserData;
+import com.backend.immilog.post.application.services.command.BulkCommandService;
+import com.backend.immilog.post.application.services.command.PostCommandService;
+import com.backend.immilog.post.application.services.command.PostResourceCommandService;
+import com.backend.immilog.post.application.services.query.PostQueryService;
+import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.post.PostInfo;
+import com.backend.immilog.post.domain.model.post.PostUserInfo;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +19,6 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -37,33 +35,25 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("PostUpdateService 테스트")
 class PostUpdateServiceTest {
-    @Mock
-    private PostRepository postRepository;
-    @Mock
-    private PostResourceRepository postResourceRepository;
-    @Mock
-    private BulkInsertRepository bulkInsertRepository;
+    private final PostQueryService postQueryService = mock(PostQueryService.class);
+    private final PostCommandService postCommandService = mock(PostCommandService.class);
+    private final PostResourceCommandService postResourceCommandService = mock(PostResourceCommandService.class);
+    private final BulkCommandService bulkCommandService = mock(BulkCommandService.class);
+    private final RedisDistributedLock redisDistributedLock = mock(RedisDistributedLock.class);
+    private final DataSource dataSource = mock(DataSource.class);
+    private final Connection connection = mock(Connection.class);
+    private final PreparedStatement preparedStatement = mock(PreparedStatement.class);
 
-    @Mock
-    private RedisDistributedLock redisDistributedLock;
-    @Mock
-    private DataSource dataSource;
-    @Mock
-    private Connection connection;
-    @Mock
-    private PreparedStatement preparedStatement;
-
-    private PostUpdateService postUpdateService;
+    private final PostUpdateService postUpdateService = new PostUpdateService(
+            postQueryService,
+            postCommandService,
+            postResourceCommandService,
+            bulkCommandService,
+            redisDistributedLock
+    );
 
     @BeforeEach
     void setUp() throws SQLException {
-        MockitoAnnotations.openMocks(this);
-        postUpdateService = new PostUpdateService(
-                postRepository,
-                postResourceRepository,
-                bulkInsertRepository,
-                redisDistributedLock
-        );
         when(dataSource.getConnection()).thenReturn(connection);
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
     }
@@ -84,10 +74,10 @@ class PostUpdateServiceTest {
                 .isPublic(true)
                 .build();
         Post post = Post.builder()
-                .postUserData(PostUserData.builder().userSeq(1L).build())
-                .postMetaData(PostMetaData.builder().build())
+                .postUserInfo(PostUserInfo.builder().userSeq(1L).build())
+                .postInfo(PostInfo.builder().build())
                 .build();
-        when(postRepository.getById(postSeq)).thenReturn(Optional.of(post));
+        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         doNothing().when(preparedStatement).setLong(eq(1), anyLong());
         doNothing().when(preparedStatement).setString(eq(2), anyString());
         doNothing().when(preparedStatement).setString(eq(3), anyString());
@@ -100,10 +90,10 @@ class PostUpdateServiceTest {
         postUpdateService.updatePost(userSeq, postSeq, postUpdateRequest.toCommand());
 
         // then
-        verify(postResourceRepository, times(2))
+        verify(postResourceCommandService, times(2))
                 .deleteAllEntities(anyLong(), any(PostType.class), any(ResourceType.class),
                         anyList());
-        verify(bulkInsertRepository, times(2)).saveAll(
+        verify(bulkCommandService, times(2)).saveAll(
                 anyList(),
                 anyString(),
                 captor.capture()
@@ -127,10 +117,10 @@ class PostUpdateServiceTest {
                 .isPublic(true)
                 .build();
         Post post = Post.builder()
-                .postUserData(PostUserData.builder().userSeq(1L).build())
-                .postMetaData(PostMetaData.builder().build())
+                .postUserInfo(PostUserInfo.builder().userSeq(1L).build())
+                .postInfo(PostInfo.builder().build())
                 .build();
-        when(postRepository.getById(postSeq)).thenReturn(Optional.of(post));
+        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
 
         doThrow(new SQLException("Mock SQL Exception"))
                 .when(preparedStatement).setLong(anyInt(), anyLong());
@@ -142,7 +132,7 @@ class PostUpdateServiceTest {
             consumer.accept(preparedStatement, postResource);
 
             return null;
-        }).when(bulkInsertRepository).saveAll(anyList(), anyString(), any(BiConsumer.class));
+        }).when(bulkCommandService).saveAll(anyList(), anyString(), any(BiConsumer.class));
 
         // when & then
         assertThatThrownBy(() ->
@@ -151,7 +141,7 @@ class PostUpdateServiceTest {
                 .isInstanceOf(PostException.class)
                 .hasMessage(FAILED_TO_SAVE_POST.getMessage());
 
-        verify(bulkInsertRepository).saveAll(anyList(), anyString(), any(BiConsumer.class));
+        verify(bulkCommandService).saveAll(anyList(), anyString(), any(BiConsumer.class));
 
     }
 
@@ -161,16 +151,16 @@ class PostUpdateServiceTest {
         // given
         Long postSeq = 1L;
         Post post = Post.builder()
-                .postMetaData(PostMetaData.builder().viewCount(0L).build())
+                .postInfo(PostInfo.builder().viewCount(0L).build())
                 .build();
-        when(postRepository.getById(postSeq)).thenReturn(Optional.of(post));
+        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         when(redisDistributedLock.tryAcquireLock(anyString(), anyString()))
                 .thenReturn(true);
         // when
         postUpdateService.increaseViewCount(postSeq);
 
         // then
-        assertThat(post.postMetaData().getViewCount()).isEqualTo(1L);
+        assertThat(post.getViewCount()).isEqualTo(1L);
         verify(redisDistributedLock).releaseLock(anyString(), anyString());
     }
 
@@ -180,16 +170,16 @@ class PostUpdateServiceTest {
         // given
         Long postSeq = 1L;
         Post post = Post.builder()
-                .postMetaData(PostMetaData.builder().viewCount(0L).build())
+                .postInfo(PostInfo.builder().viewCount(0L).build())
                 .build();
-        when(postRepository.getById(postSeq)).thenReturn(Optional.of(post));
+        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         when(redisDistributedLock.tryAcquireLock(anyString(), anyString()))
                 .thenReturn(false, false, false);
         // when
         postUpdateService.increaseViewCount(postSeq);
 
         // then
-        assertThat(post.postMetaData().getViewCount()).isEqualTo(0L);
+        assertThat(post.getViewCount()).isEqualTo(0L);
     }
 
 }

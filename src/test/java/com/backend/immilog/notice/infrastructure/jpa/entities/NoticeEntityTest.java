@@ -31,14 +31,14 @@ class NoticeEntityTest {
 
         NoticeEntity noticeEntity = NoticeEntity.from(notice);
 
-        assertThat(noticeEntity.getSeq()).isEqualTo(notice.seq());
-        assertThat(noticeEntity.getUserSeq()).isEqualTo(notice.userSeq());
-        assertThat(noticeEntity.getTitle()).isEqualTo(notice.title());
-        assertThat(noticeEntity.getContent()).isEqualTo(notice.content());
-        assertThat(noticeEntity.getType()).isEqualTo(notice.type());
-        assertThat(noticeEntity.getStatus()).isEqualTo(notice.status());
-        assertThat(noticeEntity.getTargetCountries()).isEqualTo(notice.targetCountries());
-        assertThat(noticeEntity.getReadUsers()).isEqualTo(notice.readUsers());
+        assertThat(noticeEntity.getSeq()).isEqualTo(notice.getSeq());
+        assertThat(noticeEntity.getUserSeq()).isEqualTo(notice.getUserSeq());
+        assertThat(noticeEntity.getTitle()).isEqualTo(notice.getTitle());
+        assertThat(noticeEntity.getContent()).isEqualTo(notice.getContent());
+        assertThat(noticeEntity.getType()).isEqualTo(notice.getType());
+        assertThat(noticeEntity.getStatus()).isEqualTo(notice.getStatus());
+        assertThat(noticeEntity.getTargetCountries()).isEqualTo(notice.getTargetCountries());
+        assertThat(noticeEntity.getReadUsers()).isEqualTo(notice.getReadUsers());
     }
 
     @Test
@@ -57,14 +57,14 @@ class NoticeEntityTest {
 
         Notice notice = noticeEntity.toDomain();
 
-        assertThat(notice.seq()).isEqualTo(noticeEntity.getSeq());
-        assertThat(notice.userSeq()).isEqualTo(noticeEntity.getUserSeq());
-        assertThat(notice.title()).isEqualTo(noticeEntity.getTitle());
-        assertThat(notice.content()).isEqualTo(noticeEntity.getContent());
-        assertThat(notice.type()).isEqualTo(noticeEntity.getType());
-        assertThat(notice.status()).isEqualTo(noticeEntity.getStatus());
-        assertThat(notice.targetCountries()).isEqualTo(noticeEntity.getTargetCountries());
-        assertThat(notice.readUsers()).isEqualTo(noticeEntity.getReadUsers());
+        assertThat(notice.getSeq()).isEqualTo(noticeEntity.getSeq());
+        assertThat(notice.getUserSeq()).isEqualTo(noticeEntity.getUserSeq());
+        assertThat(notice.getTitle()).isEqualTo(noticeEntity.getTitle());
+        assertThat(notice.getContent()).isEqualTo(noticeEntity.getContent());
+        assertThat(notice.getType()).isEqualTo(noticeEntity.getType());
+        assertThat(notice.getStatus()).isEqualTo(noticeEntity.getStatus());
+        assertThat(notice.getTargetCountries()).isEqualTo(noticeEntity.getTargetCountries());
+        assertThat(notice.getReadUsers()).isEqualTo(noticeEntity.getReadUsers());
     }
 
     @Test
@@ -109,14 +109,14 @@ class NoticeEntityTest {
 
         Notice notice = noticeEntity.toDomain();
 
-        assertThat(notice.seq()).isNull();
-        assertThat(notice.userSeq()).isNull();
-        assertThat(notice.title()).isNull();
-        assertThat(notice.content()).isNull();
-        assertThat(notice.type()).isNull();
-        assertThat(notice.status()).isNull();
-        assertThat(notice.targetCountries()).isNull();
-        assertThat(notice.readUsers()).isNull();
+        assertThat(notice.getSeq()).isNull();
+        assertThat(notice.getUserSeq()).isNull();
+        assertThat(notice.getTitle()).isNull();
+        assertThat(notice.getContent()).isNull();
+        assertThat(notice.getType()).isNull();
+        assertThat(notice.getStatus()).isNull();
+        assertThat(notice.getTargetCountries()).isNull();
+        assertThat(notice.getReadUsers()).isNull();
     }
 
     @Test

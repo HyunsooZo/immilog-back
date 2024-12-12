@@ -13,17 +13,8 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("RedisDistributedLock 테스트")
 class RedisDistributedLockTest {
-
-    @Mock
-    private DataRepository dataRepository; // DataRepository를 Mock으로 사용
-
-    private RedisDistributedLock redisDistributedLock;
-
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-        redisDistributedLock = new RedisDistributedLock(dataRepository); // Mock 주입
-    }
+    private final DataRepository dataRepository = mock(DataRepository.class);
+    private final RedisDistributedLock redisDistributedLock = new RedisDistributedLock(dataRepository);
 
     @Test
     @DisplayName("락 획득 시도 (최대 3회)")
