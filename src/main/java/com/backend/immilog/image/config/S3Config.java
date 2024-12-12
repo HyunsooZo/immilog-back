@@ -1,4 +1,4 @@
-package com.backend.immilog.global.configuration;
+package com.backend.immilog.image.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
