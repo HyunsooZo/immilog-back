@@ -11,7 +11,6 @@ import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.post.domain.model.post.JobBoardCompany;
 import com.backend.immilog.post.domain.model.post.PostInfo;
-import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
 import com.backend.immilog.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

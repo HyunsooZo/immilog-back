@@ -1,14 +1,12 @@
-package com.backend.immilog.global.application;
+package com.backend.immilog.user.application.services.command;
 
-import com.backend.immilog.global.infrastructure.repository.DataRepository;
+import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class RedisService {
+public class RefreshTokenCommandService {
     private final DataRepository dataRepository;
 
     public void saveKeyAndValue(
@@ -19,12 +17,7 @@ public class RedisService {
         dataRepository.save(key, value, expireTime);
     }
 
-    public String getValueByKey(String key) {
-        return dataRepository.findByKey(key);
-    }
-
     public void deleteValueByKey(String key) {
         dataRepository.deleteByKey(key);
     }
 }
-

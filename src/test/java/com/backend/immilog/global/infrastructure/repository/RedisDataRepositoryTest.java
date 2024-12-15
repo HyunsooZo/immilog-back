@@ -1,5 +1,6 @@
 package com.backend.immilog.global.infrastructure.repository;
 
+import com.backend.immilog.global.infrastructure.persistence.repository.RedisDataRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

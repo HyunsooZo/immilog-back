@@ -1,5 +1,6 @@
 package com.backend.immilog.global.persistence;
 
+import com.backend.immilog.global.infrastructure.persistence.config.QueryDSLConfig;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;

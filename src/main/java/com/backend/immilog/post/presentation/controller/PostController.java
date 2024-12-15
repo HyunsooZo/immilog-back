@@ -70,6 +70,7 @@ public class PostController {
         postUpdateService.increaseViewCount(postSeq);
         return ResponseEntity.status(NO_CONTENT).build();
     }
+
     @GetMapping
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회합니다.")
     public ResponseEntity<PostApiResponse> getPosts(

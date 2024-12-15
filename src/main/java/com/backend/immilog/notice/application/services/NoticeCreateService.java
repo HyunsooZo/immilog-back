@@ -1,13 +1,11 @@
 package com.backend.immilog.notice.application.services;
 
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.global.security.JwtProvider;
 import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.notice.application.command.NoticeUploadCommand;
 import com.backend.immilog.notice.application.services.command.NoticeCommandService;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.exception.NoticeException;
-import com.backend.immilog.user.application.services.query.UserQueryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

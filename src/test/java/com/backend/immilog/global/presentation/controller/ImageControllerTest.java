@@ -1,6 +1,7 @@
 package com.backend.immilog.global.presentation.controller;
 
 import com.backend.immilog.image.application.service.ImageService;
+import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.presentation.request.ImageRequest;
 import com.backend.immilog.global.model.GlobalApiResponse;
 import com.backend.immilog.image.presentation.controller.ImageController;
@@ -29,11 +30,11 @@ class ImageControllerTest {
         List<MultipartFile> files = List.of(mock(MultipartFile.class));
         String imagePath = "imagePath";
         List<String> imageDTO = List.of("imageUrl");
-        when(imageService.saveFiles(files, imagePath))
+        when(imageService.saveFiles(files, imagePath, ImageType.POST))
                 .thenReturn(imageDTO);
         // when
         ResponseEntity<GlobalApiResponse> response =
-                imageController.uploadImage(files, imagePath);
+                imageController.uploadImage(files, imagePath, ImageType.POST);
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
         List<String> data = (List<String>) Objects.requireNonNull(response.getBody()).data();

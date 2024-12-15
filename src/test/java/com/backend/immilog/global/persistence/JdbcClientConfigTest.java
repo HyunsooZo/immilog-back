@@ -1,5 +1,6 @@
 package com.backend.immilog.global.persistence;
 
+import com.backend.immilog.global.infrastructure.persistence.config.JdbcClientConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.core.simple.JdbcClient;

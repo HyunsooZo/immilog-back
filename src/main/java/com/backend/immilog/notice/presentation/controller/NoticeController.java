@@ -9,7 +9,6 @@ import com.backend.immilog.notice.presentation.request.NoticeRegisterRequest;
 import com.backend.immilog.notice.presentation.response.NoticeApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;

@@ -1,6 +1,6 @@
 package com.backend.immilog.user.application;
 
-import com.backend.immilog.global.infrastructure.lock.RedisDistributedLock;
+import com.backend.immilog.global.infrastructure.persistence.lock.RedisDistributedLock;
 import com.backend.immilog.user.application.services.UserReportService;
 import com.backend.immilog.user.application.services.command.ReportCommandService;
 import com.backend.immilog.user.application.services.command.UserCommandService;

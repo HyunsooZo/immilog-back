@@ -1,4 +1,4 @@
-package com.backend.immilog.global.persistence;
+package com.backend.immilog.global.infrastructure.persistence.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.EnableCaching;

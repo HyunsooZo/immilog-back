@@ -1,12 +1,13 @@
 package com.backend.immilog.user.application;
 
-import com.backend.immilog.global.application.RedisService;
 import com.backend.immilog.global.enums.GlobalCountry;
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.UserSignInService;
+import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
+import com.backend.immilog.user.application.services.query.RefreshTokenQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.User;
@@ -35,14 +36,16 @@ class UserSignInServiceTest {
     private final UserQueryService userQueryService = mock(UserQueryService.class);
     private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
     private final TokenProvider tokenProvider = mock(TokenProvider.class);
-    private final RedisService redisService = mock(RedisService.class);
+    private final RefreshTokenQueryService refreshTokenQueryService = mock(RefreshTokenQueryService.class);
+    private final RefreshTokenCommandService refreshTokenCommandService = mock(RefreshTokenCommandService.class);
     private final CompletableFuture<Pair<String, String>> country = mock(CompletableFuture.class);
 
     private final UserSignInService userSignInService = new UserSignInService(
             userQueryService,
             passwordEncoder,
             tokenProvider,
-            redisService
+            refreshTokenQueryService,
+            refreshTokenCommandService
     );
 
     @Test
@@ -164,7 +167,7 @@ class UserSignInServiceTest {
         // when
         UserSignInResult result = userSignInService.getUserSignInDTO(userSeq, country);
         // then
-        verify(redisService, times(1)).saveKeyAndValue(
+        verify(refreshTokenCommandService, times(1)).saveKeyAndValue(
                 "Refresh: refreshToken", user.getEmail(), 5 * 29 * 24 * 60
         );
         assertThat(result.userSeq()).isEqualTo(userSeq);
@@ -200,7 +203,7 @@ class UserSignInServiceTest {
         // when
         UserSignInResult result = userSignInService.getUserSignInDTO(userSeq, country);
         // then
-        verify(redisService, times(1)).saveKeyAndValue(
+        verify(refreshTokenCommandService, times(1)).saveKeyAndValue(
                 "Refresh: refreshToken", user.getEmail(), 5 * 29 * 24 * 60
         );
         assertThat(result.userSeq()).isEqualTo(userSeq);

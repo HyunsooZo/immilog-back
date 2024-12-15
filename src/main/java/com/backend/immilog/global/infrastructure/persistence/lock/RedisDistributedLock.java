@@ -1,6 +1,6 @@
-package com.backend.immilog.global.infrastructure.lock;
+package com.backend.immilog.global.infrastructure.persistence.lock;
 
-import com.backend.immilog.global.infrastructure.repository.DataRepository;
+import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;

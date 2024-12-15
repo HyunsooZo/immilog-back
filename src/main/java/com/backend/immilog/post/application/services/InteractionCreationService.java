@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services;
 
-import com.backend.immilog.global.infrastructure.lock.RedisDistributedLock;
+import com.backend.immilog.global.infrastructure.persistence.lock.RedisDistributedLock;
 import com.backend.immilog.post.application.services.command.InteractionUserCommandService;
 import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
 import com.backend.immilog.post.domain.enums.InteractionType;

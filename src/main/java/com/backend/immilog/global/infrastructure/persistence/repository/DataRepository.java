@@ -1,4 +1,4 @@
-package com.backend.immilog.global.infrastructure.repository;
+package com.backend.immilog.global.infrastructure.persistence.repository;
 
 public interface DataRepository {
     void save(

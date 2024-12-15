@@ -1,7 +1,6 @@
 package com.backend.immilog.notice.application.services;
 
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.global.security.JwtProvider;
 import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.notice.application.command.NoticeModifyCommand;
 import com.backend.immilog.notice.application.services.command.NoticeCommandService;

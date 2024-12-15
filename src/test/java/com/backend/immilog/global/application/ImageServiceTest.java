@@ -1,5 +1,9 @@
 package com.backend.immilog.global.application;
 
+import com.backend.immilog.image.application.service.command.ImageCommandService;
+import com.backend.immilog.image.application.service.query.ImageQueryService;
+import com.backend.immilog.image.domain.enums.ImageType;
+import com.backend.immilog.image.domain.model.Image;
 import com.backend.immilog.image.infrastructure.gateway.FileStorageHandler;
 import com.backend.immilog.image.application.service.ImageService;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +18,13 @@ import static org.mockito.Mockito.*;
 @DisplayName("이미지 서비스 테스트")
 class ImageServiceTest {
     private final FileStorageHandler fileStorageHandler = mock(FileStorageHandler.class);
-    private final ImageService imageService = new ImageService(fileStorageHandler);
+    private final ImageCommandService imageCommandService = mock(ImageCommandService.class);
+    private final ImageQueryService imageQueryService = mock(ImageQueryService.class);
+    private final ImageService imageService = new ImageService(
+            fileStorageHandler,
+            imageCommandService,
+            imageQueryService
+    );
 
     @Test
     @DisplayName("이미지 업로드")
@@ -28,7 +38,7 @@ class ImageServiceTest {
                 .thenReturn(mockUrl);
 
         // when
-        List<String> images = imageService.saveFiles(files, imagePath);
+        List<String> images = imageService.saveFiles(files, imagePath, ImageType.POST);
 
         // then
         assertThat(images).isNotEmpty();
@@ -41,8 +51,9 @@ class ImageServiceTest {
     @DisplayName("이미지 삭제")
     void deleteImage() {
         // given
-        String imagePath = "imagePath";
-
+        String imagePath = "https://imagePath";
+        when(imageQueryService.getImageByPath(imagePath))
+                .thenReturn(new Image(imagePath, ImageType.POST));
         // when
         imageService.deleteFile(imagePath);
 

@@ -6,7 +6,6 @@ import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.ReferenceType;
 import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.post.domain.model.post.Post;
-import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.backend.immilog.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

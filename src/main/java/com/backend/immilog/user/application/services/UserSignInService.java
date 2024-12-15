@@ -1,9 +1,10 @@
 package com.backend.immilog.user.application.services;
 
-import com.backend.immilog.global.application.RedisService;
 import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.user.application.command.UserSignInCommand;
 import com.backend.immilog.user.application.result.UserSignInResult;
+import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
+import com.backend.immilog.user.application.services.query.RefreshTokenQueryService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.User;
@@ -24,7 +25,8 @@ public class UserSignInService {
     private final UserQueryService userQueryService;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final RedisService redisService;
+    private final RefreshTokenQueryService refreshTokenQueryService;
+    private final RefreshTokenCommandService refreshTokenCommandService;
 
     final int REFRESH_TOKEN_EXPIRE_TIME = 5 * 29 * 24 * 60;
     final String TOKEN_PREFIX = "Refresh: ";
@@ -45,7 +47,7 @@ public class UserSignInService {
 
         String refreshToken = tokenProvider.issueRefreshToken();
 
-        redisService.saveKeyAndValue(
+        refreshTokenCommandService.saveKeyAndValue(
                 TOKEN_PREFIX + refreshToken,
                 user.getEmail(),
                 REFRESH_TOKEN_EXPIRE_TIME
@@ -75,7 +77,7 @@ public class UserSignInService {
         );
         final String refreshToken = tokenProvider.issueRefreshToken();
 
-        redisService.saveKeyAndValue(
+        refreshTokenCommandService.saveKeyAndValue(
                 TOKEN_PREFIX + refreshToken,
                 user.getEmail(),
                 REFRESH_TOKEN_EXPIRE_TIME

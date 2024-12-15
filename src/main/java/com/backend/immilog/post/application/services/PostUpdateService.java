@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services;
 
-import com.backend.immilog.global.infrastructure.lock.RedisDistributedLock;
+import com.backend.immilog.global.infrastructure.persistence.lock.RedisDistributedLock;
 import com.backend.immilog.post.application.command.PostUpdateCommand;
 import com.backend.immilog.post.application.services.command.BulkCommandService;
 import com.backend.immilog.post.application.services.command.PostCommandService;
@@ -9,7 +9,6 @@ import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.post.Post;
-import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
 import com.backend.immilog.post.exception.PostException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

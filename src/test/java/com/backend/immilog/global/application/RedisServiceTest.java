@@ -1,11 +1,10 @@
 package com.backend.immilog.global.application;
 
-import com.backend.immilog.global.infrastructure.repository.DataRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
+import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
+import com.backend.immilog.user.application.services.query.RefreshTokenQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -13,7 +12,8 @@ import static org.mockito.Mockito.*;
 @DisplayName("Redis 키/값 테스트")
 class RedisServiceTest {
     private final DataRepository dataRepository = mock(DataRepository.class);
-    private final RedisService redisService = new RedisService(dataRepository);
+    private final RefreshTokenQueryService refreshTokenQueryService = new RefreshTokenQueryService(dataRepository);
+    private final RefreshTokenCommandService refreshTokenCommandService = new RefreshTokenCommandService(dataRepository);
 
     @Test
     @DisplayName("키/값 저장")
@@ -24,7 +24,7 @@ class RedisServiceTest {
         int expireTime = 10;
 
         // when
-        redisService.saveKeyAndValue(key, value, expireTime);
+        refreshTokenCommandService.saveKeyAndValue(key, value, expireTime);
 
         // then
         verify(dataRepository, times(1)).save(key, value, expireTime);
@@ -40,7 +40,7 @@ class RedisServiceTest {
         when(dataRepository.findByKey(key)).thenReturn(expectedValue);
 
         // when
-        String result = redisService.getValueByKey(key);
+        String result = refreshTokenQueryService.getValueByKey(key);
 
         // then
         assertThat(result).isEqualTo(expectedValue);
@@ -54,7 +54,7 @@ class RedisServiceTest {
         String key = "key";
 
         // when
-        redisService.deleteValueByKey(key);
+        refreshTokenCommandService.deleteValueByKey(key);
 
         // then
         verify(dataRepository, times(1)).deleteByKey(key);

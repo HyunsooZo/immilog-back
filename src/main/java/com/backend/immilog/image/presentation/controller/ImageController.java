@@ -2,6 +2,7 @@ package com.backend.immilog.image.presentation.controller;
 
 import com.backend.immilog.global.model.GlobalApiResponse;
 import com.backend.immilog.image.application.service.ImageService;
+import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.presentation.request.ImageRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,9 +28,10 @@ public class ImageController {
     @Operation(summary = "이미지 업로드", description = "이미지를 업로드합니다.")
     public ResponseEntity<GlobalApiResponse> uploadImage(
             List<MultipartFile> multipartFile,
-            @RequestParam("imagePath") String imagePath
+            @RequestParam("imagePath") String imagePath,
+            @RequestParam("imageType") ImageType imageType
     ) {
-        List<String> data = imageService.saveFiles(multipartFile, imagePath);
+        List<String> data = imageService.saveFiles(multipartFile, imagePath, imageType);
 
         return ResponseEntity
                 .status(OK)
@@ -39,7 +41,7 @@ public class ImageController {
     @DeleteMapping
     @Operation(summary = "이미지 삭제", description = "이미지를 삭제합니다.")
     public ResponseEntity<GlobalApiResponse> deleteImage(
-            ImageRequest imageRequest
+            @RequestBody ImageRequest imageRequest
     ) {
         imageService.deleteFile(imageRequest.imagePath());
         return ResponseEntity.status(NO_CONTENT).build();

@@ -1,11 +1,8 @@
 package com.backend.immilog.global.application;
-import com.backend.immilog.global.infrastructure.lock.RedisDistributedLock;
-import com.backend.immilog.global.infrastructure.repository.DataRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.global.infrastructure.persistence.lock.RedisDistributedLock;
+import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.dao.DataAccessException;
 
 import static org.assertj.core.api.Assertions.assertThat;

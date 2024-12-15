@@ -1,4 +1,4 @@
-package com.backend.immilog.global.infrastructure.repository;
+package com.backend.immilog.global.infrastructure.persistence.repository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
