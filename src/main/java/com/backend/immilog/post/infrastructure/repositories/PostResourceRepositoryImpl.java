@@ -5,6 +5,7 @@ import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.domain.repositories.PostResourceRepository;
 import com.backend.immilog.post.infrastructure.jdbc.PostResourceJdbcRepository;
+import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.PostResourceJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -33,16 +34,15 @@ public class PostResourceRepositoryImpl implements PostResourceRepository {
     }
 
     @Override
-    public void deleteAllByPostSeq(
-            Long seq
-    ) {
+    public void deleteAllByPostSeq(Long seq) {
         postResourceJdbcRepository.deleteAllByPostSeq(seq);
     }
 
     @Override
-    public List<PostResource> findAllByPostSeq(
-            Long seq
-    ) {
-        return postResourceJpaRepository.findAllByPostSeq(seq);
+    public List<PostResource> findAllByPostSeq(Long seq) {
+        return postResourceJpaRepository.findAllByPostSeq(seq)
+                .stream()
+                .map(PostResourceEntity::toDomain)
+                .toList();
     }
 }

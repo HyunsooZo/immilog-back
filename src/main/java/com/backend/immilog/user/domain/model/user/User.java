@@ -153,4 +153,8 @@ public class User {
         this.reportInfo.setReportedCount(this.reportInfo.getReportedCount() + 1);
         this.reportInfo.setReportedDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
     }
+
+    public boolean hasSameSeq(Long userSeq) {
+        return this.seq.equals(userSeq);
+    }
 }

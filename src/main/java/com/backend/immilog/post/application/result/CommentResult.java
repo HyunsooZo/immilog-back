@@ -53,7 +53,7 @@ public record CommentResult(
                 .map(reply -> {
                     return replyUsers.stream()
                             .filter(Objects::nonNull)
-                            .filter(u -> u.getSeq().equals(reply.getUserSeq()))
+                            .filter(u -> u.hasSameSeq(reply.getUserSeq()))
                             .findFirst()
                             .map(replyUser -> CommentResult.of(reply, replyUser))
                             .orElse(null);

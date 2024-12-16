@@ -65,6 +65,10 @@ dependencies {
 
     // OpenAPI/Swagger for API documentation (springdoc)
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+    // Jakarta JSON API
+    implementation 'jakarta.json:jakarta.json-api:2.1.2'
+    implementation 'org.glassfish:jakarta.json:2.0.1'
 }
 
 def generatedDir = "$buildDir/main/generated"

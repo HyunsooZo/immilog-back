@@ -45,9 +45,7 @@ public class NoticeModifyService {
                 .orElseThrow(() -> new NoticeException(NOT_AN_ADMIN_USER));
     }
 
-    private Notice getNoticeBySeq(
-            Long noticeSeq
-    ) {
+    private Notice getNoticeBySeq(Long noticeSeq) {
         return noticeQueryService
                 .getNoticeBySeq(noticeSeq)
                 .filter(notice -> notice.getStatus() != DELETED)

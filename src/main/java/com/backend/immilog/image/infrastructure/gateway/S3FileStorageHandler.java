@@ -3,6 +3,7 @@ package com.backend.immilog.image.infrastructure.gateway;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.backend.immilog.global.exception.CustomException;
+import com.backend.immilog.notification.applicaiton.service.DiscordSendingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import static com.backend.immilog.global.exception.CommonErrorCode.IMAGE_UPLOAD_
 @Service
 public class S3FileStorageHandler implements FileStorageHandler {
     private final AmazonS3 amazonS3;
+    private final DiscordSendingService discordSendingService;
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
@@ -59,6 +61,7 @@ public class S3FileStorageHandler implements FileStorageHandler {
         try {
             amazonS3.putObject(bucket, originalFileName, multipartFile.getInputStream(), metadata);
         } catch (IOException e) {
+            discordSendingService.send("S3 파일 업로드", e);
             throw new CustomException(IMAGE_UPLOAD_FAILED);
         }
     }

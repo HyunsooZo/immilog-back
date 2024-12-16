@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 public class CompanyInquiryService {
     private final CompanyQueryService companyQueryService;
 
-    public CompanyResult getCompany(
-            Long userSeq
-    ) {
+    public CompanyResult getCompany(Long userSeq) {
         return companyQueryService.getByCompanyManagerUserSeq(userSeq)
                 .map(CompanyResult::from)
                 .orElse(CompanyResult.builder().build());
