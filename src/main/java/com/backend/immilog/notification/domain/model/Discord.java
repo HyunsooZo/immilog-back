@@ -8,10 +8,9 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Getter
-@NoArgsConstructor
 public class Discord {
-    private String content;
-    private List<Embed> embeds;
+    private final String content;
+    private final List<Embed> embeds;
 
     @Builder
     public Discord(

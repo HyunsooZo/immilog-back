@@ -4,16 +4,20 @@ import com.backend.immilog.user.domain.enums.UserCountry;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter(AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class Location {
     @Enumerated(EnumType.STRING)
     private UserCountry country;
     private String region;
+
+    protected Location() {}
 
     @Builder
     Location(

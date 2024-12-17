@@ -1,5 +1,6 @@
 package com.backend.immilog.post.application.services.command;
 
+import com.backend.immilog.global.aop.PerformanceMonitor;
 import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.util.function.BiConsumer;
 public class BulkCommandService {
     private final BulkInsertRepository bulkInsertRepository;
 
+    @PerformanceMonitor
     @Transactional
     public <T> void saveAll(
             List<T> entities,

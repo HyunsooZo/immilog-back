@@ -4,15 +4,12 @@ import com.backend.immilog.image.domain.enums.ImageStatus;
 import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.exception.ImageErrorCode;
 import com.backend.immilog.image.exception.ImageException;
-import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.Optional;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Image {
     private Long seq;
     private String path;

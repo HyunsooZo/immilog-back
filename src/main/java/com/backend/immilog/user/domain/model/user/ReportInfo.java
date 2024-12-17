@@ -1,17 +1,21 @@
 package com.backend.immilog.user.domain.model.user;
 
 import jakarta.persistence.Embeddable;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.sql.Date;
 
 @Getter(AccessLevel.PROTECTED)
 @Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class ReportInfo {
     private Long reportedCount;
     private Date reportedDate;
+
+    protected ReportInfo() {}
 
     @Builder
     ReportInfo(

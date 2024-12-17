@@ -1,5 +1,6 @@
 package com.backend.immilog.post.application.services.query;
 
+import com.backend.immilog.global.aop.PerformanceMonitor;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
@@ -25,6 +26,7 @@ public class PostQueryService {
         return postRepository.getById(postSeq);
     }
 
+    @PerformanceMonitor
     @Transactional(readOnly = true)
     public Page<PostResult> getPosts(
             Countries country,
