@@ -3,6 +3,7 @@ package com.backend.immilog.global.infrastructure.storage;
 import com.amazonaws.services.s3.AmazonS3;
 import com.backend.immilog.global.exception.CustomException;
 import com.backend.immilog.image.infrastructure.gateway.S3FileStorageHandler;
+import com.backend.immilog.notification.applicaiton.service.DiscordSendingService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,8 +24,12 @@ import static org.mockito.Mockito.*;
 class S3FileStorageHandlerTest {
 
     private final AmazonS3 amazonS3 = mock(AmazonS3.class);
+    private final DiscordSendingService discordSendingService = mock(DiscordSendingService.class);
     private final MultipartFile multipartFile = mock(MultipartFile.class);
-    private final S3FileStorageHandler s3FileStorageHandler = new S3FileStorageHandler(amazonS3);
+    private final S3FileStorageHandler s3FileStorageHandler = new S3FileStorageHandler(
+            amazonS3,
+            discordSendingService
+    );
 
     @BeforeEach
     void setUp() throws Exception {

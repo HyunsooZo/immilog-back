@@ -8,14 +8,9 @@ import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.ReportInfo;
 import com.backend.immilog.user.domain.model.user.User;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Entity
 @Table(name = "user")
@@ -47,6 +42,8 @@ public class UserEntity extends BaseDateEntity {
 
     @Embedded
     private ReportInfo reportInfo;
+
+    protected UserEntity() {}
 
     @Builder
     UserEntity(

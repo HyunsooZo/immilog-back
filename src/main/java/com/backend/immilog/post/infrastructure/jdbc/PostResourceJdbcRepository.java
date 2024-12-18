@@ -2,7 +2,6 @@ package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -10,9 +9,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Repository
-@RequiredArgsConstructor
 public class PostResourceJdbcRepository {
     private final JdbcClient jdbcClient;
+
+    public PostResourceJdbcRepository(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
+    }
 
     public void deleteAllEntities(
             Long postSeq,

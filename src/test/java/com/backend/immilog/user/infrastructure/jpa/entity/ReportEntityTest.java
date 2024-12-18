@@ -21,11 +21,12 @@ class ReportEntityTest {
                 .build();
 
         ReportEntity reportEntity = ReportEntity.from(report);
+        Report domain = reportEntity.toDomain();
 
-        assertThat(reportEntity.getReportedUserSeq()).isEqualTo(report.getReportedUserSeq());
-        assertThat(reportEntity.getReporterUserSeq()).isEqualTo(report.getReporterUserSeq());
-        assertThat(reportEntity.getDescription()).isEqualTo(report.getDescription());
-        assertThat(reportEntity.getReason()).isEqualTo(report.getReason());
+        assertThat(domain.getReportedUserSeq()).isEqualTo(report.getReportedUserSeq());
+        assertThat(domain.getReporterUserSeq()).isEqualTo(report.getReporterUserSeq());
+        assertThat(domain.getDescription()).isEqualTo(report.getDescription());
+        assertThat(domain.getReason()).isEqualTo(report.getReason());
     }
 
     @Test
@@ -41,11 +42,11 @@ class ReportEntityTest {
 
         Report report = reportEntity.toDomain();
 
-        assertThat(report.getSeq()).isEqualTo(reportEntity.getSeq());
-        assertThat(report.getReportedUserSeq()).isEqualTo(reportEntity.getReportedUserSeq());
-        assertThat(report.getReporterUserSeq()).isEqualTo(reportEntity.getReporterUserSeq());
-        assertThat(report.getDescription()).isEqualTo(reportEntity.getDescription());
-        assertThat(report.getReason()).isEqualTo(reportEntity.getReason());
+        assertThat(report.getSeq()).isEqualTo(1L);
+        assertThat(report.getReportedUserSeq()).isEqualTo(1L);
+        assertThat(report.getReporterUserSeq()).isEqualTo(2L);
+        assertThat(report.getDescription()).isEqualTo("Test description");
+        assertThat(report.getReason()).isEqualTo(ReportReason.SPAM);
     }
 
     @Test
@@ -53,8 +54,7 @@ class ReportEntityTest {
     void reportEntityFromReport_nullReport() {
         Report report = null;
 
-        assertThatThrownBy(() -> ReportEntity.from(report))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> ReportEntity.from(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test

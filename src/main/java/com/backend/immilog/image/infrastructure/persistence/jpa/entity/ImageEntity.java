@@ -4,12 +4,9 @@ import com.backend.immilog.image.domain.enums.ImageStatus;
 import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.domain.model.Image;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Entity
 @Table(name = "image")
@@ -25,6 +22,8 @@ public class ImageEntity {
 
     @Enumerated(EnumType.STRING)
     private ImageStatus status;
+
+    protected ImageEntity() {}
 
     @Builder
     ImageEntity(

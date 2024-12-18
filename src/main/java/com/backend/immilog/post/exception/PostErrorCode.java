@@ -17,7 +17,8 @@ public enum PostErrorCode implements ErrorCode {
     INVALID_USER(BAD_REQUEST, "해당 채팅방에 대한 권한이 없습니다."),
     EMAIL_SEND_FAILED(BAD_REQUEST, "이메일 발송에 실패하였습니다."),
     FAILED_TO_SAVE_POST(BAD_REQUEST, "게시물을 저장하는데 실패하였습니다."),
-    INVALID_REFERENCE_TYPE(BAD_REQUEST, "유효하지 않은 참조 타입입니다.");
+    INVALID_REFERENCE_TYPE(BAD_REQUEST, "유효하지 않은 참조 타입입니다."),
+    INVALID_POST_TYPE(BAD_REQUEST, "유효하지 않은 게시물 타입입니다.");
 
     private final HttpStatus status;
     private final String message;

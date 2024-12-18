@@ -5,7 +5,6 @@ import com.backend.immilog.post.application.services.command.PostResourceCommand
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.exception.PostException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,11 +16,20 @@ import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PostDeleteService {
     private final PostCommandService postCommandService;
     private final PostQueryService postQueryService;
     private final PostResourceCommandService postResourceCommandService;
+
+    public PostDeleteService(
+            PostCommandService postCommandService,
+            PostQueryService postQueryService,
+            PostResourceCommandService postResourceCommandService
+    ) {
+        this.postCommandService = postCommandService;
+        this.postQueryService = postQueryService;
+        this.postResourceCommandService = postResourceCommandService;
+    }
 
     @Transactional
     public void deletePost(

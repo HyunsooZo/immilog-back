@@ -4,7 +4,6 @@ import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.domain.repositories.NoticeRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -13,9 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class NoticeQueryService {
     private final NoticeRepository noticeRepository;
+
+    public NoticeQueryService(NoticeRepository noticeRepository) {
+        this.noticeRepository = noticeRepository;
+    }
 
     @Transactional(readOnly = true)
     public Page<NoticeResult> getNotices(

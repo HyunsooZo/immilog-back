@@ -1,16 +1,18 @@
 package com.backend.immilog.notice.infrastructure.jdbc;
 
 import com.backend.immilog.notice.application.result.NoticeResult;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-@RequiredArgsConstructor
 public class NoticeJdbcRepository {
     private final JdbcClient jdbcClient;
+
+    public NoticeJdbcRepository(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
+    }
 
     public List<NoticeResult> getNotices(
             long userSeq,

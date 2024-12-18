@@ -6,7 +6,6 @@ import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.exception.NoticeException;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.model.user.User;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -16,10 +15,17 @@ import static com.backend.immilog.notice.exception.NoticeErrorCode.NOTICE_NOT_FO
 import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 
 @Service
-@RequiredArgsConstructor
 public class NoticeInquiryService {
     private final NoticeQueryService noticeQueryService;
     private final UserQueryService userQueryService;
+
+    public NoticeInquiryService(
+            NoticeQueryService noticeQueryService,
+            UserQueryService userQueryService
+    ) {
+        this.noticeQueryService = noticeQueryService;
+        this.userQueryService = userQueryService;
+    }
 
     public Page<NoticeResult> getNotices(
             Long userSeq,

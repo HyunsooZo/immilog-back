@@ -5,19 +5,14 @@ import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.model.user.User;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 public class CommentEntityResult {
     private Long seq;
     private UserInfoResult user;
@@ -30,9 +25,31 @@ public class CommentEntityResult {
     private PostStatus status;
     private LocalDateTime createdAt;
 
-    public void addChildComment(CommentEntityResult childComment) {
-        this.replies.add(childComment);
-        this.replyCount = this.replies.size(); // 자식 댓글 수 업데이트
+    protected CommentEntityResult() {}
+
+    @Builder
+    CommentEntityResult(
+            Long seq,
+            UserInfoResult user,
+            String content,
+            List<CommentEntityResult> replies,
+            int upVotes,
+            int downVotes,
+            int replyCount,
+            List<Long> likeUsers,
+            PostStatus status,
+            LocalDateTime createdAt
+    ) {
+        this.seq = seq;
+        this.user = user;
+        this.content = content;
+        this.replies = replies;
+        this.upVotes = upVotes;
+        this.downVotes = downVotes;
+        this.replyCount = replyCount;
+        this.likeUsers = likeUsers;
+        this.status = status;
+        this.createdAt = createdAt;
     }
 
     public static CommentEntityResult of(
@@ -50,6 +67,11 @@ public class CommentEntityResult {
                 .status(comment.getStatus())
                 .createdAt(comment.getCreatedAt())
                 .build();
+    }
+
+    public void addChildComment(CommentEntityResult childComment) {
+        this.replies.add(childComment);
+        this.replyCount = this.replies.size(); // 자식 댓글 수 업데이트
     }
 
     public CommentResult toCommentResult() {

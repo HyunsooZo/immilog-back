@@ -1,9 +1,7 @@
 package com.backend.immilog.user.application.services;
 
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.util.Pair;
@@ -17,16 +15,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class LocationService {
     private final RestTemplate restTemplate;
-
     @Value("${geocode.url}")
     private String geocoderUrl;
-
     @Value("${geocode.key}")
     private String geocoderKey;
+
+    public LocationService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
+    }
 
     @Async
     public CompletableFuture<Pair<String, String>> getCountry(
@@ -42,7 +41,7 @@ public class LocationService {
             String compoundCode = extractCompoundCode(response.join());
             String[] parts = Objects.requireNonNull(compoundCode).split(" ");
             if (parts.length >= 3) {
-                String country = UserCountry.getCountryByKoreanName(parts[1]).getCountryKoreanName();
+                String country = parts[1];
                 String city = parts[2];
                 return CompletableFuture.completedFuture(Pair.of(country, city));
             }

@@ -214,14 +214,14 @@ public class LogFilter implements Filter {
             return outputStream;
         }
 
+        public int getStatus() {
+            return this.httpStatus;
+        }
+
         @Override
         public void setStatus(int sc) {
             super.setStatus(sc);
             this.httpStatus = sc;
-        }
-
-        public int getStatus() {
-            return this.httpStatus;
         }
 
         public String getCaptureAsString() {

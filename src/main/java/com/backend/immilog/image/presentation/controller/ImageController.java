@@ -6,7 +6,6 @@ import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.presentation.request.ImageRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,11 +17,14 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Tag(name = "Image API", description = "이미지 업로드 관련 API")
 @RequestMapping("/api/v1/images")
-@RequiredArgsConstructor
 @RestController
 public class ImageController {
 
     private final ImageService imageService;
+
+    public ImageController(ImageService imageService) {
+        this.imageService = imageService;
+    }
 
     @PostMapping
     @Operation(summary = "이미지 업로드", description = "이미지를 업로드합니다.")

@@ -5,7 +5,6 @@ import com.backend.immilog.post.application.services.query.JobBoardQueryService;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,9 +12,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
 public class JobBoardInquiryService {
     private final JobBoardQueryService jobBoardQueryService;
+
+    public JobBoardInquiryService(JobBoardQueryService jobBoardQueryService) {
+        this.jobBoardQueryService = jobBoardQueryService;
+    }
 
     @Transactional(readOnly = true)
     public Page<JobBoardResult> getJobBoards(

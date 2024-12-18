@@ -44,7 +44,7 @@ public class Report {
     ) {
         String description = isOther
                 ? reportUserCommand.description()
-                : reportUserCommand.reason().getReason();
+                : reportUserCommand.reason().reason();
 
         return new Report(
                 null,

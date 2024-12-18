@@ -33,21 +33,24 @@ class UserEntityTest {
                 .build();
 
         UserEntity userEntity = UserEntity.from(user);
+        User domain = userEntity.toDomain();
 
-        assertThat(userEntity.getNickName()).isEqualTo(user.getNickName());
-        assertThat(userEntity.getEmail()).isEqualTo(user.getEmail());
-        assertThat(userEntity.getPassword()).isEqualTo(user.getPassword());
-        assertThat(userEntity.getImageUrl()).isEqualTo(user.getImageUrl());
-        assertThat(userEntity.getUserStatus()).isEqualTo(user.getUserStatus());
-        assertThat(userEntity.getUserRole()).isEqualTo(user.getUserRole());
-        assertThat(userEntity.getInterestCountry()).isEqualTo(user.getInterestCountry());
-        assertThat(userEntity.getLocation()).isEqualTo(user.getLocation());
-        assertThat(userEntity.getReportInfo()).isEqualTo(user.getReportInfo());
+        assertThat(domain.getNickName()).isEqualTo(user.getNickName());
+        assertThat(domain.getEmail()).isEqualTo(user.getEmail());
+        assertThat(domain.getPassword()).isEqualTo(user.getPassword());
+        assertThat(domain.getImageUrl()).isEqualTo(user.getImageUrl());
+        assertThat(domain.getUserStatus()).isEqualTo(user.getUserStatus());
+        assertThat(domain.getUserRole()).isEqualTo(user.getUserRole());
+        assertThat(domain.getInterestCountry()).isEqualTo(user.getInterestCountry());
+        assertThat(domain.getLocation()).isEqualTo(user.getLocation());
+        assertThat(domain.getReportInfo()).isEqualTo(user.getReportInfo());
     }
 
     @Test
     @DisplayName("UserEntity toDomain - valid UserEntity object")
     void userEntityToDomain_validUserEntity() {
+        Location country = Location.builder().country(UserCountry.SOUTH_KOREA).region("Country").build();
+        ReportInfo repost = ReportInfo.builder().reportedCount(1L).reportedDate(Date.valueOf("2024-12-12")).build();
         UserEntity userEntity = UserEntity.builder()
                 .seq(1L)
                 .nickName("TestUser")
@@ -57,20 +60,20 @@ class UserEntityTest {
                 .userStatus(UserStatus.ACTIVE)
                 .userRole(UserRole.ROLE_USER)
                 .interestCountry(UserCountry.SOUTH_KOREA)
-                .location(Location.builder().country(UserCountry.SOUTH_KOREA).region("Country").build())
-                .reportInfo(ReportInfo.builder().reportedCount(1L).reportedDate(Date.valueOf("2024-12-12")).build())
+                .location(country)
+                .reportInfo(repost)
                 .build();
         User user = userEntity.toDomain();
 
-        assertThat(user.getNickName()).isEqualTo(userEntity.getNickName());
-        assertThat(user.getEmail()).isEqualTo(userEntity.getEmail());
-        assertThat(user.getPassword()).isEqualTo(userEntity.getPassword());
-        assertThat(user.getImageUrl()).isEqualTo(userEntity.getImageUrl());
-        assertThat(user.getUserStatus()).isEqualTo(userEntity.getUserStatus());
-        assertThat(user.getUserRole()).isEqualTo(userEntity.getUserRole());
-        assertThat(user.getInterestCountry()).isEqualTo(userEntity.getInterestCountry());
-        assertThat(user.getLocation()).isEqualTo(userEntity.getLocation());
-        assertThat(user.getReportInfo()).isEqualTo(userEntity.getReportInfo());
+        assertThat(user.getNickName()).isEqualTo("TestUser");
+        assertThat(user.getEmail()).isEqualTo("test@user.com");
+        assertThat(user.getPassword()).isEqualTo("password");
+        assertThat(user.getImageUrl()).isEqualTo("image.png");
+        assertThat(user.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(user.getUserRole()).isEqualTo(UserRole.ROLE_USER);
+        assertThat(user.getInterestCountry()).isEqualTo(UserCountry.SOUTH_KOREA);
+        assertThat(user.getLocation()).isEqualTo(country);
+        assertThat(user.getReportInfo()).isEqualTo(repost);
     }
 
     @Test
@@ -78,8 +81,7 @@ class UserEntityTest {
     void userEntityFromUser_nullUser() {
         User user = null;
 
-        assertThatThrownBy(() -> UserEntity.from(user))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> UserEntity.from(null)).isInstanceOf(NullPointerException.class);
     }
 
     @Test

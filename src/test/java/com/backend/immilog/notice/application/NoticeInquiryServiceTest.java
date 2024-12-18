@@ -4,6 +4,8 @@ import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.application.services.NoticeInquiryService;
 import com.backend.immilog.notice.application.services.query.NoticeQueryService;
 import com.backend.immilog.notice.domain.model.Notice;
+import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
+import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserCountry;
@@ -18,8 +20,6 @@ import org.springframework.data.domain.PageRequest;
 import java.util.List;
 import java.util.Optional;
 
-import static com.backend.immilog.notice.domain.model.enums.NoticeCountry.SOUTH_KOREA;
-import static com.backend.immilog.notice.domain.model.enums.NoticeStatus.NORMAL;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -44,8 +44,7 @@ class NoticeInquiryServiceTest {
                 .userSeq(userSeq)
                 .content("content")
                 .type(NoticeType.NOTICE)
-                .targetCountries(List.of(SOUTH_KOREA))
-                .status(NORMAL)
+                .targetCountries(List.of(NoticeCountry.SOUTH_KOREA))
                 .build();
 
         when(noticeQueryService.getNotices(userSeq, PageRequest.of(page, 10)))
@@ -82,12 +81,11 @@ class NoticeInquiryServiceTest {
                 .userSeq(1L)
                 .content("content")
                 .type(NoticeType.NOTICE)
-                .targetCountries(List.of(SOUTH_KOREA))
-                .status(NORMAL)
+                .targetCountries(List.of(NoticeCountry.SOUTH_KOREA))
+                .status(NoticeStatus.NORMAL)
                 .build();
 
-        when(noticeQueryService.getNoticeBySeq(noticeSeq))
-                .thenReturn(java.util.Optional.of(notice));
+        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(java.util.Optional.of(notice));
         // when
         NoticeResult noticeDTO = noticeInquiryService.getNoticeDetail(noticeSeq);
 
@@ -105,8 +103,7 @@ class NoticeInquiryServiceTest {
                 .location(Location.of(UserCountry.SOUTH_KOREA, "서울"))
                 .build();
 
-        when(noticeQueryService.areUnreadNoticesExist(SOUTH_KOREA, userSeq))
-                .thenReturn(true);
+        when(noticeQueryService.areUnreadNoticesExist(NoticeCountry.SOUTH_KOREA, userSeq)).thenReturn(true);
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
 
         // when

@@ -1,13 +1,11 @@
 package com.backend.immilog.user.exception;
 
 import com.backend.immilog.global.exception.ErrorCode;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-@RequiredArgsConstructor
 public enum UserErrorCode implements ErrorCode {
     USER_NOT_FOUND(NOT_FOUND, "존재하지 않는 사용자입니다."),
     EXISTING_USER(BAD_REQUEST, "이미 존재하는 사용자입니다."),
@@ -20,6 +18,14 @@ public enum UserErrorCode implements ErrorCode {
 
     private final HttpStatus status;
     private final String message;
+
+    UserErrorCode(
+            HttpStatus status,
+            String message
+    ) {
+        this.status = status;
+        this.message = message;
+    }
 
     @Override
     public HttpStatus getStatus() {

@@ -7,7 +7,6 @@ import com.backend.immilog.user.presentation.request.CompanyRegisterRequest;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,11 +15,18 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Tag(name = "Company API", description = "회사정보 관련 API")
 @RequestMapping("/api/v1/companies")
-@RequiredArgsConstructor
 @RestController
 public class CompanyController {
     private final CompanyRegisterService companyRegisterService;
     private final CompanyInquiryService companyInquiryService;
+
+    public CompanyController(
+            CompanyRegisterService companyRegisterService,
+            CompanyInquiryService companyInquiryService
+    ) {
+        this.companyRegisterService = companyRegisterService;
+        this.companyInquiryService = companyInquiryService;
+    }
 
     @PostMapping("/users/{userSeq}")
     @Operation(summary = "회사정보 등록", description = "회사정보를 등록합니다.")

@@ -1,34 +1,21 @@
 package com.backend.immilog.notification.domain.model;
 
 import com.backend.immilog.notification.applicaiton.command.DiscordCommand;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
-@Getter
-public class Discord {
-    private final String content;
-    private final List<Embed> embeds;
-
-    @Builder
-    public Discord(
-            String content,
-            List<Embed> embeds
-    ) {
-        this.content = content;
-        this.embeds = embeds;
-    }
-
+public record Discord(
+        String content,
+        List<Embed> embeds
+) {
     public static Discord from(
             String api,
             Embed embed
     ) {
-        return Discord.builder()
-                .content("[EXTERNAL API] {" + api + "}")
-                .embeds(List.of(embed))
-                .build();
+        return new Discord(
+                "[EXTERNAL API] {" + api + "}",
+                List.of(embed)
+        );
     }
 
     public DiscordCommand toRequest() {
@@ -38,26 +25,15 @@ public class Discord {
         );
     }
 
-    @Getter
-    @NoArgsConstructor
-    public static class Embed {
-        private String title;
-        private List<Field> fields;
-
-        @Builder
-        Embed(
-                String title,
-                List<Field> fields
-        ) {
-            this.title = title;
-            this.fields = fields;
-        }
-
-        public static Embed createWithField(Field field) {
-            return builder()
-                    .title("Exception Detail")
-                    .fields(List.of(field))
-                    .build();
+    public record Embed(
+            String title,
+            List<Field> fields
+    ) {
+        public static Embed createWith(Field field) {
+            return new Embed(
+                    "Exception Detail",
+                    List.of(field)
+            );
         }
 
         public DiscordCommand.Embed toRequest() {
@@ -68,30 +44,18 @@ public class Discord {
         }
     }
 
-    @Getter
-    @NoArgsConstructor
-    public static class Field {
-        private String name;
-        private String value;
-        private boolean inline;
-
-        @Builder
-        Field(
-                String name,
-                String value,
-                boolean inline
-        ) {
-            this.name = name;
-            this.value = value;
-            this.inline = inline;
-        }
+    public record Field(
+            String name,
+            String value,
+            boolean inline
+    ) {
 
         public static Discord.Field from(Exception exception) {
-            return Discord.Field.builder()
-                    .name(exception.getClass().getName())
-                    .value(exception.getMessage())
-                    .inline(true)
-                    .build();
+            return new Discord.Field(
+                    exception.getClass().getName(),
+                    exception.getMessage(),
+                    true
+            );
         }
 
         public DiscordCommand.Field toRequest() {

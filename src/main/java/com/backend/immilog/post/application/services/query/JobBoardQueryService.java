@@ -6,7 +6,6 @@ import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import com.backend.immilog.post.domain.repositories.JobBoardRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,9 +14,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class JobBoardQueryService {
     private final JobBoardRepository jobBoardRepository;
+
+    public JobBoardQueryService(JobBoardRepository jobBoardRepository) {
+        this.jobBoardRepository = jobBoardRepository;
+    }
 
     @PerformanceMonitor
     @Transactional(readOnly = true)

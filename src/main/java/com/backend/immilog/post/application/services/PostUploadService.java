@@ -8,7 +8,6 @@ import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.model.user.User;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +24,21 @@ import static com.backend.immilog.post.exception.PostErrorCode.FAILED_TO_SAVE_PO
 import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class PostUploadService {
     private final PostCommandService postCommandService;
     private final UserQueryService userQueryService;
     private final BulkCommandService bulkInsertRepository;
+
+    public PostUploadService(
+            PostCommandService postCommandService,
+            UserQueryService userQueryService,
+            BulkCommandService bulkInsertRepository
+    ) {
+        this.postCommandService = postCommandService;
+        this.userQueryService = userQueryService;
+        this.bulkInsertRepository = bulkInsertRepository;
+    }
 
     @Transactional
     public void uploadPost(

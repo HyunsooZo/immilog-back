@@ -36,9 +36,8 @@ class CommentUploadServiceTest {
         // given
         Long userId = 1L;
         Long postSeq = 1L;
-        String referenceType = "posts";
-        CommentUploadRequest commentUploadRequest =
-                new CommentUploadRequest("content");
+        String referenceType = "post";
+        CommentUploadRequest commentUploadRequest = new CommentUploadRequest("content");
         Post post = Post.builder().commentCount(0L).build();
         when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         // when

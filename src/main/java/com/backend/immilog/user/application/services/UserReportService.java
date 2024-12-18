@@ -9,7 +9,6 @@ import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -20,15 +19,41 @@ import static com.backend.immilog.user.domain.enums.ReportReason.OTHER;
 import static com.backend.immilog.user.exception.UserErrorCode.*;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class UserReportService {
+    final String LOCK_KEY = "reportUser : ";
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final ReportCommandService reportCommandService;
     private final ReportQueryService reportQueryService;
     private final RedisDistributedLock redisDistributedLock;
-    final String LOCK_KEY = "reportUser : ";
+
+    public UserReportService(
+            UserQueryService userQueryService,
+            UserCommandService userCommandService,
+            ReportCommandService reportCommandService,
+            ReportQueryService reportQueryService,
+            RedisDistributedLock redisDistributedLock
+    ) {
+        this.userQueryService = userQueryService;
+        this.userCommandService = userCommandService;
+        this.reportCommandService = reportCommandService;
+        this.reportQueryService = reportQueryService;
+        this.redisDistributedLock = redisDistributedLock;
+    }
+
+    private static Report createReport(
+            Long targetUserSeq,
+            Long reporterUserSeq,
+            UserReportCommand userReportCommand
+    ) {
+        return Report.of(
+                targetUserSeq,
+                reporterUserSeq,
+                userReportCommand,
+                userReportCommand.reason().equals(OTHER)
+        );
+    }
 
     @Async
     public void reportUser(
@@ -67,19 +92,6 @@ public class UserReportService {
         reportCommandService.save(report);
         userCommandService.save(user);
         log.info("User {} reported by {}", targetUserSeq, reporterUserSeq);
-    }
-
-    private static Report createReport(
-            Long targetUserSeq,
-            Long reporterUserSeq,
-            UserReportCommand userReportCommand
-    ) {
-        return Report.of(
-                targetUserSeq,
-                reporterUserSeq,
-                userReportCommand,
-                userReportCommand.reason().equals(OTHER)
-        );
     }
 
     private void reportValidation(

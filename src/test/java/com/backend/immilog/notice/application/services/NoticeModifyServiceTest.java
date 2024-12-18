@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static com.backend.immilog.notice.domain.model.enums.NoticeStatus.DELETED;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -76,7 +75,7 @@ class NoticeModifyServiceTest {
         Notice notice = mock(Notice.class);
         when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
         when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.of(notice));
-        when(notice.getStatus()).thenReturn(DELETED);
+        when(notice.getStatus()).thenReturn(NoticeStatus.DELETED);
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(token, noticeSeq, command));
     }
 

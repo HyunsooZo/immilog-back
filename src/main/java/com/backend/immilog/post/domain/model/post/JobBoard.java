@@ -1,7 +1,6 @@
 package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.application.command.JobBoardUploadCommand;
-import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.user.domain.model.company.Company;
 import lombok.Builder;
 import lombok.Getter;
@@ -65,8 +64,8 @@ public class JobBoard {
                 .build();
     }
 
-    public void toDeleteDomain() {
-        this.postInfo.setStatus(PostStatus.DELETED);
+    public void delete() {
+        this.postInfo.delete();
     }
 
 }

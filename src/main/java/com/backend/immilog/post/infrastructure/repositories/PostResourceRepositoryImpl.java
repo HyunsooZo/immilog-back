@@ -7,16 +7,22 @@ import com.backend.immilog.post.domain.repositories.PostResourceRepository;
 import com.backend.immilog.post.infrastructure.jdbc.PostResourceJdbcRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.PostResourceJpaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Repository
 public class PostResourceRepositoryImpl implements PostResourceRepository {
     private final PostResourceJdbcRepository postResourceJdbcRepository;
     private final PostResourceJpaRepository postResourceJpaRepository;
+
+    public PostResourceRepositoryImpl(
+            PostResourceJdbcRepository postResourceJdbcRepository,
+            PostResourceJpaRepository postResourceJpaRepository
+    ) {
+        this.postResourceJdbcRepository = postResourceJdbcRepository;
+        this.postResourceJpaRepository = postResourceJpaRepository;
+    }
 
     @Override
     public void deleteAllEntities(

@@ -5,17 +5,13 @@ import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
 import com.backend.immilog.post.domain.model.comment.Comment;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.util.List;
 
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
 @DynamicUpdate
 @Entity
 @Table(name = "comment")
@@ -31,10 +27,8 @@ public class CommentEntity extends BaseDateEntity {
 
     private Long parentSeq;
 
-    @Setter
     private int replyCount;
 
-    @Setter
     private Integer likeCount;
 
     private String content;
@@ -48,6 +42,33 @@ public class CommentEntity extends BaseDateEntity {
     @ElementCollection(fetch = FetchType.LAZY)
     @Cascade(value = CascadeType.ALL)
     private List<Long> likeUsers;
+
+    protected CommentEntity() {}
+
+    @Builder
+    CommentEntity(
+            Long seq,
+            Long userSeq,
+            Long postSeq,
+            Long parentSeq,
+            int replyCount,
+            Integer likeCount,
+            String content,
+            ReferenceType referenceType,
+            PostStatus status,
+            List<Long> likeUsers
+    ) {
+        this.seq = seq;
+        this.userSeq = userSeq;
+        this.postSeq = postSeq;
+        this.parentSeq = parentSeq;
+        this.replyCount = replyCount;
+        this.likeCount = likeCount;
+        this.content = content;
+        this.referenceType = referenceType;
+        this.status = status;
+        this.likeUsers = likeUsers;
+    }
 
     public static CommentEntity from(
             Comment comment

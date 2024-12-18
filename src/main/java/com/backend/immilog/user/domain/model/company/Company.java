@@ -11,6 +11,7 @@ import java.util.Optional;
 @Getter
 public class Company {
     private final Long seq;
+    private final Long companyManagerUserSeq;
     private Industry industry;
     private String companyName;
     private String companyEmail;
@@ -20,7 +21,6 @@ public class Company {
     private UserCountry companyCountry;
     private String companyRegion;
     private String companyLogo;
-    private final Long companyManagerUserSeq;
 
     @Builder
     private Company(

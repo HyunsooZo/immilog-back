@@ -4,7 +4,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.backend.immilog.global.exception.CustomException;
 import com.backend.immilog.notification.applicaiton.service.DiscordSendingService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,14 +13,20 @@ import java.util.UUID;
 
 import static com.backend.immilog.global.exception.CommonErrorCode.IMAGE_UPLOAD_FAILED;
 
-@RequiredArgsConstructor
 @Service
 public class S3FileStorageHandler implements FileStorageHandler {
     private final AmazonS3 amazonS3;
     private final DiscordSendingService discordSendingService;
-
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
+
+    public S3FileStorageHandler(
+            AmazonS3 amazonS3,
+            DiscordSendingService discordSendingService
+    ) {
+        this.amazonS3 = amazonS3;
+        this.discordSendingService = discordSendingService;
+    }
 
     @Override
     public String uploadFile(

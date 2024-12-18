@@ -4,13 +4,10 @@ import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @DynamicUpdate
 @Entity
 @Table(name = "interaction_user")
@@ -24,10 +21,29 @@ public class InteractionUserEntity {
     @Enumerated(EnumType.STRING)
     private PostType postType;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     private InteractionType interactionType;
 
+    @Getter
     private Long userSeq;
+
+    protected InteractionUserEntity() {}
+
+    @Builder
+    InteractionUserEntity(
+            Long seq,
+            Long postSeq,
+            PostType postType,
+            InteractionType interactionType,
+            Long userSeq
+    ) {
+        this.seq = seq;
+        this.postSeq = postSeq;
+        this.postType = postType;
+        this.interactionType = interactionType;
+        this.userSeq = userSeq;
+    }
 
     public static InteractionUserEntity from(
             InteractionUser interactionUser

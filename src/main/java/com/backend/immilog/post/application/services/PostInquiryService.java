@@ -8,7 +8,6 @@ import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.exception.PostException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -23,10 +22,17 @@ import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PostInquiryService {
     private final PostQueryService postQueryService;
     private final CommentQueryService commentQueryService;
+
+    public PostInquiryService(
+            PostQueryService postQueryService,
+            CommentQueryService commentQueryService
+    ) {
+        this.postQueryService = postQueryService;
+        this.commentQueryService = commentQueryService;
+    }
 
     public Page<PostResult> getPosts(
             Countries country,

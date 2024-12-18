@@ -5,11 +5,11 @@ import com.backend.immilog.post.domain.enums.PostStatus;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class PostInfo {
     private String title;
@@ -21,12 +21,12 @@ public class PostInfo {
     private Long likeCount;
 
     private String region;
-
     @Enumerated(EnumType.STRING)
     private PostStatus status;
-
     @Enumerated(EnumType.STRING)
     private Countries country;
+
+    protected PostInfo() {}
 
     @Builder
     PostInfo(
@@ -64,4 +64,19 @@ public class PostInfo {
                 .build();
     }
 
+    public void increaseViewCount() {
+        this.viewCount++;
+    }
+
+    public void delete() {
+        this.status = PostStatus.DELETED;
+    }
+
+    public void updateTitle(String title) {
+        this.title = title;
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

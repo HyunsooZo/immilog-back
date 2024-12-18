@@ -6,7 +6,6 @@ import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,12 +16,21 @@ import static com.backend.immilog.user.exception.UserErrorCode.EXISTING_USER;
 import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class UserSignUpService {
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final PasswordEncoder passwordEncoder;
+
+    public UserSignUpService(
+            UserQueryService userQueryService,
+            UserCommandService userCommandService,
+            PasswordEncoder passwordEncoder
+    ) {
+        this.userQueryService = userQueryService;
+        this.userCommandService = userCommandService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public Pair<Long, String> signUp(UserSignUpCommand userSignUpCommand) {
         validateUserNotExists(userSignUpCommand.email());

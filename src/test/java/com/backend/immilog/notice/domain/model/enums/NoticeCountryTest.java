@@ -1,11 +1,9 @@
 package com.backend.immilog.notice.domain.model.enums;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("Enum NoticeCountry 테스트")
 class NoticeCountryTest {

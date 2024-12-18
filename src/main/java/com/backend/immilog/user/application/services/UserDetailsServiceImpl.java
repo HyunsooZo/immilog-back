@@ -2,7 +2,6 @@ package com.backend.immilog.user.application.services;
 
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.exception.UserException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,10 +14,13 @@ import java.util.List;
 
 import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 
-@RequiredArgsConstructor
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserQueryService userQueryService;
+
+    public UserDetailsServiceImpl(UserQueryService userQueryService) {
+        this.userQueryService = userQueryService;
+    }
 
     @Override
     public UserDetails loadUserByUsername(

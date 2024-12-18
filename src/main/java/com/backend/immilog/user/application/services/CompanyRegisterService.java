@@ -4,17 +4,23 @@ import com.backend.immilog.user.application.command.CompanyRegisterCommand;
 import com.backend.immilog.user.application.services.command.CompanyCommandService;
 import com.backend.immilog.user.application.services.query.CompanyQueryService;
 import com.backend.immilog.user.domain.model.company.Company;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@RequiredArgsConstructor
 @Service
 public class CompanyRegisterService {
     private final CompanyQueryService companyQueryService;
     private final CompanyCommandService companyCommandService;
+
+    public CompanyRegisterService(
+            CompanyQueryService companyQueryService,
+            CompanyCommandService companyCommandService
+    ) {
+        this.companyQueryService = companyQueryService;
+        this.companyCommandService = companyCommandService;
+    }
 
     @Transactional
     public void registerOrEditCompany(

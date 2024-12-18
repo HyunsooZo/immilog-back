@@ -7,7 +7,6 @@ import com.backend.immilog.notice.application.services.command.NoticeCommandServ
 import com.backend.immilog.notice.application.services.query.NoticeQueryService;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.exception.NoticeException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +17,20 @@ import static com.backend.immilog.notice.exception.NoticeErrorCode.NOTICE_NOT_FO
 import static com.backend.immilog.notice.exception.NoticeErrorCode.NOT_AN_ADMIN_USER;
 
 @Service
-@RequiredArgsConstructor
 public class NoticeModifyService {
     private final NoticeQueryService noticeQueryService;
     private final NoticeCommandService noticeCommandService;
     private final TokenProvider tokenProvider;
+
+    public NoticeModifyService(
+            NoticeQueryService noticeQueryService,
+            NoticeCommandService noticeCommandService,
+            TokenProvider tokenProvider
+    ) {
+        this.noticeQueryService = noticeQueryService;
+        this.noticeCommandService = noticeCommandService;
+        this.tokenProvider = tokenProvider;
+    }
 
     @Transactional
     public void modifyNotice(

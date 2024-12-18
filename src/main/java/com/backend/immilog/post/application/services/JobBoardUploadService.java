@@ -5,16 +5,22 @@ import com.backend.immilog.post.application.services.command.JobBoardCommandServ
 import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class JobBoardUploadService {
     private final JobBoardCommandService jobBoardCommandService;
     private final CompanyInquiryService companyInquiryService;
+
+    public JobBoardUploadService(
+            JobBoardCommandService jobBoardCommandService,
+            CompanyInquiryService companyInquiryService
+    ) {
+        this.jobBoardCommandService = jobBoardCommandService;
+        this.companyInquiryService = companyInquiryService;
+    }
 
     public void uploadJobBoard(
             Long userSeq,

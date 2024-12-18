@@ -4,7 +4,6 @@ import com.backend.immilog.notification.applicaiton.command.DiscordCommand;
 import jakarta.json.Json;
 import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
@@ -14,12 +13,14 @@ import org.springframework.web.client.RestClient;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class DiscordGateway {
     private final RestClient restClient;
-
     @Value("${discord.webhookURL}")
     private String webHookUrl;
+
+    public DiscordGateway(RestClient restClient) {
+        this.restClient = restClient;
+    }
 
     public void send(DiscordCommand discordCommand) {
         try {

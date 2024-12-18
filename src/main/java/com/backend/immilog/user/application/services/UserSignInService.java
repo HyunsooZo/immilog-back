@@ -4,12 +4,10 @@ import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.user.application.command.UserSignInCommand;
 import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
-import com.backend.immilog.user.application.services.query.RefreshTokenQueryService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,17 +17,47 @@ import java.util.concurrent.TimeUnit;
 
 import static com.backend.immilog.user.exception.UserErrorCode.*;
 
-@RequiredArgsConstructor
 @Service
 public class UserSignInService {
+    final int REFRESH_TOKEN_EXPIRE_TIME = 5 * 29 * 24 * 60;
+    final String TOKEN_PREFIX = "Refresh: ";
     private final UserQueryService userQueryService;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final RefreshTokenQueryService refreshTokenQueryService;
     private final RefreshTokenCommandService refreshTokenCommandService;
+    public UserSignInService(
+            UserQueryService userQueryService,
+            PasswordEncoder passwordEncoder,
+            TokenProvider tokenProvider,
+            RefreshTokenCommandService refreshTokenCommandService
+    ) {
+        this.userQueryService = userQueryService;
+        this.passwordEncoder = passwordEncoder;
+        this.tokenProvider = tokenProvider;
+        this.refreshTokenCommandService = refreshTokenCommandService;
+    }
 
-    final int REFRESH_TOKEN_EXPIRE_TIME = 5 * 29 * 24 * 60;
-    final String TOKEN_PREFIX = "Refresh: ";
+    private static Pair<String, String> fetchLocation(CompletableFuture<Pair<String, String>> country) {
+        return country
+                .orTimeout(5, TimeUnit.SECONDS) // 5초 이내에 완료되지 않으면 타임아웃
+                .exceptionally(throwable -> Pair.of("Error", "Timeout"))
+                .join();
+    }
+
+    private static boolean isLocationMatch(
+            User user,
+            Pair<String, String> countryPair
+    ) {
+        String country = user.getCountry().koreanName();
+        String region = user.getRegion();
+        return country.equals(countryPair.getFirst()) && region.equals(countryPair.getSecond());
+    }
+
+    private static void validateIfUserStateIsActive(User user) {
+        if (!user.getUserStatus().equals(UserStatus.ACTIVE)) {
+            throw new UserException(USER_STATUS_NOT_ACTIVE);
+        }
+    }
 
     public UserSignInResult signIn(
             UserSignInCommand userSignInCommand,
@@ -89,28 +117,6 @@ public class UserSignInService {
                 refreshToken,
                 isLocationMatch
         );
-    }
-
-    private static Pair<String, String> fetchLocation(CompletableFuture<Pair<String, String>> country) {
-        return country
-                .orTimeout(5, TimeUnit.SECONDS) // 5초 이내에 완료되지 않으면 타임아웃
-                .exceptionally(throwable -> Pair.of("Error", "Timeout"))
-                .join();
-    }
-
-    private static boolean isLocationMatch(
-            User user,
-            Pair<String, String> countryPair
-    ) {
-        String country = user.getCountry().getCountryKoreanName();
-        String region = user.getRegion();
-        return country.equals(countryPair.getFirst()) && region.equals(countryPair.getSecond());
-    }
-
-    private static void validateIfUserStateIsActive(User user) {
-        if (!user.getUserStatus().equals(UserStatus.ACTIVE)) {
-            throw new UserException(USER_STATUS_NOT_ACTIVE);
-        }
     }
 
     private void validateIfPasswordsMatches(

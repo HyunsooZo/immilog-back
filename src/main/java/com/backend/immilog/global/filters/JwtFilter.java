@@ -4,7 +4,6 @@ import com.backend.immilog.global.security.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.PatternMatchUtils;
@@ -14,11 +13,9 @@ import java.io.IOException;
 
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
-@AllArgsConstructor
 @Component
 public class JwtFilter extends OncePerRequestFilter {
 
-    private JwtProvider jwtProvider;
     private static final String[] ALL_WHITELIST = {
             "/api/v1/users/**",
             "/api/v1/locations",
@@ -29,6 +26,11 @@ public class JwtFilter extends OncePerRequestFilter {
             "/swagger-resources/**",
             "/webjars/**"
     };
+    private final JwtProvider jwtProvider;
+
+    public JwtFilter(JwtProvider jwtProvider) {
+        this.jwtProvider = jwtProvider;
+    }
 
     private boolean isFilterCheck(
             String requestURI
@@ -47,7 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
     }
 
     @Override
-    protected void doFilterInternal(
+    public void doFilterInternal(
             HttpServletRequest request,
             HttpServletResponse response,
             FilterChain chain

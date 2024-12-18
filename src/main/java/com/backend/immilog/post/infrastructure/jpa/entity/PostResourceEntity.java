@@ -4,13 +4,10 @@ import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.resource.PostResource;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @DynamicUpdate
 @Entity
 @Table(name = "post_resource")
@@ -24,10 +21,29 @@ public class PostResourceEntity {
     @Enumerated(EnumType.STRING)
     private PostType postType;
 
+    @Getter
     @Enumerated(EnumType.STRING)
     private ResourceType resourceType;
 
+    @Getter
     private String content;
+
+    protected PostResourceEntity() {}
+
+    @Builder
+    PostResourceEntity(
+            Long seq,
+            Long postSeq,
+            PostType postType,
+            ResourceType resourceType,
+            String content
+    ) {
+        this.seq = seq;
+        this.postSeq = postSeq;
+        this.postType = postType;
+        this.resourceType = resourceType;
+        this.content = content;
+    }
 
     public static PostResourceEntity from(
             PostResource postResource

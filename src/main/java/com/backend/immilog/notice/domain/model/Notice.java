@@ -15,13 +15,13 @@ import java.util.Optional;
 public class Notice {
     private final Long seq;
     private final Long userSeq;
+    private final List<NoticeCountry> targetCountries;
+    private final List<Long> readUsers;
+    private final LocalDateTime createdAt;
     private String title;
     private String content;
     private NoticeType type;
     private NoticeStatus status;
-    private final List<NoticeCountry> targetCountries;
-    private final List<Long> readUsers;
-    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder

@@ -7,7 +7,6 @@ import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.UserSignInService;
 import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.application.services.query.RefreshTokenQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.User;
@@ -36,7 +35,6 @@ class UserSignInServiceTest {
     private final UserQueryService userQueryService = mock(UserQueryService.class);
     private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
     private final TokenProvider tokenProvider = mock(TokenProvider.class);
-    private final RefreshTokenQueryService refreshTokenQueryService = mock(RefreshTokenQueryService.class);
     private final RefreshTokenCommandService refreshTokenCommandService = mock(RefreshTokenCommandService.class);
     private final CompletableFuture<Pair<String, String>> country = mock(CompletableFuture.class);
 
@@ -44,7 +42,6 @@ class UserSignInServiceTest {
             userQueryService,
             passwordEncoder,
             tokenProvider,
-            refreshTokenQueryService,
             refreshTokenCommandService
     );
 

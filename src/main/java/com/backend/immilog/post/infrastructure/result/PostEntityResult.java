@@ -10,7 +10,6 @@ import com.backend.immilog.post.infrastructure.jpa.entity.InteractionUserEntity;
 import com.backend.immilog.post.infrastructure.jpa.entity.PostEntity;
 import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.ToString;
 
 import java.util.ArrayList;
@@ -23,29 +22,28 @@ import static com.backend.immilog.post.domain.enums.ResourceType.ATTACHMENT;
 import static com.backend.immilog.post.domain.enums.ResourceType.TAG;
 
 @Getter
-@Setter
 @ToString
 public class PostEntityResult {
-    private Long seq;
-    private String title;
-    private String content;
-    private Long userSeq;
-    private String userProfileUrl;
-    private String userNickName;
-    private List<CommentEntityResult> comments;
-    private Long commentCount;
-    private Long viewCount;
-    private Long likeCount;
-    private List<String> tags;
-    private List<String> attachments;
-    private List<Long> likeUsers;
-    private List<Long> bookmarkUsers;
-    private String isPublic;
-    private String country;
-    private String region;
-    private Categories category;
-    private PostStatus status;
-    private String createdAt;
+    private final Long seq;
+    private final String title;
+    private final String content;
+    private final Long userSeq;
+    private final String userProfileUrl;
+    private final String userNickName;
+    private final List<CommentEntityResult> comments;
+    private final Long commentCount;
+    private final Long viewCount;
+    private final Long likeCount;
+    private final List<String> tags;
+    private final List<String> attachments;
+    private final List<Long> likeUsers;
+    private final List<Long> bookmarkUsers;
+    private final String isPublic;
+    private final String country;
+    private final String region;
+    private final Categories category;
+    private final PostStatus status;
+    private final String createdAt;
 
     public PostEntityResult(
             PostEntity postEntity,

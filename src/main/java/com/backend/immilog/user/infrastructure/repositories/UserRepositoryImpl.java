@@ -4,15 +4,17 @@ import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.domain.repositories.UserRepository;
 import com.backend.immilog.user.infrastructure.jpa.entity.UserEntity;
 import com.backend.immilog.user.infrastructure.jpa.repositories.UserJpaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
+
+    public UserRepositoryImpl(UserJpaRepository userJpaRepository) {
+        this.userJpaRepository = userJpaRepository;
+    }
 
     @Override
     public Optional<User> getByEmail(

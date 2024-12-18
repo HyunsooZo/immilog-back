@@ -5,13 +5,9 @@ import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.post.domain.model.post.JobBoardCompany;
 import com.backend.immilog.post.domain.model.post.PostInfo;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @DynamicUpdate
 @Entity
 @Table(name = "job_board")
@@ -27,6 +23,21 @@ public class JobBoardEntity extends BaseDateEntity {
 
     @Embedded
     private JobBoardCompany jobBoardCompany;
+
+    protected JobBoardEntity() {}
+
+    @Builder
+    JobBoardEntity(
+            Long seq,
+            Long userSeq,
+            PostInfo postInfo,
+            JobBoardCompany jobBoardCompany
+    ) {
+        this.seq = seq;
+        this.userSeq = userSeq;
+        this.postInfo = postInfo;
+        this.jobBoardCompany = jobBoardCompany;
+    }
 
     public static JobBoardEntity from(
             JobBoard jobBoard

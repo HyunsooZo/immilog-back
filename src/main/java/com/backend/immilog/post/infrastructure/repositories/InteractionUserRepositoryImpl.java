@@ -6,16 +6,18 @@ import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.InteractionUserEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.InteractionUserJpaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Repository
 public class InteractionUserRepositoryImpl implements InteractionUserRepository {
     private final InteractionUserJpaRepository interactionUserJpaRepository;
+
+    public InteractionUserRepositoryImpl(InteractionUserJpaRepository interactionUserJpaRepository) {
+        this.interactionUserJpaRepository = interactionUserJpaRepository;
+    }
 
     @Override
     public List<InteractionUser> getByPostSeq(Long postSeq) {

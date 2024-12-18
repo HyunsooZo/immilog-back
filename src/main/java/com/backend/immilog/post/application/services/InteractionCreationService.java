@@ -6,7 +6,6 @@ import com.backend.immilog.post.application.services.query.InteractionUserQueryS
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -16,12 +15,30 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class InteractionCreationService {
+    final String LIKE_LOCK_KEY = "interaction : ";
     private final InteractionUserCommandService interactionUserCommandService;
     private final InteractionUserQueryService interactionUserQueryService;
     private final RedisDistributedLock redisDistributedLock;
-    final String LIKE_LOCK_KEY = "interaction : ";
+
+    public InteractionCreationService(
+            InteractionUserCommandService interactionUserCommandService,
+            InteractionUserQueryService interactionUserQueryService,
+            RedisDistributedLock redisDistributedLock
+    ) {
+        this.interactionUserCommandService = interactionUserCommandService;
+        this.interactionUserQueryService = interactionUserQueryService;
+        this.redisDistributedLock = redisDistributedLock;
+    }
+
+    private static InteractionUser createInteractionUser(
+            Long userSeq,
+            Long postSeq,
+            PostType postType,
+            InteractionType interactionType
+    ) {
+        return InteractionUser.of(postSeq, postType, interactionType, userSeq);
+    }
 
     @Async
     @Transactional
@@ -72,15 +89,6 @@ public class InteractionCreationService {
                 redisDistributedLock.releaseLock(lockKey, subKey);
             }
         }
-    }
-
-    private static InteractionUser createInteractionUser(
-            Long userSeq,
-            Long postSeq,
-            PostType postType,
-            InteractionType interactionType
-    ) {
-        return InteractionUser.of(postSeq, postType, interactionType, userSeq);
     }
 
     private Optional<InteractionUser> getInteractionUser(

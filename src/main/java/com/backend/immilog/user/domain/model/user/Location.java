@@ -7,10 +7,8 @@ import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Getter(AccessLevel.PROTECTED)
-@Setter(AccessLevel.PROTECTED)
 @Embeddable
 public class Location {
     @Enumerated(EnumType.STRING)

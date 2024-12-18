@@ -14,7 +14,6 @@ import com.backend.immilog.post.presentation.response.PostApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +22,24 @@ import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "PostEntity API", description = "게시물 관련 API")
 @RequestMapping("/api/v1/posts")
-@RequiredArgsConstructor
 @RestController
 public class PostController {
     private final PostUploadService postUploadService;
     private final PostUpdateService postUpdateService;
     private final PostDeleteService postDeleteService;
     private final PostInquiryService postInquiryService;
+
+    public PostController(
+            PostUploadService postUploadService,
+            PostUpdateService postUpdateService,
+            PostDeleteService postDeleteService,
+            PostInquiryService postInquiryService
+    ) {
+        this.postUploadService = postUploadService;
+        this.postUpdateService = postUpdateService;
+        this.postDeleteService = postDeleteService;
+        this.postInquiryService = postInquiryService;
+    }
 
     @PostMapping("/users/{userSeq}")
     @Operation(summary = "게시물 작성", description = "게시물을 작성합니다.")

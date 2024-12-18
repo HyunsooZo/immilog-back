@@ -16,14 +16,14 @@ public class Comment {
     private final Long userSeq;
     private final Long postSeq;
     private final Long parentSeq;
-    private int replyCount;
-    private Integer likeCount;
     private final String content;
     private final ReferenceType referenceType;
-    private PostStatus status;
-    private List<Long> likeUsers;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private int replyCount;
+    private Integer likeCount;
+    private PostStatus status;
+    private List<Long> likeUsers;
 
     @Builder
     public Comment(

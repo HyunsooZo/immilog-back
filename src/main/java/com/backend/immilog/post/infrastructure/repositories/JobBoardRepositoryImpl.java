@@ -8,7 +8,6 @@ import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.post.domain.repositories.JobBoardRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.JobBoardEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.JobBoardJpaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -16,9 +15,12 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 public class JobBoardRepositoryImpl implements JobBoardRepository {
     private final JobBoardJpaRepository jobBoardJpaRepository;
+
+    public JobBoardRepositoryImpl(JobBoardJpaRepository jobBoardJpaRepository) {
+        this.jobBoardJpaRepository = jobBoardJpaRepository;
+    }
 
     @Override
     public void save(

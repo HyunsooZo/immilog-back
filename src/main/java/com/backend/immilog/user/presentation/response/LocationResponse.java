@@ -13,7 +13,7 @@ public record LocationResponse(
             String region
     ) {
         return LocationResponse.builder()
-                .country(country.getCountryName())
+                .country(country.name())
                 .region(region)
                 .build();
     }

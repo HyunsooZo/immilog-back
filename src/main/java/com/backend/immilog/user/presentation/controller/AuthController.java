@@ -6,7 +6,6 @@ import com.backend.immilog.user.application.services.UserSignInService;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,11 +16,18 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Tag(name = "Auth API", description = "인증 관련 API")
 @RequestMapping("/api/v1/auth")
-@RequiredArgsConstructor
 @RestController
 public class AuthController {
     private final LocationService locationService;
     private final UserSignInService userSignInService;
+
+    public AuthController(
+            LocationService locationService,
+            UserSignInService userSignInService
+    ) {
+        this.locationService = locationService;
+        this.userSignInService = userSignInService;
+    }
 
     @GetMapping("/user/{userSeq}")
     @Operation(summary = "사용자 정보 조회", description = "사용자 정보를 조회합니다.")

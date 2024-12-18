@@ -1,12 +1,7 @@
 package com.backend.immilog.post.domain.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
 import java.util.Arrays;
 
-@Getter
-@RequiredArgsConstructor
 public enum Countries {
     ALL("ALL", "ALL", "전체"),
     MALAYSIA("MALAYSIA", "MY", "말레이시아"),
@@ -33,21 +28,37 @@ public enum Countries {
     private final String countryCode;
     private final String countryKoreanName;
 
+    Countries(
+            String countryName,
+            String countryCode,
+            String countryKoreanName
+    ) {
+        this.countryName = countryName;
+        this.countryCode = countryCode;
+        this.countryKoreanName = countryKoreanName;
+    }
+
     public static Countries getCountry(
             String countryName
     ) {
         return Arrays.stream(Countries.values())
-                .filter(country -> country.getCountryName().equals(countryName))
+                .filter(country -> country.isCountryNameMatch(countryName))
                 .findFirst()
                 .orElse(null);
     }
 
-    public static Countries getCountryByKoreanName(
-            String countryKoreanName
-    ) {
+    public static Countries getCountryByKoreanName(String countryKoreanName) {
         return Arrays.stream(Countries.values())
-                .filter(country -> country.getCountryKoreanName().equals(countryKoreanName))
+                .filter(country -> country.isKoreanNameMatch(countryKoreanName))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public boolean isCountryNameMatch(String countryName) {
+        return this.countryName.equals(countryName);
+    }
+
+    public boolean isKoreanNameMatch(String koreanName) {
+        return this.countryKoreanName.equals(koreanName);
     }
 }

@@ -6,7 +6,6 @@ import com.backend.immilog.post.infrastructure.result.CommentEntityResult;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
-import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -18,13 +17,53 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-@RequiredArgsConstructor
 public class CommentJdbcRepository {
     private final JdbcClient jdbcClient;
 
-    public List<CommentEntityResult> getComments(
-            Long postSeq
-    ) {
+    public CommentJdbcRepository(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
+    }
+
+    private static CommentEntityResult getCommentEntityResult(
+            ResultSet rs,
+            long commentSeq,
+            UserInfoResult user
+    ) throws SQLException {
+        String prefix = commentSeq == rs.getLong("c.seq") ? "c" : "cc";
+        return CommentEntityResult.builder()
+                .seq(commentSeq)
+                .user(user)
+                .content(rs.getString(prefix + ".content"))
+                .replies(new ArrayList<>())
+                .upVotes(rs.getInt(prefix + ".upVotes"))
+                .downVotes(rs.getInt(prefix + ".downVotes"))
+                .replyCount(rs.getInt(prefix + ".replyCount"))
+                .likeUsers(new ArrayList<>())
+                .status(PostStatus.valueOf(rs.getString(prefix + ".status")))
+                .createdAt(rs.getTimestamp(prefix + ".createdAt").toLocalDateTime())
+                .build();
+    }
+
+    private static UserInfoResult getUserInfoResult(
+            ResultSet rs,
+            String prefix
+    ) throws SQLException {
+        return new UserInfoResult(
+                rs.getLong(prefix + ".seq"),
+                rs.getString(prefix + ".nickName"),
+                rs.getString(prefix + ".email"),
+                rs.getString(prefix + ".profileImage"),
+                rs.getLong(prefix + ".reportedCount"),
+                rs.getDate(prefix + ".reportedDate"),
+                UserCountry.valueOf(rs.getString(prefix + ".country")),
+                UserCountry.valueOf(rs.getString(prefix + ".interestCountry")),
+                rs.getString(prefix + ".region"),
+                UserRole.valueOf(rs.getString(prefix + ".userRole")),
+                UserStatus.valueOf(rs.getString(prefix + ".userStatus"))
+        );
+    }
+
+    public List<CommentEntityResult> getComments(Long postSeq) {
         String sql = """
                 SELECT c.*, u.*, cc.*, cu.*
                 FROM comment c
@@ -61,44 +100,5 @@ public class CommentJdbcRepository {
             }
         } while (rs.next());
         return new ArrayList<>(commentMap.values());
-    }
-
-    private static CommentEntityResult getCommentEntityResult(
-            ResultSet rs,
-            long commentSeq,
-            UserInfoResult user
-    ) throws SQLException {
-        String prefix = commentSeq == rs.getLong("c.seq") ? "c" : "cc";
-        return new CommentEntityResult(
-                commentSeq,
-                user,
-                rs.getString(prefix + ".content"),
-                new ArrayList<>(),
-                rs.getInt(prefix + ".upVotes"),
-                rs.getInt(prefix + ".downVotes"),
-                rs.getInt(prefix + ".replyCount"),
-                new ArrayList<>(),
-                PostStatus.valueOf(rs.getString(prefix + ".status")),
-                rs.getTimestamp(prefix + ".createdAt").toLocalDateTime()
-        );
-    }
-
-    private static UserInfoResult getUserInfoResult(
-            ResultSet rs,
-            String prefix
-    ) throws SQLException {
-        return new UserInfoResult(
-                rs.getLong(prefix + ".seq"),
-                rs.getString(prefix + ".nickName"),
-                rs.getString(prefix + ".email"),
-                rs.getString(prefix + ".profileImage"),
-                rs.getLong(prefix + ".reportedCount"),
-                rs.getDate(prefix + ".reportedDate"),
-                UserCountry.valueOf(rs.getString(prefix + ".country")),
-                UserCountry.valueOf(rs.getString(prefix + ".interestCountry")),
-                rs.getString(prefix + ".region"),
-                UserRole.valueOf(rs.getString(prefix + ".userRole")),
-                UserStatus.valueOf(rs.getString(prefix + ".userStatus"))
-        );
     }
 }

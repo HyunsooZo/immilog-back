@@ -14,16 +14,16 @@ import java.util.Optional;
 @Getter
 public class User {
     private final Long seq;
-    private String nickName;
     private final String email;
+    private final UserRole userRole;
+    private final ReportInfo reportInfo;
+    private final LocalDateTime createdAt;
+    private String nickName;
     private String password;
     private String imageUrl;
     private UserStatus userStatus;
-    private final UserRole userRole;
     private UserCountry interestCountry;
     private Location location;
-    private final ReportInfo reportInfo;
-    private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
     @Builder
@@ -60,9 +60,9 @@ public class User {
             String encodedPassword
     ) {
         UserCountry interestCountry = command.interestCountry() != null
-                ? UserCountry.getCountry(command.interestCountry())
+                ? UserCountry.valueOf(command.interestCountry())
                 : null;
-        UserCountry country = UserCountry.getCountry(command.country());
+        UserCountry country = UserCountry.valueOf(command.country());
 
         return new User(
                 null,
@@ -150,8 +150,8 @@ public class User {
     }
 
     public void increaseReportedCount() {
-        this.reportInfo.setReportedCount(this.reportInfo.getReportedCount() + 1);
-        this.reportInfo.setReportedDate(Date.valueOf(LocalDateTime.now().toLocalDate()));
+        this.reportInfo.increaseReportCount();
+        this.reportInfo.updateReportedDate();
     }
 
     public boolean hasSameSeq(Long userSeq) {

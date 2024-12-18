@@ -1,10 +1,8 @@
 package com.backend.immilog.notice.domain.model.enums;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public enum NoticeCountry {
     ALL("ALL", "전체"),
     MALAYSIA("MY", "말레이시아"),
@@ -29,4 +27,12 @@ public enum NoticeCountry {
 
     private final String countryCode;
     private final String countryKoreanName;
+
+    NoticeCountry(
+            String countryCode,
+            String countryKoreanName
+    ) {
+        this.countryCode = countryCode;
+        this.countryKoreanName = countryKoreanName;
+    }
 }

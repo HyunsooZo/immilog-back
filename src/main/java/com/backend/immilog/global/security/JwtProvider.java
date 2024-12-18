@@ -9,7 +9,6 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,25 +23,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class JwtProvider implements TokenProvider {
+    private static final long ONE_DAY = 24 * 60 * 60 * 1000L;
+    private static final long SIX_MONTH = 6 * 30 * 24 * 60 * 60 * 1000L;
     private final UserDetailsServiceImpl userDetailsService;
-
     @Value("${token.issuer}")
     private String issuer;
     private SecretKey secretKey;
-
     @Value("${token.secret-key}")
     private String secretKeyString;
+
+    public JwtProvider(UserDetailsServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     @PostConstruct
     public void init() {
         secretKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKeyString));
     }
-
-    private static final long ONE_DAY = 24 * 60 * 60 * 1000L;
-    private static final long SIX_MONTH = 6 * 30 * 24 * 60 * 60 * 1000L;
 
     @Override
     public String issueAccessToken(
@@ -55,7 +54,7 @@ public class JwtProvider implements TokenProvider {
                 Jwts.claims().setSubject(id.toString());
         claims.put("email", email);
         claims.put("userRole", userRole);
-        claims.put("country", country.getCountryCode());
+        claims.put("country", country.countryCode());
 
         return buildJwt(claims);
     }

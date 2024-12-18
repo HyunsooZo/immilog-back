@@ -5,7 +5,7 @@ import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Builder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
@@ -16,10 +16,6 @@ import java.util.List;
 
 import static jakarta.persistence.GenerationType.IDENTITY;
 
-@Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Builder
 @DynamicUpdate
 @Entity
 @Table(name = "notice")
@@ -30,16 +26,12 @@ public class NoticeEntity {
 
     private Long userSeq;
 
-    @Setter
     private String title;
 
-    @Setter
     private String content;
 
-    @Setter
     private NoticeType type;
 
-    @Setter
     private NoticeStatus status;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -50,12 +42,34 @@ public class NoticeEntity {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<Long> readUsers;
 
-    @Setter
     @CreatedDate
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    protected NoticeEntity() {}
+
+    @Builder
+    NoticeEntity(
+            Long seq,
+            Long userSeq,
+            String title,
+            String content,
+            NoticeType type,
+            NoticeStatus status,
+            List<NoticeCountry> targetCountries,
+            List<Long> readUsers
+    ) {
+        this.seq = seq;
+        this.userSeq = userSeq;
+        this.title = title;
+        this.content = content;
+        this.type = type;
+        this.status = status;
+        this.targetCountries = targetCountries;
+        this.readUsers = readUsers;
+    }
 
     public static NoticeEntity from(
             Notice notice
@@ -75,16 +89,16 @@ public class NoticeEntity {
     public Notice toDomain(
     ) {
         return Notice.builder()
-                .seq(this.getSeq())
-                .userSeq(this.getUserSeq())
-                .title(this.getTitle())
-                .content(this.getContent())
-                .type(this.getType())
-                .status(this.getStatus())
-                .targetCountries(this.getTargetCountries())
-                .readUsers(this.getReadUsers())
-                .createdAt(this.getCreatedAt())
-                .updatedAt(this.getUpdatedAt())
+                .seq(this.seq)
+                .userSeq(this.userSeq)
+                .title(this.title)
+                .content(this.content)
+                .type(this.type)
+                .status(this.status)
+                .targetCountries(this.targetCountries)
+                .readUsers(this.readUsers)
+                .createdAt(this.createdAt)
+                .updatedAt(this.updatedAt)
                 .build();
     }
 }

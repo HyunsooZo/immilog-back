@@ -5,13 +5,13 @@ import com.backend.immilog.user.domain.enums.Industry;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter(AccessLevel.PROTECTED)
-@Setter(AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
 public class JobBoardCompany {
     private Long companySeq;
@@ -30,6 +30,8 @@ public class JobBoardCompany {
     private String companyAddress;
     private String companyHomepage;
     private String companyLogo;
+
+    protected JobBoardCompany() {}
 
     @Builder
     JobBoardCompany(

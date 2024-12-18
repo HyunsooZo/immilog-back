@@ -9,7 +9,6 @@ import com.backend.immilog.post.presentation.request.JobBoardUploadRequest;
 import com.backend.immilog.post.presentation.response.PostApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,12 +17,21 @@ import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "JobBoard API", description = "구인구직 업로드 관련 API")
 @RequestMapping("/api/v1/job-boards")
-@RequiredArgsConstructor
 @RestController
 public class JobBoardController {
     private final JobBoardUploadService jobBoardUploadService;
     private final JobBoardInquiryService jobBoardInquiryService;
     private final JobBoardUpdateService jobBoardUpdateService;
+
+    public JobBoardController(
+            JobBoardUploadService jobBoardUploadService,
+            JobBoardInquiryService jobBoardInquiryService,
+            JobBoardUpdateService jobBoardUpdateService
+    ) {
+        this.jobBoardUploadService = jobBoardUploadService;
+        this.jobBoardInquiryService = jobBoardInquiryService;
+        this.jobBoardUpdateService = jobBoardUpdateService;
+    }
 
     @PostMapping("/users/{userSeq}")
     @Operation(summary = "구인구직 게시글 업로드", description = "구인구직 게시글을 업로드합니다.")

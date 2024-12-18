@@ -12,7 +12,6 @@ import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.post.domain.model.post.JobBoardCompany;
 import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.exception.PostException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,12 +24,23 @@ import static com.backend.immilog.post.exception.PostErrorCode.*;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class JobBoardUpdateService {
     private final JobBoardQueryService jobBoardQueryService;
     private final JobBoardCommandService jobBoardCommandService;
     private final PostResourceCommandService postResourceCommandService;
     private final BulkCommandService bulkInsertRepository;
+
+    public JobBoardUpdateService(
+            JobBoardQueryService jobBoardQueryService,
+            JobBoardCommandService jobBoardCommandService,
+            PostResourceCommandService postResourceCommandService,
+            BulkCommandService bulkInsertRepository
+    ) {
+        this.jobBoardQueryService = jobBoardQueryService;
+        this.jobBoardCommandService = jobBoardCommandService;
+        this.postResourceCommandService = postResourceCommandService;
+        this.bulkInsertRepository = bulkInsertRepository;
+    }
 
     @Transactional
     public void updateJobBoard(
@@ -52,7 +62,7 @@ public class JobBoardUpdateService {
         JobBoardResult jobBoardResult = getJobBoard(jobBoardSeq);
         verifyIfUserIsOwner(userSeq, jobBoardResult);
         JobBoard jobBoard = jobBoardResult.toDomain();
-        jobBoard.toDeleteDomain();
+        jobBoard.delete();
         jobBoardCommandService.save(jobBoard);
     }
 

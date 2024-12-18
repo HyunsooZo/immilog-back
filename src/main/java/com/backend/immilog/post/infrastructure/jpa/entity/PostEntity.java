@@ -6,12 +6,9 @@ import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.domain.model.post.PostUserInfo;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Entity
 @Table(name = "post")
@@ -33,6 +30,8 @@ public class PostEntity extends BaseDateEntity {
     private String isPublic;
 
     private Long commentCount;
+
+    protected PostEntity() {}
 
     @Builder
     PostEntity(

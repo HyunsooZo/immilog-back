@@ -4,14 +4,9 @@ import com.backend.immilog.global.model.BaseDateEntity;
 import com.backend.immilog.user.domain.enums.ReportReason;
 import com.backend.immilog.user.domain.model.report.Report;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Entity
 public class ReportEntity extends BaseDateEntity {
@@ -24,6 +19,8 @@ public class ReportEntity extends BaseDateEntity {
 
     @Enumerated(EnumType.STRING)
     private ReportReason reason;
+
+    protected ReportEntity() {}
 
     @Builder
     ReportEntity(

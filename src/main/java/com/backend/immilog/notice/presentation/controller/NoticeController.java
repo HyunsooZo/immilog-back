@@ -9,7 +9,6 @@ import com.backend.immilog.notice.presentation.request.NoticeRegisterRequest;
 import com.backend.immilog.notice.presentation.response.NoticeApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -18,12 +17,21 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Notice API", description = "공지사항 관련 API")
 @RequestMapping("/api/v1/notices")
-@RequiredArgsConstructor
 @RestController
 public class NoticeController {
     private final NoticeCreateService noticeRegisterService;
     private final NoticeInquiryService noticeInquiryService;
     private final NoticeModifyService noticeModifyService;
+
+    public NoticeController(
+            NoticeCreateService noticeRegisterService,
+            NoticeInquiryService noticeInquiryService,
+            NoticeModifyService noticeModifyService
+    ) {
+        this.noticeRegisterService = noticeRegisterService;
+        this.noticeInquiryService = noticeInquiryService;
+        this.noticeModifyService = noticeModifyService;
+    }
 
     @PostMapping
     @Operation(summary = "공지사항 등록", description = "공지사항을 등록합니다.")

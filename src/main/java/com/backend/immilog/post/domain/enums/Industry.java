@@ -1,10 +1,5 @@
 package com.backend.immilog.post.domain.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
 public enum Industry {
     ALL("all"),
     IT("IT"),
@@ -18,4 +13,8 @@ public enum Industry {
     ETC("기타");
 
     private final String industry;
+
+    Industry(String industry) {
+        this.industry = industry;
+    }
 }

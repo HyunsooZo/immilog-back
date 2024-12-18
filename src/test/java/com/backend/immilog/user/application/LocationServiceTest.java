@@ -1,5 +1,6 @@
 package com.backend.immilog.user.application;
 
+import com.backend.immilog.global.enums.GlobalCountry;
 import com.backend.immilog.user.application.services.LocationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,7 +14,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.backend.immilog.global.enums.GlobalCountry.SOUTH_KOREA;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -53,7 +53,7 @@ class LocationServiceTest {
         Pair<String, String> result = resultFuture.join();
 
         // then
-        assertThat(result.getFirst()).isEqualTo(SOUTH_KOREA.getCountryKoreanName());
+        assertThat(result.getFirst()).isEqualTo(GlobalCountry.SOUTH_KOREA.koreanName());
         assertThat(result.getSecond()).isEqualTo("서울특별시");
     }
 

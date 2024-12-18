@@ -1,6 +1,5 @@
 package com.backend.immilog.global.infrastructure.persistence.repository;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Repository;
@@ -9,9 +8,12 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 @Repository
-@RequiredArgsConstructor
 public class RedisDataRepository implements DataRepository {
     private final RedisTemplate<String, String> stringRedisTemplate;
+
+    public RedisDataRepository(RedisTemplate<String, String> stringRedisTemplate) {
+        this.stringRedisTemplate = stringRedisTemplate;
+    }
 
     @Override
     public void save(

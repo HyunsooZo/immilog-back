@@ -22,17 +22,14 @@ class SecurityConfigTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
         mockHttpSecurityChain(httpSecurity);
     }
 
     private void mockHttpSecurityChain(HttpSecurity http) throws Exception {
-        // HttpSecurity 체인 메서드 모킹
         doReturn(http).when(http).csrf(any());
         doReturn(http).when(http).cors(any());
         doReturn(http).when(http).headers(any());
-        doReturn(http).when(http).addFilterBefore(any(JwtFilter.class),
-                eq(UsernamePasswordAuthenticationFilter.class));
+        doReturn(http).when(http).addFilterBefore(any(JwtFilter.class), eq(UsernamePasswordAuthenticationFilter.class));
         doReturn(http).when(http).authorizeHttpRequests(any());
         doReturn(mock(SecurityFilterChain.class)).when(http).build();
     }

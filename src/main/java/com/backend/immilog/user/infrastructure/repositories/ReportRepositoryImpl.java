@@ -4,13 +4,15 @@ import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.repositories.ReportRepository;
 import com.backend.immilog.user.infrastructure.jpa.entity.ReportEntity;
 import com.backend.immilog.user.infrastructure.jpa.repositories.ReportJpaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 @Repository
-@RequiredArgsConstructor
 public class ReportRepositoryImpl implements ReportRepository {
     private final ReportJpaRepository reportJpaRepository;
+
+    public ReportRepositoryImpl(ReportJpaRepository reportJpaRepository) {
+        this.reportJpaRepository = reportJpaRepository;
+    }
 
     @Override
     public boolean existsByUserSeqNumbers(

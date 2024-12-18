@@ -1,19 +1,20 @@
 package com.backend.immilog.global.infrastructure.persistence.lock;
 
 import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class RedisDistributedLock {
-    private final DataRepository dataRepository;
     final int MAX_RETRY = 3;
     final int EXPIRE_TIME_IN_SECONDS = 10;
     final long RETRY_DELAY_MILLIS = 500;
+    private final DataRepository dataRepository;
+    public RedisDistributedLock(DataRepository dataRepository) {
+        this.dataRepository = dataRepository;
+    }
 
     public boolean tryAcquireLock(
             String key,

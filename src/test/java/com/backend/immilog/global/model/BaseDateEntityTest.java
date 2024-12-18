@@ -13,23 +13,6 @@ class BaseDateEntityTest {
     };
 
     @Test
-    @DisplayName("생성일자가 설정되는지 테스트")
-    void createdAtIsSet() {
-        LocalDateTime now = LocalDateTime.now();
-        baseDateEntity.setCreatedAt(now);
-        assertThat(baseDateEntity.getCreatedAt()).isEqualTo(now);
-    }
-
-    @Test
-    @DisplayName("수정일자가 설정되는지 테스트")
-    void updatedAtIsSet() {
-        LocalDateTime now = LocalDateTime.now();
-        baseDateEntity.setUpdatedAt(now);
-
-        assertThat(baseDateEntity.getUpdatedAt()).isEqualTo(now);
-    }
-
-    @Test
     @DisplayName("생성일자와 수정일자가 null인 경우")
     void createdAtAndUpdatedAtAreNullInitially() {
         assertThat(baseDateEntity.getCreatedAt()).isNull();

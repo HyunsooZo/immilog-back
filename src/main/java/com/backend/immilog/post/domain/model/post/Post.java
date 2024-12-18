@@ -15,10 +15,10 @@ public class Post {
     private final PostUserInfo postUserInfo;
     private final PostInfo postInfo;
     private final Categories category;
-    private String isPublic;
-    private Long commentCount;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
+    private String isPublic;
+    private Long commentCount;
 
     @Builder
     public Post(
@@ -76,15 +76,15 @@ public class Post {
     }
 
     public void updateContent(String content) {
-        this.postInfo.setContent(content);
+        this.postInfo.updateContent(content);
     }
 
     public void updateTitle(String title) {
-        this.postInfo.setTitle(title);
+        this.postInfo.updateTitle(title);
     }
 
     public void delete() {
-        this.getPostInfo().setStatus(PostStatus.DELETED);
+        this.getPostInfo().delete();
     }
 
     public Long getUserSeq() {
@@ -92,8 +92,7 @@ public class Post {
     }
 
     public void increaseViewCount() {
-        Long viewCount = this.postInfo.getViewCount();
-        this.postInfo.setViewCount(viewCount + 1);
+        this.postInfo.increaseViewCount();
     }
 
     public String getTitle() {
@@ -112,9 +111,7 @@ public class Post {
         return this.postUserInfo.getNickname();
     }
 
-    public String getCountryName() {
-        return this.postInfo.getCountry().getCountryName();
-    }
+    public String getCountryName() {return this.postInfo.getCountry().name();}
 
     public String getRegion() {
         return this.postInfo.getRegion();

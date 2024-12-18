@@ -9,18 +9,24 @@ import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.PostEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.PostJpaRepository;
 import com.backend.immilog.post.infrastructure.querydsl.PostQueryDslRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Repository
 public class PostRepositoryImpl implements PostRepository {
     private final PostQueryDslRepository postQueryDslRepository;
     private final PostJpaRepository postJpaRepository;
+
+    public PostRepositoryImpl(
+            PostQueryDslRepository postQueryDslRepository,
+            PostJpaRepository postJpaRepository
+    ) {
+        this.postQueryDslRepository = postQueryDslRepository;
+        this.postJpaRepository = postJpaRepository;
+    }
 
     @Override
     public Page<PostResult> getPosts(

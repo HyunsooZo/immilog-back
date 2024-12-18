@@ -8,7 +8,6 @@ import com.backend.immilog.user.presentation.response.UserApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +19,6 @@ import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "User API", description = "사용자 관련 API")
 @RequestMapping("/api/v1/users")
-@RequiredArgsConstructor
 @RestController
 public class UserController {
     private final UserSignUpService userSignUpService;
@@ -29,6 +27,22 @@ public class UserController {
     private final UserReportService userReportService;
     private final LocationService locationService;
     private final EmailService emailService;
+
+    public UserController(
+            UserSignUpService userSignUpService,
+            UserSignInService userSignInService,
+            UserInformationService userInformationService,
+            UserReportService userReportService,
+            LocationService locationService,
+            EmailService emailService
+    ) {
+        this.userSignUpService = userSignUpService;
+        this.userSignInService = userSignInService;
+        this.userInformationService = userInformationService;
+        this.userReportService = userReportService;
+        this.locationService = locationService;
+        this.emailService = emailService;
+    }
 
     @PostMapping
     @Operation(summary = "사용자 회원가입", description = "사용자 회원가입 진행")

@@ -10,7 +10,6 @@ import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.exception.PostException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -26,14 +25,27 @@ import static com.backend.immilog.post.exception.PostErrorCode.*;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class PostUpdateService {
+    final String VIEW_LOCK_KEY = "viewPost : ";
     private final PostQueryService postQueryService;
     private final PostCommandService postCommandService;
     private final PostResourceCommandService postResourceCommandService;
     private final BulkCommandService bulkCommandService;
     private final RedisDistributedLock redisDistributedLock;
-    final String VIEW_LOCK_KEY = "viewPost : ";
+
+    public PostUpdateService(
+            PostQueryService postQueryService,
+            PostCommandService postCommandService,
+            PostResourceCommandService postResourceCommandService,
+            BulkCommandService bulkCommandService,
+            RedisDistributedLock redisDistributedLock
+    ) {
+        this.postQueryService = postQueryService;
+        this.postCommandService = postCommandService;
+        this.postResourceCommandService = postResourceCommandService;
+        this.bulkCommandService = bulkCommandService;
+        this.redisDistributedLock = redisDistributedLock;
+    }
 
     @Transactional
     public void updatePost(

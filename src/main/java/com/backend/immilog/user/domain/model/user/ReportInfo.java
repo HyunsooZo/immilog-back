@@ -4,12 +4,10 @@ import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.sql.Date;
 
 @Getter(AccessLevel.PROTECTED)
-@Setter(AccessLevel.PROTECTED)
 @Embeddable
 public class ReportInfo {
     private Long reportedCount;
@@ -34,5 +32,13 @@ public class ReportInfo {
                 .reportedCount(reportedCount)
                 .reportedDate(reportedDate)
                 .build();
+    }
+
+    protected void increaseReportCount() {
+        this.reportedCount++;
+    }
+
+    public void updateReportedDate() {
+        this.reportedDate = new Date(System.currentTimeMillis());
     }
 }

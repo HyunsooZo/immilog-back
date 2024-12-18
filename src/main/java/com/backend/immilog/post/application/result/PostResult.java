@@ -35,6 +35,56 @@ public record PostResult(
         String createdAt,
         String keyword
 ) {
+    private static String extractKeyword(
+            String text,
+            String keyword,
+            int after,
+            int before
+    ) {
+
+        int keywordIndex = text.indexOf(keyword);
+        if (keywordIndex != -1) {
+            int start = Math.max(keywordIndex - before, 0);
+            int end = Math.min(keywordIndex + keyword.length() + after, text.length());
+            return text.substring(start, end);
+        } else {
+            return text.substring(0, Math.min(text.length(), after));
+        }
+    }
+
+    private static List<String> extractTags(
+            List<String> tags,
+            String keyword
+    ) {
+        if (tags.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<String> keywordTagList = tags.stream()
+                .filter(tag -> tag.contains(keyword))
+                .limit(1)
+                .toList();
+
+        boolean isAdded = !keywordTagList.isEmpty();
+
+        List<String> shuffledTags = tags.stream()
+                .filter(tag -> !keywordTagList.contains(tag)) // 이미 추가된 태그는 제외
+                .collect(Collectors.collectingAndThen(
+                        Collectors.toList(), collected -> {
+                            Collections.shuffle(collected);
+                            return collected.stream()
+                                    .limit(isAdded ?
+                                            Math.min(2, collected.size()) :
+                                            Math.min(3, collected.size())
+                                    ).toList();
+                        }
+                ));
+
+        List<String> result = new ArrayList<>(keywordTagList);
+        result.addAll(shuffledTags);
+        return result;
+    }
+
     public PostResult copyWithNewComments(
             List<CommentResult> comments
     ) {
@@ -92,56 +142,6 @@ public record PostResult(
                 .createdAt(this.createdAt())
                 .keyword(keyword)
                 .build();
-    }
-
-    private static String extractKeyword(
-            String text,
-            String keyword,
-            int after,
-            int before
-    ) {
-
-        int keywordIndex = text.indexOf(keyword);
-        if (keywordIndex != -1) {
-            int start = Math.max(keywordIndex - before, 0);
-            int end = Math.min(keywordIndex + keyword.length() + after, text.length());
-            return text.substring(start, end);
-        } else {
-            return text.substring(0, Math.min(text.length(), after));
-        }
-    }
-
-    private static List<String> extractTags(
-            List<String> tags,
-            String keyword
-    ) {
-        if (tags.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        List<String> keywordTagList = tags.stream()
-                .filter(tag -> tag.contains(keyword))
-                .limit(1)
-                .toList();
-
-        boolean isAdded = !keywordTagList.isEmpty();
-
-        List<String> shuffledTags = tags.stream()
-                .filter(tag -> !keywordTagList.contains(tag)) // 이미 추가된 태그는 제외
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(), collected -> {
-                            Collections.shuffle(collected);
-                            return collected.stream()
-                                    .limit(isAdded ?
-                                            Math.min(2, collected.size()) :
-                                            Math.min(3, collected.size())
-                                    ).toList();
-                        }
-                ));
-
-        List<String> result = new ArrayList<>(keywordTagList);
-        result.addAll(shuffledTags);
-        return result;
     }
 
 }

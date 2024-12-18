@@ -4,14 +4,9 @@ import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.company.Company;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicUpdate;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @DynamicUpdate
 @Entity
 public class CompanyEntity {
@@ -29,6 +24,8 @@ public class CompanyEntity {
     private String companyRegion;
     private String companyLogo;
     private Long companyManagerUserSeq;
+
+    protected CompanyEntity() {}
 
     @Builder
     CompanyEntity(

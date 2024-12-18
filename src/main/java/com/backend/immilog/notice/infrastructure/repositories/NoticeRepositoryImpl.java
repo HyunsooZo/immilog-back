@@ -7,7 +7,6 @@ import com.backend.immilog.notice.domain.repositories.NoticeRepository;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeEntity;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -17,10 +16,17 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
 public class NoticeRepositoryImpl implements NoticeRepository {
     private final NoticeJdbcRepository noticeJdbcRepository;
     private final NoticeJpaRepository noticeJpaRepository;
+
+    public NoticeRepositoryImpl(
+            NoticeJdbcRepository noticeJdbcRepository,
+            NoticeJpaRepository noticeJpaRepository
+    ) {
+        this.noticeJdbcRepository = noticeJdbcRepository;
+        this.noticeJpaRepository = noticeJpaRepository;
+    }
 
     @Override
     public Page<NoticeResult> getNotices(

@@ -1,23 +1,18 @@
 package com.backend.immilog.post.domain.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.backend.immilog.post.exception.PostErrorCode;
+import com.backend.immilog.post.exception.PostException;
 
-@Getter
-@RequiredArgsConstructor
+import java.util.Arrays;
+
 public enum PostType {
-    POST("post"),
-    JOB_BOARD("job_board");
+    POST,
+    JOB_BOARD;
 
-    private final String value;
-
-    public static PostType convertToEnum(
-            String postType
-    ) {
-        return switch (postType) {
-            case "post" -> POST;
-            case "job_board" -> JOB_BOARD;
-            default -> throw new IllegalStateException("Unexpected value: " + postType);
-        };
+    public static PostType convertToEnum(String postType) {
+        return Arrays.stream(PostType.values())
+                .filter(type -> postType.compareToIgnoreCase(type.name()) == 0)
+                .findFirst()
+                .orElseThrow(() -> new PostException(PostErrorCode.INVALID_POST_TYPE));
     }
 }

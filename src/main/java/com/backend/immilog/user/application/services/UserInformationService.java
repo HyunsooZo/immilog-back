@@ -8,7 +8,6 @@ import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,13 +20,24 @@ import static com.backend.immilog.global.enums.UserRole.ROLE_ADMIN;
 import static com.backend.immilog.user.exception.UserErrorCode.*;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
 public class UserInformationService {
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final PasswordEncoder passwordEncoder;
     private final ImageService imageService;
+
+    public UserInformationService(
+            UserQueryService userQueryService,
+            UserCommandService userCommandService,
+            PasswordEncoder passwordEncoder,
+            ImageService imageService
+    ) {
+        this.userQueryService = userQueryService;
+        this.userCommandService = userCommandService;
+        this.passwordEncoder = passwordEncoder;
+        this.imageService = imageService;
+    }
 
     public void updateInformation(
             Long userSeq,

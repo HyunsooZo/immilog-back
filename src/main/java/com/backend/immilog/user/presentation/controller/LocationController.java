@@ -6,7 +6,6 @@ import com.backend.immilog.user.presentation.response.LocationResponse;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,10 +17,13 @@ import static org.springframework.http.HttpStatus.OK;
 
 @Tag(name = "Location API", description = "위치 관련 API")
 @RequestMapping("/api/v1/locations")
-@RequiredArgsConstructor
 @RestController
 public class LocationController {
     private final LocationService locationService;
+
+    public LocationController(LocationService locationService) {
+        this.locationService = locationService;
+    }
 
     @GetMapping
     @Operation(summary = "위치 정보", description = "위치 정보를 가져옵니다.")

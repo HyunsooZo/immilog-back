@@ -1,10 +1,5 @@
 package com.backend.immilog.user.domain.enums;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-@Getter
-@RequiredArgsConstructor
 public enum ReportReason {
     INAPPROPRIATE_CONTENT("부적절한 내용"),
     SPAM("스팸 광고"),
@@ -16,4 +11,8 @@ public enum ReportReason {
     OTHER("기타");
 
     private final String reason;
+
+    ReportReason(String reason) {this.reason = reason;}
+
+    public String reason() {return reason;}
 }

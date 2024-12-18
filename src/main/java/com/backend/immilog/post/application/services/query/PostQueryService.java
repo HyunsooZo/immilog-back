@@ -7,7 +7,6 @@ import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.repositories.PostRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,9 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class PostQueryService {
     private final PostRepository postRepository;
+
+    public PostQueryService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+    }
 
     @Transactional(readOnly = true)
     public Optional<Post> getPostById(Long postSeq) {

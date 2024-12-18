@@ -1,6 +1,6 @@
-package com.backend.immilog.global.filters;
+package com.backend.immilog.global.security;
 
-import com.backend.immilog.global.security.JwtProvider;
+import com.backend.immilog.global.filters.JwtFilter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletResponse;
