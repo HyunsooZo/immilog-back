@@ -31,7 +31,7 @@ public class InteractionUserEntity {
     protected InteractionUserEntity() {}
 
     @Builder
-    InteractionUserEntity(
+    protected InteractionUserEntity(
             Long seq,
             Long postSeq,
             PostType postType,
@@ -45,9 +45,7 @@ public class InteractionUserEntity {
         this.userSeq = userSeq;
     }
 
-    public static InteractionUserEntity from(
-            InteractionUser interactionUser
-    ) {
+    public static InteractionUserEntity from(InteractionUser interactionUser) {
         return InteractionUserEntity.builder()
                 .postSeq(interactionUser.getPostSeq())
                 .postType(interactionUser.getPostType())

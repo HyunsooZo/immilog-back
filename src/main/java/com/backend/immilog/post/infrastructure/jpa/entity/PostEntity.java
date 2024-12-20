@@ -34,7 +34,7 @@ public class PostEntity extends BaseDateEntity {
     protected PostEntity() {}
 
     @Builder
-    PostEntity(
+    protected PostEntity(
             Long seq,
             PostUserInfo postUserInfo,
             PostInfo postInfo,
@@ -50,9 +50,7 @@ public class PostEntity extends BaseDateEntity {
         this.commentCount = commentCount;
     }
 
-    public static PostEntity from(
-            Post post
-    ) {
+    public static PostEntity from(Post post) {
         return PostEntity.builder()
                 .seq(post.getSeq())
                 .postUserInfo(post.getPostUserInfo())

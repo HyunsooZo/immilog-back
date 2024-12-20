@@ -26,7 +26,7 @@ public class ImageEntity {
     protected ImageEntity() {}
 
     @Builder
-    ImageEntity(
+    protected ImageEntity(
             Long seq,
             String path,
             ImageType imageType,

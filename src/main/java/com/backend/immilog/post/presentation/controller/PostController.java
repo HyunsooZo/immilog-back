@@ -18,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "PostEntity API", description = "게시물 관련 API")
@@ -128,6 +130,20 @@ public class PostController {
             @PathVariable("page") Integer page
     ) {
         Page<PostResult> posts = postInquiryService.getUserPosts(userSeq, page);
+        return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
+    }
+
+    @GetMapping("/hot")
+    @Operation(summary = "인기 게시물 조회", description = "인기 게시물을 조회합니다.")
+    public ResponseEntity<PostApiResponse> getHotPosts() {
+        List<PostResult> posts = postInquiryService.getHotPosts();
+        return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
+    }
+
+    @GetMapping("/most-viewed")
+    @Operation(summary = "가장 많이 조회된 게시물 조회", description = "가장 많이 조회된 게시물을 조회합니다.")
+    public ResponseEntity<PostApiResponse> getMostViewedPosts() {
+        List<PostResult> posts = postInquiryService.getMostViewedPosts();
         return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
     }
 

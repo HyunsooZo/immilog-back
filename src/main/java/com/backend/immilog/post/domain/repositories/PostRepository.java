@@ -8,6 +8,8 @@ import com.backend.immilog.post.domain.model.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository {
@@ -35,4 +37,5 @@ public interface PostRepository {
     Optional<Post> getById(Long postSeq);
 
     Post save(Post postEntity);
+
 }

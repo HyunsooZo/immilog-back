@@ -46,7 +46,7 @@ public class CommentEntity extends BaseDateEntity {
     protected CommentEntity() {}
 
     @Builder
-    CommentEntity(
+    protected CommentEntity(
             Long seq,
             Long userSeq,
             Long postSeq,
@@ -70,9 +70,7 @@ public class CommentEntity extends BaseDateEntity {
         this.likeUsers = likeUsers;
     }
 
-    public static CommentEntity from(
-            Comment comment
-    ) {
+    public static CommentEntity from(Comment comment) {
         return CommentEntity.builder()
                 .seq(comment.getSeq())
                 .userSeq(comment.getUserSeq())

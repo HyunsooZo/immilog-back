@@ -23,7 +23,7 @@ public class ReportEntity extends BaseDateEntity {
     protected ReportEntity() {}
 
     @Builder
-    ReportEntity(
+    protected ReportEntity(
             Long seq,
             Long reportedUserSeq,
             Long reporterUserSeq,
@@ -37,9 +37,7 @@ public class ReportEntity extends BaseDateEntity {
         this.reason = reason;
     }
 
-    public static ReportEntity from(
-            Report report
-    ) {
+    public static ReportEntity from(Report report) {
         return ReportEntity.builder()
                 .reportedUserSeq(report.getReportedUserSeq())
                 .reporterUserSeq(report.getReporterUserSeq())

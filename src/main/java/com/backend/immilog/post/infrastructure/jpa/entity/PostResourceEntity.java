@@ -31,7 +31,7 @@ public class PostResourceEntity {
     protected PostResourceEntity() {}
 
     @Builder
-    PostResourceEntity(
+    protected PostResourceEntity(
             Long seq,
             Long postSeq,
             PostType postType,
@@ -45,9 +45,7 @@ public class PostResourceEntity {
         this.content = content;
     }
 
-    public static PostResourceEntity from(
-            PostResource postResource
-    ) {
+    public static PostResourceEntity from(PostResource postResource) {
         return PostResourceEntity.builder()
                 .postSeq(postResource.getPostSeq())
                 .postType(postResource.getPostType())

@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -216,8 +217,33 @@ public class PostQueryDslRepository {
             case CREATED_DATE -> post.createdAt.desc();
             case VIEW_COUNT -> post.postInfo.viewCount.desc();
             case LIKE_COUNT -> post.postInfo.likeCount.desc();
+            case COMMENT_COUNT -> post.commentCount.desc();
             default -> post.createdAt.desc();
         };
+    }
+
+    public List<PostResult> getPopularPosts(
+            LocalDateTime from,
+            LocalDateTime to,
+            SortingMethods sortingMethod
+    ) {
+        QPostEntity post = QPostEntity.postEntity;
+
+        BooleanBuilder predicateBuilder = new BooleanBuilder();
+        Predicate predicate = predicateBuilder.and(post.createdAt.between(from, to)).getValue();
+
+        OrderSpecifier<?> orderSpecifier = getOrderSpecifier(sortingMethod, post);
+
+        List<PostEntityResult> postEntityResults = fetchPosts(
+                post,
+                predicate,
+                orderSpecifier,
+                Pageable.ofSize(10)
+        );
+
+        return postEntityResults.stream()
+                .map(PostEntityResult::toPostResult)
+                .toList();
     }
 }
 

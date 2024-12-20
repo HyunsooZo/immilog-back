@@ -51,7 +51,7 @@ public class NoticeEntity {
     protected NoticeEntity() {}
 
     @Builder
-    NoticeEntity(
+    protected NoticeEntity(
             Long seq,
             Long userSeq,
             String title,
@@ -71,9 +71,7 @@ public class NoticeEntity {
         this.readUsers = readUsers;
     }
 
-    public static NoticeEntity from(
-            Notice notice
-    ) {
+    public static NoticeEntity from(Notice notice) {
         return NoticeEntity.builder()
                 .seq(notice.getSeq())
                 .userSeq(notice.getUserSeq())

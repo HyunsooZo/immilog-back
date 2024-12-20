@@ -1,8 +1,11 @@
 package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.application.command.PostUploadCommand;
+import com.backend.immilog.post.domain.enums.Badge;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.exception.PostErrorCode;
+import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.user.domain.model.user.User;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +21,7 @@ public class Post {
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private String isPublic;
+    private Badge badge;
     private Long commentCount;
 
     @Builder
@@ -28,6 +32,7 @@ public class Post {
             Categories category,
             String isPublic,
             Long commentCount,
+            Badge badge,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
@@ -37,6 +42,7 @@ public class Post {
         this.category = category;
         this.isPublic = isPublic;
         this.commentCount = commentCount;
+        this.badge = badge;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -123,6 +129,13 @@ public class Post {
 
     public Long getLikeCount() {
         return this.postInfo.getLikeCount();
+    }
+
+    public void updateBadge(Badge badge) {
+        if (badge == null) {
+            throw new PostException(PostErrorCode.BADGE_NOT_FOUND);
+        }
+        this.badge = badge;
     }
 
     public PostStatus getStatus() {

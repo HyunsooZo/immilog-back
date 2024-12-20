@@ -46,7 +46,7 @@ public class UserEntity extends BaseDateEntity {
     protected UserEntity() {}
 
     @Builder
-    UserEntity(
+    protected UserEntity(
             Long seq,
             String nickName,
             String email,

@@ -82,11 +82,17 @@ public class PostInquiryService {
         return postQueryService.getPostsByUserSeq(userSeq, pageable);
     }
 
-    private PostResult getPostDTO(
-            Long postSeq
-    ) {
+    private PostResult getPostDTO(Long postSeq) {
         return postQueryService
                 .getPost(postSeq)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+    }
+
+    public List<PostResult> getMostViewedPosts() {
+        return postQueryService.getPostsFromRedis("most_viewed_posts");
+    }
+
+    public List<PostResult> getHotPosts() {
+        return postQueryService.getPostsFromRedis("hot_posts");
     }
 }

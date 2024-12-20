@@ -27,7 +27,7 @@ public class JobBoardEntity extends BaseDateEntity {
     protected JobBoardEntity() {}
 
     @Builder
-    JobBoardEntity(
+    protected JobBoardEntity(
             Long seq,
             Long userSeq,
             PostInfo postInfo,
@@ -39,9 +39,7 @@ public class JobBoardEntity extends BaseDateEntity {
         this.jobBoardCompany = jobBoardCompany;
     }
 
-    public static JobBoardEntity from(
-            JobBoard jobBoard
-    ) {
+    public static JobBoardEntity from(JobBoard jobBoard) {
         return JobBoardEntity.builder()
                 .seq(jobBoard.getSeq())
                 .userSeq(jobBoard.getUserSeq())

@@ -28,7 +28,7 @@ public class CompanyEntity {
     protected CompanyEntity() {}
 
     @Builder
-    CompanyEntity(
+    protected CompanyEntity(
             Long seq,
             Industry industry,
             String companyName,
@@ -54,9 +54,7 @@ public class CompanyEntity {
         this.companyManagerUserSeq = companyManagerUserSeq;
     }
 
-    public static CompanyEntity from(
-            Company company
-    ) {
+    public static CompanyEntity from(Company company) {
         return CompanyEntity.builder()
                 .industry(company.getIndustry())
                 .companyName(company.getCompanyName())
