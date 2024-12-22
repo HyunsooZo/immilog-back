@@ -1,7 +1,7 @@
 package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.user.domain.enums.Industry;
+import com.backend.immilog.post.domain.enums.Industry;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

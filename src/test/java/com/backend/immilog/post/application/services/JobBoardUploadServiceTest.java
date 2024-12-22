@@ -6,6 +6,7 @@ import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
+import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
@@ -54,6 +55,7 @@ class JobBoardUploadServiceTest {
                 .companyName("company")
                 .companyCountry(UserCountry.SOUTH_KOREA)
                 .companyRegion("region")
+                .industry(Industry.IT)
                 .build();
 
         when(companyInquiryService.getCompany(userSeq)).thenReturn(company);

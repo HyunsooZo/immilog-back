@@ -46,7 +46,7 @@ public class JobBoard {
         );
         JobBoardCompany jobBoardCompany = JobBoardCompany.of(
                 company.getSeq(),
-                company.getIndustry(),
+                company.getIndustry().toPostIndustry(),
                 command.experience(),
                 command.deadline(),
                 command.salary(),

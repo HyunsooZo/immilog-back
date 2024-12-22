@@ -16,4 +16,8 @@ public enum Industry {
     Industry(String industry) {
         this.industry = industry;
     }
+
+    public com.backend.immilog.post.domain.enums.Industry toPostIndustry() {
+        return com.backend.immilog.post.domain.enums.Industry.valueOf(this.name());
+    }
 }

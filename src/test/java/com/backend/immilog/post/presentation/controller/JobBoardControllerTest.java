@@ -84,7 +84,7 @@ class JobBoardControllerTest {
                 .bookmarkUsers(Collections.emptyList())
                 .country(Countries.SOUTH_KOREA)
                 .region("region")
-                .industry(Industry.IT)
+                .industry(Industry.IT.toPostIndustry())
                 .deadline(now)
                 .experience(Experience.JUNIOR)
                 .salary("salary")
