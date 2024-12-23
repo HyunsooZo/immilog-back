@@ -1,14 +1,10 @@
 package com.backend.immilog.user.application;
 
-import com.backend.immilog.user.application.services.UserDetailsServiceImpl;
+import com.backend.immilog.global.security.UserDetailsServiceImpl;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.model.user.User;
-import com.backend.immilog.user.domain.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 

@@ -1,7 +1,9 @@
-package com.backend.immilog.user.application.services;
+package com.backend.immilog.global.security;
 
+import com.backend.immilog.global.exception.CommonErrorCode;
+import com.backend.immilog.global.exception.CustomException;
+import com.backend.immilog.global.exception.ErrorCode;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.exception.UserException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,8 +14,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
-
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserQueryService userQueryService;
@@ -23,13 +23,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(
-            String email
-    ) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         com.backend.immilog.user.domain.model.user.User userDomain = getUser(email);
 
-        List<GrantedAuthority> authorities =
-                new ArrayList<>(userDomain.getUserRole().getAuthorities());
+        List<GrantedAuthority> authorities = new ArrayList<>(userDomain.getUserRole().getAuthorities());
 
         return User.builder()
                 .username(userDomain.getEmail())
@@ -38,11 +35,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 .build();
     }
 
-    private com.backend.immilog.user.domain.model.user.User getUser(
-            String email
-    ) {
+    private com.backend.immilog.user.domain.model.user.User getUser(String email) {
         return userQueryService
                 .getUserByEmail(email)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
+                .orElseThrow(() -> new GlobalException(CommonErrorCode.USER_NOT_FOUND));
+    }
+
+    private static class GlobalException extends CustomException {
+        public GlobalException(ErrorCode errorCode) {
+            super(errorCode);
+        }
     }
 }

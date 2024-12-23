@@ -2,7 +2,6 @@ package com.backend.immilog.global.security;
 
 import com.backend.immilog.global.enums.GlobalCountry;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.user.application.services.UserDetailsServiceImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
