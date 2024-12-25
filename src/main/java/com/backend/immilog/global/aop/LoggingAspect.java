@@ -92,6 +92,7 @@ public class LoggingAspect {
 
     private String getRequestBody(HttpServletRequest request) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
+        request.setCharacterEncoding("UTF-8");
         try (BufferedReader reader = request.getReader()) {
             String line;
             while ((line = reader.readLine()) != null) {

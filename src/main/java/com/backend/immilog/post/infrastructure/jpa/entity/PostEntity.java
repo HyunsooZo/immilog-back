@@ -69,6 +69,8 @@ public class PostEntity extends BaseDateEntity {
                 .category(this.category)
                 .isPublic(this.isPublic)
                 .commentCount(this.commentCount)
+                .createdAt(this.getCreatedAt())
+                .updatedAt(this.getUpdatedAt())
                 .build();
     }
 }
