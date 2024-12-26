@@ -12,13 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.util.ContentCachingRequestWrapper;
+import org.springframework.web.util.ContentCachingResponseWrapper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.charset.StandardCharsets;
 
 @Aspect
 @Component
@@ -26,79 +24,78 @@ public class LoggingAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(LoggingAspect.class);
     private static final ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-    private static final String ANSI_RESET = "\u001B[0m";
-    private static final String ANSI_YELLOW = "\u001B[33m";
-    private static final String ANSI_GREEN = "\u001B[32m";
 
-    @Around("execution(* com.backend.immilog..*(..)) && @within(org.springframework.web.bind.annotation.RestController)")
-    public Object logRequestAndResponse(ProceedingJoinPoint joinPoint) throws Throwable {
-        HttpServletRequest request = getCurrentHttpRequest();
-        HttpServletResponse response = getCurrentHttpResponse();
+    @Around("within(@org.springframework.stereotype.Controller *) || " +
+            "within(@org.springframework.web.bind.annotation.RestController *)")
+    public Object logHttpRequests(ProceedingJoinPoint joinPoint) throws Throwable {
+        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+        HttpServletRequest request = attributes != null ? attributes.getRequest() : null;
+        HttpServletResponse response = attributes != null ? attributes.getResponse() : null;
 
-        // 요청 로깅
-        Map<String, Object> requestMap = new HashMap<>();
-        requestMap.put("method", Objects.requireNonNull(request).getMethod());
-        requestMap.put("uri", request.getRequestURI());
-        requestMap.put("body", getRequestBody(request));
+        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
 
-        String requestLog = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(requestMap);
-        logger.info(ANSI_YELLOW + "[Incoming Request] : {}" + ANSI_RESET, requestLog);
+        String methodName = joinPoint.getSignature().toShortString();
+        String requestBody = getRequestBody(wrappedRequest);
+
+        logRequest(wrappedRequest, methodName, joinPoint.getArgs(), requestBody);
 
         Object result;
         try {
             result = joinPoint.proceed();
         } catch (Throwable ex) {
-            logger.error("Exception occurred: ", ex);
+            logException(ex);
             throw ex;
         }
 
-        Map<String, Object> responseMap = new HashMap<>();
-        responseMap.put("status", Objects.requireNonNull(response).getStatus());
-        responseMap.put("body", result);
-
-        String responseLog = objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(responseMap);
-        logger.info(ANSI_GREEN + "Outgoing Response: {}" + ANSI_RESET, responseLog);
-
+        logResponse(wrappedResponse, result);
+        wrappedResponse.copyBodyToResponse();
         return result;
     }
 
-    private HttpServletRequest getCurrentHttpRequest() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return attributes != null ? attributes.getRequest() : null;
-    }
-
-    private HttpServletResponse getCurrentHttpResponse() {
-        ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        return attributes != null ? attributes.getResponse() : null;
-    }
-
-    private Map<String, String> getHeadersInfo(HttpServletRequest request) {
-        Map<String, String> headers = new HashMap<>();
-        Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            headers.put(headerName, request.getHeader(headerName));
+    private void logRequest(
+            HttpServletRequest request,
+            String methodName,
+            Object[] args,
+            String body
+    ) {
+        if (request != null) {
+            logger.info(
+                    "[IMMILOG Incoming Request] HTTP Method: {}, URL: {}, Body: {}",
+                    request.getMethod(),
+                    request.getRequestURI(),
+                    toPrettyJson(args)
+            );
         }
-        return headers;
     }
 
-    private Map<String, String> getHeadersInfo(HttpServletResponse response) {
-        Map<String, String> headers = new HashMap<>();
-        for (String headerName : response.getHeaderNames()) {
-            headers.put(headerName, response.getHeader(headerName));
+    private void logResponse(
+            HttpServletResponse response,
+            Object result
+    ) {
+        if (response != null) {
+            logger.info(
+                    "IMMILOG Outgoing Response: Status: {},Result: {}",
+                    response.getStatus(),
+                    toPrettyJson(result)
+            );
         }
-        return headers;
     }
 
-    private String getRequestBody(HttpServletRequest request) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        request.setCharacterEncoding("UTF-8");
-        try (BufferedReader reader = request.getReader()) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
+    private void logException(Throwable ex) {
+        logger.error("Exception occurred: ", ex);
+    }
+
+    private String getRequestBody(ContentCachingRequestWrapper request) throws IOException {
+        byte[] buf = request.getContentAsByteArray();
+        return new String(buf, 0, buf.length, StandardCharsets.UTF_8);
+    }
+
+    private String toPrettyJson(Object data) {
+        try {
+            return objectMapper.writeValueAsString(data);
+        } catch (Exception e) {
+            return "Unable to convert to JSON: " + e.getMessage();
         }
-        return stringBuilder.toString();
     }
 }

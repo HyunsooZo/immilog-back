@@ -106,7 +106,7 @@ public class UserController {
     @GetMapping("/nicknames")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복 체크 진행")
     public ResponseEntity<UserApiResponse> checkNickname(
-            @RequestParam String nickname
+            @RequestParam("nickname") String nickname
     ) {
         Boolean isNickNameAvailable = userSignUpService.checkNickname(nickname);
         return ResponseEntity.status(OK).body(UserApiResponse.of(isNickNameAvailable));

@@ -33,13 +33,13 @@ public record UserSignUpRequest(
 ) {
     public UserSignUpCommand toCommand() {
         return UserSignUpCommand.builder()
-                .nickName(nickName)
-                .password(password)
-                .email(email)
-                .country(country)
-                .interestCountry(interestCountry)
-                .region(region)
-                .profileImage(profileImage)
+                .nickName(this.nickName)
+                .password(this.password)
+                .email(this.email)
+                .country(this.country)
+                .interestCountry(this.interestCountry)
+                .region(this.region)
+                .profileImage(this.profileImage)
                 .build();
     }
 }

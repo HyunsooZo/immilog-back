@@ -59,11 +59,10 @@ public class User {
             UserSignUpCommand command,
             String encodedPassword
     ) {
-        UserCountry interestCountry = command.interestCountry() != null
-                ? UserCountry.valueOf(command.interestCountry())
-                : null;
-        UserCountry country = UserCountry.valueOf(command.country());
-
+        final UserCountry country = UserCountry.valueOf(command.country());
+        final String interestCountryValue = command.interestCountry();
+        final boolean isInterestCountryNull = interestCountryValue == null || interestCountryValue.isEmpty();
+        final UserCountry interestCountry = isInterestCountryNull ? null : country;
         return new User(
                 null,
                 command.nickName(),
@@ -81,10 +80,11 @@ public class User {
     }
 
     public void changePassword(String encodedPassword) {
-        Optional.ofNullable(encodedPassword).ifPresent(password -> {
-            this.password = password;
-            updateTimestamp();
-        });
+        Optional.ofNullable(encodedPassword)
+                .ifPresent(password -> {
+                    this.password = password;
+                    updateTimestamp();
+                });
     }
 
     public void changeUserStatus(UserStatus userStatus) {
