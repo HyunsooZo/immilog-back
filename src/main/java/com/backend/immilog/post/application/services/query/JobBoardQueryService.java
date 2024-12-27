@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services.query;
 
-import com.backend.immilog.global.aop.PerformanceMonitor;
+import com.backend.immilog.global.aop.monitor.PerformanceMonitor;
 import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;

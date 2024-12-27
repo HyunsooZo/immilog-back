@@ -1,4 +1,4 @@
-package com.backend.immilog.global.aop;
+package com.backend.immilog.global.aop.monitor;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class PerformanceMonitorAspect {
-    @Around("@annotation(com.backend.immilog.global.aop.PerformanceMonitor)")
+    @Around("@annotation(com.backend.immilog.global.aop.monitor.PerformanceMonitor)")
     public Object monitorExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
         long startTime = System.currentTimeMillis();
         Object result = joinPoint.proceed();

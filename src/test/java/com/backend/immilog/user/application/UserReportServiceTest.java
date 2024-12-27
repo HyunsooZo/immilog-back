@@ -1,6 +1,5 @@
 package com.backend.immilog.user.application;
 
-import com.backend.immilog.global.infrastructure.persistence.lock.RedisDistributedLock;
 import com.backend.immilog.user.application.services.UserReportService;
 import com.backend.immilog.user.application.services.command.ReportCommandService;
 import com.backend.immilog.user.application.services.command.UserCommandService;
@@ -35,13 +34,11 @@ class UserReportServiceTest {
     private final UserCommandService userCommandService = mock(UserCommandService.class);
     private final ReportCommandService reportCommandService = mock(ReportCommandService.class);
     private final ReportQueryService reportQueryService = mock(ReportQueryService.class);
-    private final RedisDistributedLock redisDistributedLock = mock(RedisDistributedLock.class);
     private final UserReportService userReportService = new UserReportService(
             userQueryService,
             userCommandService,
             reportCommandService,
-            reportQueryService,
-            redisDistributedLock
+            reportQueryService
     );
 
     @Test
@@ -70,7 +67,6 @@ class UserReportServiceTest {
                 .reason(ReportReason.FRAUD)
                 .build();
         when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(false);
-        when(redisDistributedLock.tryAcquireLock("reportUser : ", targetUserSeq.toString())).thenReturn(true);
         when(userQueryService.getUserById(targetUserSeq)).thenReturn(Optional.of(user));
         // when
         userReportService.reportUser(
@@ -80,8 +76,6 @@ class UserReportServiceTest {
         );
 
         // then
-        verify(redisDistributedLock, times(1)).tryAcquireLock("reportUser : ", targetUserSeq.toString());
-        verify(redisDistributedLock, times(1)).releaseLock("reportUser : ", targetUserSeq.toString());
         verify(reportCommandService, times(1)).save(any(Report.class));
     }
 

@@ -1,4 +1,4 @@
-package com.backend.immilog.global.aop;
+package com.backend.immilog.global.aop.log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

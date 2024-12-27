@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services;
 
-import com.backend.immilog.global.infrastructure.persistence.lock.RedisDistributedLock;
+import com.backend.immilog.global.aop.lock.DistributedLock;
 import com.backend.immilog.post.application.command.PostUpdateCommand;
 import com.backend.immilog.post.application.services.command.BulkCommandService;
 import com.backend.immilog.post.application.services.command.PostCommandService;
@@ -31,20 +31,17 @@ public class PostUpdateService {
     private final PostCommandService postCommandService;
     private final PostResourceCommandService postResourceCommandService;
     private final BulkCommandService bulkCommandService;
-    private final RedisDistributedLock redisDistributedLock;
 
     public PostUpdateService(
             PostQueryService postQueryService,
             PostCommandService postCommandService,
             PostResourceCommandService postResourceCommandService,
-            BulkCommandService bulkCommandService,
-            RedisDistributedLock redisDistributedLock
+            BulkCommandService bulkCommandService
     ) {
         this.postQueryService = postQueryService;
         this.postCommandService = postCommandService;
         this.postResourceCommandService = postResourceCommandService;
         this.bulkCommandService = bulkCommandService;
-        this.redisDistributedLock = redisDistributedLock;
     }
 
     @Transactional
@@ -61,36 +58,11 @@ public class PostUpdateService {
     }
 
     @Async
+    @DistributedLock(key = VIEW_LOCK_KEY, identifier = "#postSeq", expireTime = 5)
     public void increaseViewCount(Long postSeq) {
-        executeWithLock(
-                VIEW_LOCK_KEY,
-                postSeq.toString(),
-                () -> {
-                    Post post = getPost(postSeq);
-                    post.increaseViewCount();
-                    postCommandService.save(post);
-                }
-        );
-    }
-
-    private void executeWithLock(
-            String lockKey,
-            String subKey,
-            Runnable action
-    ) {
-        boolean lockAcquired = false;
-        try {
-            lockAcquired = redisDistributedLock.tryAcquireLock(lockKey, subKey);
-            if (lockAcquired) {
-                action.run();
-            } else {
-                log.error("Failed to acquire lock for {}, key: {}", lockKey, subKey);
-            }
-        } finally {
-            if (lockAcquired) {
-                redisDistributedLock.releaseLock(lockKey, subKey);
-            }
-        }
+        Post post = getPost(postSeq);
+        post.increaseViewCount();
+        postCommandService.save(post);
     }
 
     private void updateResources(
