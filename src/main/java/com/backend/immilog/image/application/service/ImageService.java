@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ImageService {
@@ -41,9 +42,13 @@ public class ImageService {
     }
 
     public void deleteFile(String imagePath) {
-        fileStorageHandler.deleteFile(imagePath);
-        Image image = imageQueryService.getImageByPath(imagePath);
-        image.delete();
-        imageCommandService.save(image);
+        Optional.ofNullable(imagePath)
+                .filter(image -> !image.isBlank())
+                .ifPresent(path -> {
+                    fileStorageHandler.deleteFile(path);
+                    Image image = imageQueryService.getImageByPath(path);
+                    image.delete();
+                    imageCommandService.save(image);
+                });
     }
 }

@@ -81,6 +81,7 @@ public class User {
 
     public void changePassword(String encodedPassword) {
         Optional.ofNullable(encodedPassword)
+                .filter(password -> !password.trim().isEmpty())
                 .ifPresent(password -> {
                     this.password = password;
                     updateTimestamp();
@@ -88,45 +89,57 @@ public class User {
     }
 
     public void changeUserStatus(UserStatus userStatus) {
-        Optional.ofNullable(userStatus).ifPresent(status -> {
-            this.userStatus = status;
-            updateTimestamp();
-        });
+        Optional.ofNullable(userStatus)
+                .filter(status -> !status.equals(this.userStatus))
+                .ifPresent(status -> {
+                    this.userStatus = status;
+                    updateTimestamp();
+                });
     }
 
     public void changeNickName(String nickName) {
-        Optional.ofNullable(nickName).ifPresent(name -> {
-            this.nickName = name;
-            updateTimestamp();
-        });
+        Optional.ofNullable(nickName)
+                .filter(name -> !name.trim().isEmpty())
+                .ifPresent(name -> {
+                    this.nickName = name;
+                    updateTimestamp();
+                });
     }
 
     public void changeInterestCountry(UserCountry interestCountry) {
-        Optional.ofNullable(interestCountry).ifPresent(country -> {
-            this.interestCountry = country;
-            updateTimestamp();
-        });
+        Optional.ofNullable(interestCountry)
+                .filter(country -> !country.equals(this.interestCountry))
+                .ifPresent(country -> {
+                    this.interestCountry = country;
+                    updateTimestamp();
+                });
     }
 
     public void changeImageUrl(String imageUrl) {
-        Optional.ofNullable(imageUrl).ifPresent(url -> {
-            this.imageUrl = url;
-            updateTimestamp();
-        });
+        Optional.ofNullable(imageUrl)
+                .filter(url -> !url.trim().isEmpty())
+                .ifPresent(url -> {
+                    this.imageUrl = url;
+                    updateTimestamp();
+                });
     }
 
     public void changeRegion(String second) {
-        Optional.ofNullable(second).ifPresent(region -> {
-            this.location = Location.of(this.location.getCountry(), region);
-            updateTimestamp();
-        });
+        Optional.ofNullable(second)
+                .filter(region -> !region.trim().isEmpty())
+                .ifPresent(region -> {
+                    this.location = Location.of(this.location.getCountry(), region);
+                    updateTimestamp();
+                });
     }
 
     public void changeCountry(UserCountry country) {
-        Optional.ofNullable(country).ifPresent(value -> {
-            this.location = Location.of(value, this.location.getRegion());
-            updateTimestamp();
-        });
+        Optional.ofNullable(country)
+                .filter(value -> !value.equals(this.location.getCountry()))
+                .ifPresent(value -> {
+                    this.location = Location.of(value, this.location.getRegion());
+                    updateTimestamp();
+                });
     }
 
     private void updateTimestamp() {
