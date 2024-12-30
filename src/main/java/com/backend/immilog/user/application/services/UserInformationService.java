@@ -47,7 +47,7 @@ public class UserInformationService {
         User user = getUser(userSeq);
         changeCountryIfItsChanged(country, userInfoUpdateCommand, user);
         changeImageProfileIfItsChanged(userInfoUpdateCommand.profileImage(), user);
-        user.changeNickName(userInfoUpdateCommand.nickName());
+        user.changeNickname(userInfoUpdateCommand.nickName());
         user.changeInterestCountry(userInfoUpdateCommand.interestCountry());
         user.changeUserStatus(userInfoUpdateCommand.status());
         userCommandService.save(user);

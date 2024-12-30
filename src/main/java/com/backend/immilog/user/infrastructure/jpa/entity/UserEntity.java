@@ -20,7 +20,7 @@ public class UserEntity extends BaseDateEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
 
-    private String nickName;
+    private String nickname;
 
     private String email;
 
@@ -59,7 +59,7 @@ public class UserEntity extends BaseDateEntity {
             ReportInfo reportInfo
     ) {
         this.seq = seq;
-        this.nickName = nickName;
+        this.nickname = nickName;
         this.email = email;
         this.password = password;
         this.imageUrl = imageUrl;
@@ -73,7 +73,7 @@ public class UserEntity extends BaseDateEntity {
     public static UserEntity from(User user) {
         return UserEntity.builder()
                 .seq(user.getSeq())
-                .nickName(user.getNickName())
+                .nickName(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
                 .imageUrl(user.getImageUrl())
@@ -88,7 +88,7 @@ public class UserEntity extends BaseDateEntity {
     public User toDomain() {
         return User.builder()
                 .seq(this.seq)
-                .nickName(this.nickName)
+                .nickName(this.nickname)
                 .email(this.email)
                 .password(this.password)
                 .imageUrl(this.imageUrl)

@@ -28,7 +28,7 @@ public record UserSignInResult(
         return UserSignInResult.builder()
                 .userSeq(user.getSeq())
                 .email(user.getEmail())
-                .nickname(user.getNickName())
+                .nickname(user.getNickname())
                 .accessToken(accessToken == null ? "" : accessToken)
                 .refreshToken(refreshToken == null ? "" : refreshToken)
                 .country(user.getCountry().name())

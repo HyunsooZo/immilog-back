@@ -18,7 +18,7 @@ public class User {
     private final UserRole userRole;
     private final ReportInfo reportInfo;
     private final LocalDateTime createdAt;
-    private String nickName;
+    private String nickname;
     private String password;
     private String imageUrl;
     private UserStatus userStatus;
@@ -42,7 +42,7 @@ public class User {
             LocalDateTime updatedAt
     ) {
         this.seq = seq;
-        this.nickName = nickName;
+        this.nickname = nickName;
         this.email = email;
         this.password = password;
         this.imageUrl = imageUrl;
@@ -97,11 +97,11 @@ public class User {
                 });
     }
 
-    public void changeNickName(String nickName) {
-        Optional.ofNullable(nickName)
+    public void changeNickname(String nickname) {
+        Optional.ofNullable(nickname)
                 .filter(name -> !name.trim().isEmpty())
                 .ifPresent(name -> {
-                    this.nickName = name;
+                    this.nickname = name;
                     updateTimestamp();
                 });
     }

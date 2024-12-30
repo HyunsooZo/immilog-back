@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 public class InteractionCreationService {
-    final String LIKE_LOCK_KEY = "interaction : ";
     private final InteractionUserCommandService interactionUserCommandService;
     private final InteractionUserQueryService interactionUserQueryService;
 
@@ -26,10 +25,8 @@ public class InteractionCreationService {
         this.interactionUserQueryService = interactionUserQueryService;
     }
 
-
     @Async
     @Transactional
-    @DistributedLock(key = LIKE_LOCK_KEY, identifier = "#postSeq", expireTime = 15)
     public void createInteraction(
             Long userSeq,
             Long postSeq,
@@ -56,7 +53,6 @@ public class InteractionCreationService {
                                     )
                             );
                         }
-
                 );
     }
 }

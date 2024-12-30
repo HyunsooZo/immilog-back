@@ -61,7 +61,7 @@ public class Post {
         PostUserInfo postUserInfo = PostUserInfo.builder()
                 .userSeq(user.getSeq())
                 .profileImage(user.getImageUrl())
-                .nickname(user.getNickName())
+                .nickname(user.getNickname())
                 .build();
 
         return Post.builder()

@@ -35,7 +35,7 @@ class UserEntityTest {
         UserEntity userEntity = UserEntity.from(user);
         User domain = userEntity.toDomain();
 
-        assertThat(domain.getNickName()).isEqualTo(user.getNickName());
+        assertThat(domain.getNickname()).isEqualTo(user.getNickname());
         assertThat(domain.getEmail()).isEqualTo(user.getEmail());
         assertThat(domain.getPassword()).isEqualTo(user.getPassword());
         assertThat(domain.getImageUrl()).isEqualTo(user.getImageUrl());
@@ -65,7 +65,7 @@ class UserEntityTest {
                 .build();
         User user = userEntity.toDomain();
 
-        assertThat(user.getNickName()).isEqualTo("TestUser");
+        assertThat(user.getNickname()).isEqualTo("TestUser");
         assertThat(user.getEmail()).isEqualTo("test@user.com");
         assertThat(user.getPassword()).isEqualTo("password");
         assertThat(user.getImageUrl()).isEqualTo("image.png");
@@ -90,7 +90,7 @@ class UserEntityTest {
         UserEntity userEntity = UserEntity.builder().build();
         User user = userEntity.toDomain();
         assertThat(user.getSeq()).isNull();
-        assertThat(user.getNickName()).isNull();
+        assertThat(user.getNickname()).isNull();
         assertThat(user.getEmail()).isNull();
         assertThat(user.getPassword()).isNull();
         assertThat(user.getImageUrl()).isNull();

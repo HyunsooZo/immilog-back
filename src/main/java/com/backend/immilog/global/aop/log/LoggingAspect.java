@@ -75,7 +75,7 @@ public class LoggingAspect {
     ) {
         if (response != null) {
             logger.info(
-                    "IMMILOG Outgoing Response: Status: {},Result: {}",
+                    "[IMMILOG Outgoing Response] Status: {},Result: {}",
                     response.getStatus(),
                     toPrettyJson(result)
             );

@@ -35,12 +35,12 @@ public class CommentJdbcRepository {
                 .user(user)
                 .content(rs.getString(prefix + ".content"))
                 .replies(new ArrayList<>())
-                .upVotes(rs.getInt(prefix + ".upVotes"))
-                .downVotes(rs.getInt(prefix + ".downVotes"))
-                .replyCount(rs.getInt(prefix + ".replyCount"))
+                .upVotes(rs.getInt(prefix + ".like_count"))
+                .downVotes(0)
+                .replyCount(rs.getInt(prefix + ".reply_count"))
                 .likeUsers(new ArrayList<>())
                 .status(PostStatus.valueOf(rs.getString(prefix + ".status")))
-                .createdAt(rs.getTimestamp(prefix + ".createdAt").toLocalDateTime())
+                .createdAt(rs.getTimestamp(prefix + ".created_at").toLocalDateTime())
                 .build();
     }
 
@@ -50,16 +50,16 @@ public class CommentJdbcRepository {
     ) throws SQLException {
         return new UserInfoResult(
                 rs.getLong(prefix + ".seq"),
-                rs.getString(prefix + ".nickName"),
+                rs.getString(prefix + ".nickname"),
                 rs.getString(prefix + ".email"),
-                rs.getString(prefix + ".profileImage"),
-                rs.getLong(prefix + ".reportedCount"),
-                rs.getDate(prefix + ".reportedDate"),
+                rs.getString(prefix + ".image_url"),
+                rs.getLong(prefix + ".reported_count"),
+                rs.getDate(prefix + ".reported_date"),
                 UserCountry.valueOf(rs.getString(prefix + ".country")),
-                UserCountry.valueOf(rs.getString(prefix + ".interestCountry")),
+                UserCountry.valueOf(rs.getString(prefix + ".interest_country")),
                 rs.getString(prefix + ".region"),
-                UserRole.valueOf(rs.getString(prefix + ".userRole")),
-                UserStatus.valueOf(rs.getString(prefix + ".userStatus"))
+                UserRole.valueOf(rs.getString(prefix + ".user_role")),
+                UserStatus.valueOf(rs.getString(prefix + ".user_status"))
         );
     }
 

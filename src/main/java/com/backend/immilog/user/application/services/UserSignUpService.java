@@ -36,7 +36,7 @@ public class UserSignUpService {
         validateUserNotExists(userSignUpCommand.email());
         String password = passwordEncoder.encode(userSignUpCommand.password());
         User user = userCommandService.save(User.of(userSignUpCommand, password));
-        return Pair.of(user.getSeq(), user.getNickName());
+        return Pair.of(user.getSeq(), user.getNickname());
     }
 
     public Boolean checkNickname(String nickname) {

@@ -27,7 +27,7 @@ public record UserInfoResult(
     ) {
         return UserInfoResult.builder()
                 .seq(user.getSeq())
-                .nickName(user.getNickName())
+                .nickName(user.getNickname())
                 .email(user.getEmail())
                 .profileImage(user.getImageUrl())
                 .reportedCount(user.getReportedCount())

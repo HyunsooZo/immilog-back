@@ -30,7 +30,7 @@ public class UserRepositoryImpl implements UserRepository {
             String nickname
     ) {
         return userJpaRepository
-                .findByNickName(nickname)
+                .findByNickname(nickname)
                 .map(UserEntity::toDomain);
     }
 
