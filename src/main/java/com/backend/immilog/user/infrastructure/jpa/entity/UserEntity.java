@@ -1,7 +1,6 @@
 package com.backend.immilog.user.infrastructure.jpa.entity;
 
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.global.model.BaseDateEntity;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.Location;
@@ -11,30 +10,40 @@ import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.time.LocalDateTime;
+
 @DynamicUpdate
 @Entity
 @Table(name = "user")
-public class UserEntity extends BaseDateEntity {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "seq")
     private Long seq;
 
+    @Column(name = "nickname")
     private String nickname;
 
+    @Column(name = "email")
     private String email;
 
+    @Column(name = "password")
     private String password;
 
+    @Column(name = "image_url")
     private String imageUrl;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_status")
     private UserStatus userStatus;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "user_role")
     private UserRole userRole;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "interest_country")
     private UserCountry interestCountry;
 
     @Embedded
@@ -42,6 +51,12 @@ public class UserEntity extends BaseDateEntity {
 
     @Embedded
     private ReportInfo reportInfo;
+
+    @Column(name = "created_at")
+    private final LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     protected UserEntity() {}
 
@@ -56,7 +71,8 @@ public class UserEntity extends BaseDateEntity {
             UserRole userRole,
             UserCountry interestCountry,
             Location location,
-            ReportInfo reportInfo
+            ReportInfo reportInfo,
+            LocalDateTime updatedAt
     ) {
         this.seq = seq;
         this.nickname = nickName;
@@ -68,6 +84,7 @@ public class UserEntity extends BaseDateEntity {
         this.interestCountry = interestCountry;
         this.location = location;
         this.reportInfo = reportInfo;
+        this.updatedAt = updatedAt;
     }
 
     public static UserEntity from(User user) {
@@ -82,6 +99,7 @@ public class UserEntity extends BaseDateEntity {
                 .interestCountry(user.getInterestCountry())
                 .location(user.getLocation())
                 .reportInfo(user.getReportInfo())
+                .updatedAt(user.getSeq() != null ? LocalDateTime.now() : null)
                 .build();
     }
 
@@ -97,8 +115,8 @@ public class UserEntity extends BaseDateEntity {
                 .interestCountry(this.interestCountry)
                 .location(this.location)
                 .reportInfo(this.reportInfo)
-                .createdAt(this.getCreatedAt())
-                .updatedAt(this.getUpdatedAt())
+                .createdAt(this.createdAt)
+                .updatedAt(this.updatedAt)
                 .build();
     }
 }
