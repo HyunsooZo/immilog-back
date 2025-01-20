@@ -3,7 +3,6 @@ package com.backend.immilog.global.presentation.controller;
 import com.backend.immilog.image.application.service.ImageService;
 import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.presentation.request.ImageRequest;
-import com.backend.immilog.global.model.GlobalApiResponse;
 import com.backend.immilog.image.presentation.controller.ImageController;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,7 +32,7 @@ class ImageControllerTest {
         when(imageService.saveFiles(files, imagePath, ImageType.POST))
                 .thenReturn(imageDTO);
         // when
-        ResponseEntity<GlobalApiResponse> response =
+        ResponseEntity<ImageController.ImageResponse> response =
                 imageController.uploadImage(files, imagePath, ImageType.POST);
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
@@ -51,7 +50,7 @@ class ImageControllerTest {
                 .imagePath(imagePath)
                 .build();
         // when
-        ResponseEntity<GlobalApiResponse> response = imageController.deleteImage(param);
+        ResponseEntity<ImageController.ImageResponse> response = imageController.deleteImage(param);
         // then
         verify(imageService, times(1)).deleteFile(imagePath);
         assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
