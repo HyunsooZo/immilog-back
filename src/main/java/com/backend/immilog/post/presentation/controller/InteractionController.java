@@ -29,12 +29,7 @@ public class InteractionController {
             @PathVariable("postSeq") Long postSeq,
             @PathVariable("userSeq") Long userSeq
     ) {
-        interactionCreationService.createInteraction(
-                userSeq,
-                postSeq,
-                postType,
-                interactionType
-        );
+        interactionCreationService.createInteraction(userSeq, postSeq, postType, interactionType);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 }

@@ -3,7 +3,7 @@ package com.backend.immilog.post.application.services;
 import com.backend.immilog.post.application.services.command.PostCommandService;
 import com.backend.immilog.post.application.services.command.PostResourceCommandService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
-import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.Post;
 import com.backend.immilog.post.exception.PostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

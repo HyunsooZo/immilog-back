@@ -4,7 +4,7 @@ import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
-import com.backend.immilog.post.domain.model.post.JobBoard;
+import com.backend.immilog.post.domain.model.JobBoard;
 import com.backend.immilog.post.domain.repositories.JobBoardRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.JobBoardEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.JobBoardJpaRepository;
@@ -23,9 +23,7 @@ public class JobBoardRepositoryImpl implements JobBoardRepository {
     }
 
     @Override
-    public void save(
-            JobBoard jobBoard
-    ) {
+    public void save(JobBoard jobBoard) {
         jobBoardJpaRepository.save(JobBoardEntity.from(jobBoard));
     }
 

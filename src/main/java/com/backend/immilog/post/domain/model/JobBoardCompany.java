@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model.post;
+package com.backend.immilog.post.domain.model;
 
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;

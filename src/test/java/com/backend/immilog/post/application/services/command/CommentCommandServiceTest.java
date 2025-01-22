@@ -2,7 +2,7 @@ package com.backend.immilog.post.application.services.command;
 
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
-import com.backend.immilog.post.domain.model.comment.Comment;
+import com.backend.immilog.post.domain.model.Comment;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

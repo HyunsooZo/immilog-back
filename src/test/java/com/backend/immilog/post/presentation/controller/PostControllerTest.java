@@ -202,7 +202,7 @@ class PostControllerTest {
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
         assertThat(Objects.requireNonNull(response.getBody()).data()).isEqualTo(postResult);
-        assertThat(((PostResult) (response.getBody()).data()).seq()).isEqualTo(postSeq);
+        assertThat(((PostResult) (response.getBody()).data()).getSeq()).isEqualTo(postSeq);
     }
 
     @Test

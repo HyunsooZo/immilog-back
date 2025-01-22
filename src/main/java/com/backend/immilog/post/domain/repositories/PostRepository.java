@@ -4,12 +4,10 @@ import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
-import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 public interface PostRepository {

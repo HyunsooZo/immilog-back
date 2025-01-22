@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services.command;
 
-import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.InteractionUser;
 import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

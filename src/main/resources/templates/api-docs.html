@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Documentation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.css" />
+    <style>
+        .menu-content {
+            position: relative;
+        }
+        .menu-content .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        .menu-content .logo-container img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+    </style>
+</head>
+<body>
+<!-- Redoc API 문서 -->
+<redoc spec-url="/v3/api-docs"></redoc>
+
+<script src="https://cdn.jsdelivr.net/npm/redoc/bundles/redoc.standalone.js"></script>
+<script>
+    // Redoc DOM 생성 대기 후 로고 삽입
+    document.addEventListener('DOMContentLoaded', function() {
+        const observer = new MutationObserver(() => {
+            const menuContent = document.querySelector('.menu-content');
+            if (menuContent && !document.querySelector('.logo-container')) {
+                const logoContainer = document.createElement('div');
+                logoContainer.className = 'logo-container';
+                logoContainer.innerHTML = '<img src="/logo.png" alt="Company Logo">';
+                menuContent.prepend(logoContainer);
+                observer.disconnect();
+            }
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    });
+</script>
+</body>
+</html>

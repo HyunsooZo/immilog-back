@@ -4,7 +4,7 @@ import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
-import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.Post;
 import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.PostEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.PostJpaRepository;
@@ -13,8 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 @Repository
