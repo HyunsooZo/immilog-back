@@ -27,14 +27,9 @@ public class CommentController {
             @PathVariable("referenceType") String referenceType,
             @PathVariable("postSeq") Long postSeq,
             @PathVariable("userSeq") Long userSeq,
-            @Valid @RequestBody CommentUploadRequest commentUploadRequest
+            @Valid @RequestBody CommentUploadRequest request
     ) {
-        commentUploadService.uploadComment(
-                userSeq,
-                postSeq,
-                referenceType,
-                commentUploadRequest.content()
-        );
+        commentUploadService.uploadComment(userSeq, postSeq, referenceType, request.content());
         return ResponseEntity.status(CREATED).build();
     }
 }

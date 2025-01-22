@@ -52,13 +52,7 @@ public class JobBoardController {
             @RequestParam(required = false, name = "experience") String experience,
             @RequestParam(required = false, name = "page") Integer page
     ) {
-        Page<JobBoardResult> jobBoards = jobBoardInquiryService.getJobBoards(
-                country,
-                sortingMethod,
-                industry,
-                experience,
-                page
-        );
+        Page<JobBoardResult> jobBoards = jobBoardInquiryService.getJobBoards(country, sortingMethod, industry, experience, page);
         return ResponseEntity.status(OK).body(PostApiResponse.of(jobBoards));
     }
 

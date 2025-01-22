@@ -1,7 +1,6 @@
 package com.backend.immilog.post.domain.repositories;
 
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.model.post.Post;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.time.LocalDateTime;

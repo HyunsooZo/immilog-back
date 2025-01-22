@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model.post;
+package com.backend.immilog.post.domain.model;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

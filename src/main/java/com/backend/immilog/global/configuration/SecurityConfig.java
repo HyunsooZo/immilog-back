@@ -28,18 +28,24 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .headers(headers -> headers
                         .xssProtection(HeadersConfigurer.XXssConfig::disable)
-                        .contentSecurityPolicy(csp -> csp.policyDirectives("default-src 'self'"))
-                )
+                        .contentSecurityPolicy(csp -> csp.policyDirectives(
+                                "default-src 'self'; " +
+                                        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; " +
+                                        "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net blob:; " +
+                                        "connect-src 'self'; " +
+                                        "img-src 'self' data: https://cdn.jsdelivr.net"
+                        )))
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/**",
                                 "/swagger-ui/index.html",
                                 "/swagger-ui/**",
-                                "/v2/api-docs",
+                                "/v3/api-docs/**",
                                 "/swagger-resources/**",
                                 "/webjars/**",
-                                "**/v1/images"
+                                "**/v1/images",
+                                "/api-docs"
                         ).permitAll()
                         .anyRequest().authenticated()
                 );

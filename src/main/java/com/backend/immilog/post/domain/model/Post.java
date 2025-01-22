@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model.post;
+package com.backend.immilog.post.domain.model;
 
 import com.backend.immilog.post.application.command.PostUploadCommand;
 import com.backend.immilog.post.domain.enums.Badge;

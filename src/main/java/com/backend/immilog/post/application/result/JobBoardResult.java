@@ -2,11 +2,11 @@ package com.backend.immilog.post.application.result;
 
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.post.domain.enums.PostStatus;
-import com.backend.immilog.post.domain.model.post.JobBoard;
-import com.backend.immilog.post.domain.model.post.JobBoardCompany;
-import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.domain.enums.Industry;
+import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.domain.model.JobBoard;
+import com.backend.immilog.post.domain.model.JobBoardCompany;
+import com.backend.immilog.post.domain.model.PostInfo;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

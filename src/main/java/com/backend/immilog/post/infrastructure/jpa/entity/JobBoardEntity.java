@@ -1,8 +1,8 @@
 package com.backend.immilog.post.infrastructure.jpa.entity;
 
-import com.backend.immilog.post.domain.model.post.JobBoard;
-import com.backend.immilog.post.domain.model.post.JobBoardCompany;
-import com.backend.immilog.post.domain.model.post.PostInfo;
+import com.backend.immilog.post.domain.model.JobBoard;
+import com.backend.immilog.post.domain.model.JobBoardCompany;
+import com.backend.immilog.post.domain.model.PostInfo;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;

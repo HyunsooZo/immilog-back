@@ -2,7 +2,7 @@ package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.post.application.services.command.InteractionUserCommandService;
 import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
-import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.InteractionUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

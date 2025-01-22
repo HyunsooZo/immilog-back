@@ -2,7 +2,7 @@ package com.backend.immilog.post.domain.repositories;
 
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.InteractionUser;
 
 import java.util.List;
 import java.util.Optional;

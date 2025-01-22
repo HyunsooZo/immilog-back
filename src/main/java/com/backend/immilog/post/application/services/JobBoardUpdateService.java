@@ -8,9 +8,9 @@ import com.backend.immilog.post.application.services.command.PostResourceCommand
 import com.backend.immilog.post.application.services.query.JobBoardQueryService;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.post.JobBoard;
-import com.backend.immilog.post.domain.model.post.JobBoardCompany;
-import com.backend.immilog.post.domain.model.post.PostInfo;
+import com.backend.immilog.post.domain.model.JobBoard;
+import com.backend.immilog.post.domain.model.JobBoardCompany;
+import com.backend.immilog.post.domain.model.PostInfo;
 import com.backend.immilog.post.exception.PostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -194,9 +194,7 @@ public class JobBoardUpdateService {
         }
     }
 
-    private JobBoardResult getJobBoard(
-            Long jobBoardSeq
-    ) {
+    private JobBoardResult getJobBoard(Long jobBoardSeq) {
         return jobBoardQueryService
                 .getJobBoardBySeq(jobBoardSeq)
                 .orElseThrow(() -> new PostException(JOB_BOARD_NOT_FOUND));

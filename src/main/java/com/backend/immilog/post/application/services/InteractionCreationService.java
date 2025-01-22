@@ -1,11 +1,10 @@
 package com.backend.immilog.post.application.services;
 
-import com.backend.immilog.global.aop.lock.DistributedLock;
 import com.backend.immilog.post.application.services.command.InteractionUserCommandService;
 import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.InteractionUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model.post;
+package com.backend.immilog.post.domain.model;
 
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.PostStatus;
@@ -64,19 +64,19 @@ public class PostInfo {
                 .build();
     }
 
-    public void increaseViewCount() {
+    protected void increaseViewCount() {
         this.viewCount++;
     }
 
-    public void delete() {
+    protected void delete() {
         this.status = PostStatus.DELETED;
     }
 
-    public void updateTitle(String title) {
+    protected void updateTitle(String title) {
         this.title = title;
     }
 
-    public void updateContent(String content) {
+    protected void updateContent(String content) {
         this.content = content;
     }
 }

@@ -6,8 +6,14 @@ import com.backend.immilog.post.exception.PostException;
 import java.util.Arrays;
 
 public enum PostType {
-    POST,
-    JOB_BOARD;
+    POST("posts"),
+    JOB_BOARD("jobboards");
+
+    private final String postType;
+
+    PostType(String postType) {
+        this.postType = postType;
+    }
 
     public static PostType convertToEnum(String postType) {
         return Arrays.stream(PostType.values())

@@ -5,7 +5,7 @@ import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.Post;
 import com.backend.immilog.post.infrastructure.jpa.entity.InteractionUserEntity;
 import com.backend.immilog.post.infrastructure.jpa.entity.PostEntity;
 import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
@@ -34,10 +34,10 @@ public class PostEntityResult {
     private final Long commentCount;
     private final Long viewCount;
     private final Long likeCount;
-    private final List<String> tags;
-    private final List<String> attachments;
-    private final List<Long> likeUsers;
-    private final List<Long> bookmarkUsers;
+    private final List<String> tags = new ArrayList<>();
+    private final List<String> attachments = new ArrayList<>();
+    private final List<Long> likeUsers = new ArrayList<>();
+    private final List<Long> bookmarkUsers = new ArrayList<>();
     private final String isPublic;
     private final String country;
     private final String region;
@@ -53,9 +53,8 @@ public class PostEntityResult {
         interactionUsers = interactionUsers != null ? interactionUsers : List.of();
         postResources = postResources != null ? postResources : List.of();
         Post post = postEntity.toDomain();
-
-        List<Long> likeUsers = getLongs(interactionUsers, LIKE);
-        List<Long> bookmarkUsers = getLongs(interactionUsers, BOOKMARK);
+        List<Long> likeUsers = getSequenceList(interactionUsers, LIKE);
+        List<Long> bookmarkUsers = getSequenceList(interactionUsers, BOOKMARK);
         List<String> tags = getStrings(postResources, TAG);
         List<String> attachments = getStrings(postResources, ATTACHMENT);
 
@@ -68,13 +67,13 @@ public class PostEntityResult {
         this.country = post.getCountryName();
         this.region = post.getRegion();
         this.viewCount = post.getViewCount();
-        this.likeCount = post.getLikeCount();
+        this.likeCount = (long) likeUsers.size();
         this.commentCount = post.getCommentCount();
         this.comments = new ArrayList<>();
-        this.likeUsers = likeUsers;
-        this.bookmarkUsers = bookmarkUsers;
-        this.tags = tags;
-        this.attachments = attachments;
+        this.likeUsers.addAll(likeUsers);
+        this.bookmarkUsers.addAll(bookmarkUsers);
+        this.tags.addAll(tags);
+        this.attachments.addAll(attachments);
         this.isPublic = post.getIsPublic();
         this.status = post.getStatus();
         this.category = post.getCategory();
@@ -92,7 +91,7 @@ public class PostEntityResult {
                 .toList();
     }
 
-    private static List<Long> getLongs(
+    private static List<Long> getSequenceList(
             List<InteractionUserEntity> interactionUsers,
             InteractionType type
     ) {

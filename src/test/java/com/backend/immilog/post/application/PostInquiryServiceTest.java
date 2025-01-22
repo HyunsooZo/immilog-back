@@ -14,6 +14,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -80,14 +83,14 @@ class PostInquiryServiceTest {
         // given
         String keyword = "keyword";
         int page = 0;
-        Pageable pageable = PageRequest.of(page, 10);
+        PageRequest pageable = PageRequest.of(page, 10);
         PostResult postResult = PostResult.builder()
                 .content("keyword123")
                 .title("content123")
-                .tags(List.of("tag1", "tag2"))
+                .tags(new ArrayList<>(Arrays.asList("tag1", "tag2")))
                 .build();
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
-        when(postQueryService.getPostsByKeyword(keyword, (PageRequest) pageable)).thenReturn(posts);
+        when(postQueryService.getPostsByKeyword(keyword, pageable)).thenReturn(posts);
         // when
         Page<PostResult> result = postInquiryService.searchKeyword(keyword, page);
         // then

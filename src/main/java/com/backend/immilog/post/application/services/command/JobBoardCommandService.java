@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services.command;
 
-import com.backend.immilog.post.domain.model.post.JobBoard;
+import com.backend.immilog.post.domain.model.JobBoard;
 import com.backend.immilog.post.domain.repositories.JobBoardRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

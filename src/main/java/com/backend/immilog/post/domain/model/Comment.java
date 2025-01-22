@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model.comment;
+package com.backend.immilog.post.domain.model;
 
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;

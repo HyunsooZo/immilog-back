@@ -1,9 +1,9 @@
 package com.backend.immilog.post.infrastructure.jpa.entity;
 
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.model.post.Post;
-import com.backend.immilog.post.domain.model.post.PostInfo;
-import com.backend.immilog.post.domain.model.post.PostUserInfo;
+import com.backend.immilog.post.domain.model.Post;
+import com.backend.immilog.post.domain.model.PostInfo;
+import com.backend.immilog.post.domain.model.PostUserInfo;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.DynamicInsert;

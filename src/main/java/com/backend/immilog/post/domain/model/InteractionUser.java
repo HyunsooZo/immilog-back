@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model.interaction;
+package com.backend.immilog.post.domain.model;
 
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;

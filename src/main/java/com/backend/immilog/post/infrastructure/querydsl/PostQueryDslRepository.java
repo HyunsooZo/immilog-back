@@ -59,16 +59,8 @@ public class PostQueryDslRepository {
 
     public Optional<PostResult> getPost(Long postSeq) {
         QPostEntity post = QPostEntity.postEntity;
-
         BooleanExpression predicate = post.seq.eq(postSeq);
-
-        List<PostEntityResult> results = fetchPosts(
-                post,
-                predicate,
-                null,
-                null
-        );
-
+        List<PostEntityResult> results = fetchPosts(post, predicate, null, null);
         return results.stream().map(PostEntityResult::toPostResult).findFirst();
     }
 
@@ -77,18 +69,9 @@ public class PostQueryDslRepository {
             Pageable pageable
     ) {
         QPostEntity post = QPostEntity.postEntity;
-
         BooleanExpression predicate = generateKeywordCriteria(keyword, post);
-
-        List<PostEntityResult> postEntityResults = fetchPosts(
-                post,
-                predicate,
-                null,
-                pageable
-        );
-
+        List<PostEntityResult> postEntityResults = fetchPosts(post, predicate, null, pageable);
         long total = countPosts(post, predicate);
-
         return new PageImpl<>(
                 postEntityResults.stream().map(PostEntityResult::toPostResult).toList(),
                 pageable,

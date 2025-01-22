@@ -10,13 +10,13 @@ import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.exception.PostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
 
@@ -41,7 +41,7 @@ public class PostInquiryService {
             Categories category,
             Integer page
     ) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(Objects.requireNonNullElseGet(page, () -> 0), 10);
         return postQueryService.getPosts(
                 country,
                 sortingMethod,
@@ -52,13 +52,11 @@ public class PostInquiryService {
     }
 
     @Transactional(readOnly = true)
-    public PostResult getPost(
-            Long postSeq
-    ) {
-        PostResult postResult = getPostDTO(postSeq);
+    public PostResult getPost(Long postSeq) {
+        PostResult post = getPostResult(postSeq);
         List<CommentResult> comments = commentQueryService.getComments(postSeq);
-        postResult = postResult.copyWithNewComments(comments);
-        return postResult;
+        post.addComments(comments);
+        return post;
     }
 
     public Page<PostResult> searchKeyword(
@@ -66,23 +64,20 @@ public class PostInquiryService {
             Integer page
     ) {
         PageRequest pageRequest = PageRequest.of(page, 10);
-        List<PostResult> postResults = postQueryService.getPostsByKeyword(keyword, pageRequest)
-                .getContent()
-                .stream()
-                .map(postResult -> postResult.copyWithKeyword(keyword))
-                .toList();
-        return new PageImpl<>(postResults, pageRequest, postResults.size());
+        Page<PostResult> posts = postQueryService.getPostsByKeyword(keyword, pageRequest);
+        posts.getContent().forEach(post -> post.addKeywords(keyword));
+        return posts;
     }
 
     public Page<PostResult> getUserPosts(
             Long userSeq,
             Integer page
     ) {
-        Pageable pageable = PageRequest.of(page, 10);
+        Pageable pageable = PageRequest.of(Objects.requireNonNullElseGet(page, () -> 0), 10);
         return postQueryService.getPostsByUserSeq(userSeq, pageable);
     }
 
-    private PostResult getPostDTO(Long postSeq) {
+    private PostResult getPostResult(Long postSeq) {
         return postQueryService
                 .getPost(postSeq)
                 .orElseThrow(() -> new PostException(POST_NOT_FOUND));

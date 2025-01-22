@@ -92,25 +92,15 @@ public class PostController {
             @RequestParam(required = false, name = "category") Categories category,
             @RequestParam(required = false, name = "page") Integer page
     ) {
-        Page<PostResult> posts = postInquiryService.getPosts(
-                country,
-                sortingMethod,
-                isPublic,
-                category,
-                page == null ? 0 : page
-        );
+        Page<PostResult> posts = postInquiryService.getPosts(country, sortingMethod, isPublic, category, page);
         return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
     }
 
     @GetMapping("/{postSeq}")
-    @Operation(summary = "게시물 상세 조회", description = "게시물 상세 정보를 조회합���다.")
-    public ResponseEntity<PostApiResponse> getPost(
-            @PathVariable("postSeq") Long postSeq
-    ) {
+    @Operation(summary = "게시물 상세 조회", description = "게시물 상세 정보를 조회합다.")
+    public ResponseEntity<PostApiResponse> getPost(@PathVariable("postSeq") Long postSeq) {
         PostResult post = postInquiryService.getPost(postSeq);
-        return ResponseEntity
-                .status(OK)
-                .body(PostApiResponse.of(post));
+        return ResponseEntity.status(OK).body(PostApiResponse.of(post));
     }
 
     @GetMapping("/search")

@@ -2,7 +2,7 @@ package com.backend.immilog.post.infrastructure.jpa.entity;
 
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
-import com.backend.immilog.post.domain.model.comment.Comment;
+import com.backend.immilog.post.domain.model.Comment;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.Cascade;

@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model.resource;
+package com.backend.immilog.post.domain.model;
 
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;

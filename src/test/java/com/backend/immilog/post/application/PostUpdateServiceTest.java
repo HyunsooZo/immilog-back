@@ -7,10 +7,10 @@ import com.backend.immilog.post.application.services.command.PostResourceCommand
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.post.Post;
-import com.backend.immilog.post.domain.model.post.PostInfo;
-import com.backend.immilog.post.domain.model.post.PostUserInfo;
-import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.domain.model.Post;
+import com.backend.immilog.post.domain.model.PostInfo;
+import com.backend.immilog.post.domain.model.PostUserInfo;
+import com.backend.immilog.post.domain.model.PostResource;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

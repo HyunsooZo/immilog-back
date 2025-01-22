@@ -2,7 +2,7 @@ package com.backend.immilog.post.infrastructure.jpa.entity;
 
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.domain.model.PostResource;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
