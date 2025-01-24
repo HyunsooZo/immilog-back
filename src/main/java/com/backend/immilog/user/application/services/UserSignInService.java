@@ -19,8 +19,8 @@ import static com.backend.immilog.user.exception.UserErrorCode.*;
 
 @Service
 public class UserSignInService {
-    final int REFRESH_TOKEN_EXPIRE_TIME = 5 * 29 * 24 * 60;
-    final String TOKEN_PREFIX = "Refresh: ";
+    private final int REFRESH_TOKEN_EXPIRE_TIME = 5 * 29 * 24 * 60;
+    private final String TOKEN_PREFIX = "Refresh: ";
     private final UserQueryService userQueryService;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
@@ -48,7 +48,7 @@ public class UserSignInService {
             User user,
             Pair<String, String> countryPair
     ) {
-        String country = user.getCountry().koreanName();
+        String country = user.getCountryNameInKorean();
         String region = user.getRegion();
         return country.equals(countryPair.getFirst()) && region.equals(countryPair.getSecond());
     }

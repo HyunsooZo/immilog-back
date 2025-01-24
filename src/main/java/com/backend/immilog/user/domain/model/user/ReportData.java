@@ -1,22 +1,16 @@
 package com.backend.immilog.user.domain.model.user;
 
-import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.sql.Date;
 
 @Getter(AccessLevel.PROTECTED)
-@Embeddable
-public class ReportInfo {
+public class ReportData {
     private Long reportedCount;
     private Date reportedDate;
 
-    protected ReportInfo() {}
-
-    @Builder
-    ReportInfo(
+    public ReportData(
             Long reportedCount,
             Date reportedDate
     ) {
@@ -24,14 +18,11 @@ public class ReportInfo {
         this.reportedDate = reportedDate;
     }
 
-    public static ReportInfo of(
+    public static ReportData of(
             Long reportedCount,
             Date reportedDate
     ) {
-        return ReportInfo.builder()
-                .reportedCount(reportedCount)
-                .reportedDate(reportedDate)
-                .build();
+        return new ReportData(reportedCount, reportedDate);
     }
 
     protected void increaseReportCount() {
@@ -41,4 +32,5 @@ public class ReportInfo {
     public void updateReportedDate() {
         this.reportedDate = new Date(System.currentTimeMillis());
     }
+
 }

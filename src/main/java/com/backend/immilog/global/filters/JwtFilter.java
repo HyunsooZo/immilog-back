@@ -32,15 +32,11 @@ public class JwtFilter extends OncePerRequestFilter {
         this.jwtProvider = jwtProvider;
     }
 
-    private boolean isFilterCheck(
-            String requestURI
-    ) {
+    private boolean isFilterCheck(String requestURI) {
         return !PatternMatchUtils.simpleMatch(ALL_WHITELIST, requestURI);
     }
 
-    private String extractTokenFromRequest(
-            HttpServletRequest request
-    ) {
+    private String extractTokenFromRequest(HttpServletRequest request) {
         String bearerToken = request.getHeader(AUTHORIZATION);
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);

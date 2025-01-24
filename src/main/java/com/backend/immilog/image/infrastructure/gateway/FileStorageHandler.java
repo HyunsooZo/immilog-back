@@ -8,7 +8,5 @@ public interface FileStorageHandler {
             String imagePath
     );
 
-    void deleteFile(
-            String imagePath
-    );
+    void deleteFile(String imagePath);
 }
