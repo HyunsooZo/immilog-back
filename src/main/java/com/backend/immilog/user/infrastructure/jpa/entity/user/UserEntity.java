@@ -1,15 +1,16 @@
-package com.backend.immilog.user.infrastructure.jpa.entity;
+package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
-import com.backend.immilog.user.domain.model.user.Location;
-import com.backend.immilog.user.domain.model.user.ReportInfo;
 import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.exception.UserErrorCode;
+import com.backend.immilog.user.exception.UserException;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 @DynamicUpdate
@@ -22,17 +23,8 @@ public class UserEntity {
     @Column(name = "seq")
     private Long seq;
 
-    @Column(name = "nickname")
-    private String nickname;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "password")
-    private String password;
-
-    @Column(name = "image_url")
-    private String imageUrl;
+    @Embedded
+    private AuthEntity auth;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status")
@@ -42,15 +34,14 @@ public class UserEntity {
     @Column(name = "user_role")
     private UserRole userRole;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "interest_country")
-    private UserCountry interestCountry;
+    @Embedded
+    private LocationEntity location;
 
     @Embedded
-    private Location location;
+    private ReportDataEntity report;
 
     @Embedded
-    private ReportInfo reportInfo;
+    private ProfileEntity profile;
 
     @Column(name = "created_at")
     private final LocalDateTime createdAt = LocalDateTime.now();
@@ -63,59 +54,63 @@ public class UserEntity {
     @Builder
     protected UserEntity(
             Long seq,
-            String nickName,
             String email,
             String password,
-            String imageUrl,
             UserStatus userStatus,
             UserRole userRole,
+            Long reportedCount,
+            Date reportedDate,
+            String nickname,
+            String imageUrl,
+            UserCountry country,
+            String region,
             UserCountry interestCountry,
-            Location location,
-            ReportInfo reportInfo,
             LocalDateTime updatedAt
     ) {
+        AuthEntity auth = AuthEntity.of(email, password);
+        ProfileEntity profile = ProfileEntity.of(nickname, imageUrl, interestCountry);
+        LocationEntity location = LocationEntity.of(country, region);
+        ReportDataEntity reportData = ReportDataEntity.of(reportedCount, reportedDate);
         this.seq = seq;
-        this.nickname = nickName;
-        this.email = email;
-        this.password = password;
-        this.imageUrl = imageUrl;
+        this.auth = auth;
         this.userStatus = userStatus;
         this.userRole = userRole;
-        this.interestCountry = interestCountry;
+        this.profile = profile;
         this.location = location;
-        this.reportInfo = reportInfo;
+        this.report = reportData;
         this.updatedAt = updatedAt;
     }
 
     public static UserEntity from(User user) {
         return UserEntity.builder()
                 .seq(user.getSeq())
-                .nickName(user.getNickname())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .imageUrl(user.getImageUrl())
                 .userStatus(user.getUserStatus())
                 .userRole(user.getUserRole())
+                .country(user.getCountry())
+                .region(user.getRegion())
+                .reportedCount(user.getReportedCount())
+                .reportedDate(user.getReportedDate())
+                .nickname(user.getNickname())
+                .imageUrl(user.getImageUrl())
                 .interestCountry(user.getInterestCountry())
-                .location(user.getLocation())
-                .reportInfo(user.getReportInfo())
                 .updatedAt(user.getSeq() != null ? LocalDateTime.now() : null)
                 .build();
     }
 
     public User toDomain() {
+        if (this.seq == null || this.userRole == null || this.userStatus == null) {
+            throw new UserException(UserErrorCode.ENTITY_TO_DOMAIN_ERROR);
+        }
         return User.builder()
                 .seq(this.seq)
-                .nickName(this.nickname)
-                .email(this.email)
-                .password(this.password)
-                .imageUrl(this.imageUrl)
+                .auth(this.auth.toDomain())
                 .userStatus(this.userStatus)
                 .userRole(this.userRole)
-                .interestCountry(this.interestCountry)
-                .location(this.location)
-                .reportInfo(this.reportInfo)
-                .createdAt(this.createdAt)
+                .location(this.location.toDomain())
+                .reportData(this.report.toDomain())
+                .profile(this.profile.toDomain())
                 .updatedAt(this.updatedAt)
                 .build();
     }

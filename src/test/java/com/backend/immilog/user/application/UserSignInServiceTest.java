@@ -8,7 +8,9 @@ import com.backend.immilog.user.application.services.UserSignInService;
 import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.Auth;
 import com.backend.immilog.user.domain.model.user.Location;
+import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
 import com.backend.immilog.user.presentation.request.UserSignInRequest;
@@ -56,18 +58,15 @@ class UserSignInServiceTest {
                 .longitude(127.1234)
                 .build();
 
-        Location location = Location.builder()
-                .country(SOUTH_KOREA)
-                .region("서울")
-                .build();
+        Location location = Location.of(SOUTH_KOREA, "서울");
 
         User user = User.builder()
                 .seq(1L)
-                .email(userSignInRequest.email())
+                .auth(Auth.of(userSignInRequest.email(), passwordEncoder.encode(userSignInRequest.password())))
                 .userStatus(UserStatus.ACTIVE)
                 .userRole(UserRole.ROLE_USER)
-                .password(passwordEncoder.encode(userSignInRequest.password()))
                 .location(location)
+                .profile(Profile.of("test", "image", SOUTH_KOREA))
                 .build();
 
         when(userQueryService.getUserByEmail(userSignInRequest.email()))
@@ -112,17 +111,13 @@ class UserSignInServiceTest {
                 .longitude(127.1234)
                 .build();
 
-        Location location = Location.builder()
-                .country(SOUTH_KOREA)
-                .region("서울")
-                .build();
+        Location location = Location.of(SOUTH_KOREA, "서울");
 
         User user = User.builder()
                 .seq(1L)
-                .email(userSignInRequest.email())
+                .auth(Auth.of(userSignInRequest.email(), passwordEncoder.encode(userSignInRequest.password())))
                 .userStatus(UserStatus.ACTIVE)
                 .userRole(UserRole.ROLE_USER)
-                .password(passwordEncoder.encode(userSignInRequest.password()))
                 .location(location)
                 .build();
 
@@ -141,14 +136,12 @@ class UserSignInServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "test"))
+                .profile(Profile.of("test", "image", SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(SOUTH_KOREA)
                 .location(Location.of(SOUTH_KOREA, "Seoul"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
 
         Pair<String, String> country = Pair.of("South Korea", "Seoul");
@@ -177,14 +170,12 @@ class UserSignInServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "test"))
+                .profile(Profile.of("test", "image", SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(SOUTH_KOREA)
                 .location(Location.of(MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
 
         Pair<String, String> country = Pair.of("South Korea", "Seoul");

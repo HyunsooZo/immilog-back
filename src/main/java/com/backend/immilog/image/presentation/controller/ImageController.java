@@ -36,9 +36,7 @@ public class ImageController {
     ) {
         List<String> data = imageService.saveFiles(multipartFile, imagePath, imageType);
 
-        return ResponseEntity
-                .status(OK)
-                .body(ImageResponse.of(data));
+        return ResponseEntity.status(OK).body(ImageResponse.of(data));
     }
 
     @DeleteMapping

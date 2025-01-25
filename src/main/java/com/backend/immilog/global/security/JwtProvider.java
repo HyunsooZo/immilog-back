@@ -64,9 +64,7 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public boolean validateToken(
-            String token
-    ) {
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(secretKey)
@@ -79,9 +77,7 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public Long getIdFromToken(
-            String token
-    ) {
+    public Long getIdFromToken(String token) {
         token = removeBearer(token);
 
         return Long.parseLong(Jwts.parserBuilder()
@@ -93,9 +89,7 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public String getEmailFromToken(
-            String token
-    ) {
+    public String getEmailFromToken(String token) {
         token = removeBearer(token);
 
         return Jwts.parserBuilder()
@@ -107,9 +101,7 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public Authentication getAuthentication(
-            String token
-    ) {
+    public Authentication getAuthentication(String token) {
         token = removeBearer(token);
 
         Claims claims = Jwts.parserBuilder()
@@ -132,9 +124,7 @@ public class JwtProvider implements TokenProvider {
     }
 
     @Override
-    public UserRole getUserRoleFromToken(
-            String authorizationHeader
-    ) {
+    public UserRole getUserRoleFromToken(String authorizationHeader) {
         String token = removeBearer(authorizationHeader);
         return UserRole.valueOf(Jwts.parserBuilder()
                 .setSigningKey(secretKey)
@@ -144,18 +134,14 @@ public class JwtProvider implements TokenProvider {
                 .get("userRole", String.class));
     }
 
-    private String removeBearer(
-            String token
-    ) {
+    private String removeBearer(String token) {
         if (token.startsWith("Bearer ")) {
             return token.substring(7);
         }
         return token;
     }
 
-    private String buildJwt(
-            Claims claims
-    ) {
+    private String buildJwt(Claims claims) {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuer(issuer)

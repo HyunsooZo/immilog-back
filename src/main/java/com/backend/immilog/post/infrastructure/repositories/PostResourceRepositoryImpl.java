@@ -2,10 +2,10 @@ package com.backend.immilog.post.infrastructure.repositories;
 
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.PostResource;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.domain.repositories.PostResourceRepository;
 import com.backend.immilog.post.infrastructure.jdbc.PostResourceJdbcRepository;
-import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.resource.PostResourceEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.PostResourceJpaRepository;
 import org.springframework.stereotype.Repository;
 

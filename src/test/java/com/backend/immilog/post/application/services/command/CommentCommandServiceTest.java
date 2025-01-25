@@ -2,7 +2,8 @@ package com.backend.immilog.post.application.services.command;
 
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
-import com.backend.immilog.post.domain.model.Comment;
+import com.backend.immilog.post.domain.model.comment.Comment;
+import com.backend.immilog.post.domain.model.comment.CommentRelation;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,12 +27,10 @@ class CommentCommandServiceTest {
         Comment comment = new Comment(
                 1L,
                 1L,
-                1L,
-                1L,
                 0,
                 0,
                 "content",
-                ReferenceType.POST,
+                CommentRelation.of(1L, 1L, ReferenceType.POST),
                 PostStatus.NORMAL,
                 List.of(),
                 LocalDateTime.now(),

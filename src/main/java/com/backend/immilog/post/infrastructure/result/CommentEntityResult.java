@@ -2,7 +2,7 @@ package com.backend.immilog.post.infrastructure.result;
 
 import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.domain.enums.PostStatus;
-import com.backend.immilog.post.domain.model.Comment;
+import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.model.user.User;
 import lombok.Builder;

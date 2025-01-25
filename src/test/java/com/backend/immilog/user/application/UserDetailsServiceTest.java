@@ -2,6 +2,7 @@ package com.backend.immilog.user.application;
 
 import com.backend.immilog.global.security.UserDetailsServiceImpl;
 import com.backend.immilog.user.application.services.query.UserQueryService;
+import com.backend.immilog.user.domain.model.user.Auth;
 import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,8 +28,7 @@ class UserDetailsServiceTest {
         // given
         String email = "test@email.com";
         User user = User.builder()
-                .email(email)
-                .password("password")
+                .auth(Auth.of(email, "password"))
                 .userRole(ROLE_USER)
                 .build();
 

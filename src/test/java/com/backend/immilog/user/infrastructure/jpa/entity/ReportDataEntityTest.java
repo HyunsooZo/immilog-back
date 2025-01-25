@@ -2,6 +2,7 @@ package com.backend.immilog.user.infrastructure.jpa.entity;
 
 import com.backend.immilog.user.domain.enums.ReportReason;
 import com.backend.immilog.user.domain.model.report.Report;
+import com.backend.immilog.user.infrastructure.jpa.entity.report.ReportEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,7 +10,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("ReportEntity 테스트")
-class ReportEntityTest {
+class ReportDataEntityTest {
     @Test
     @DisplayName("ReportEntity -> Report")
     void reportEntityFromReport_validReport() {

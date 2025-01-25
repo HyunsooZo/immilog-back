@@ -1,8 +1,8 @@
-package com.backend.immilog.post.infrastructure.jpa.entity;
+package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
-import com.backend.immilog.post.domain.model.JobBoard;
-import com.backend.immilog.post.domain.model.JobBoardCompany;
-import com.backend.immilog.post.domain.model.PostInfo;
+import com.backend.immilog.post.domain.model.post.JobBoard;
+import com.backend.immilog.post.domain.model.post.JobBoardCompany;
+import com.backend.immilog.post.domain.model.post.PostData;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
@@ -22,7 +22,7 @@ public class JobBoardEntity {
     private Long userSeq;
 
     @Embedded
-    private PostInfo postInfo;
+    private PostData postData;
 
     @Embedded
     private JobBoardCompany jobBoardCompany;
@@ -39,13 +39,13 @@ public class JobBoardEntity {
     protected JobBoardEntity(
             Long seq,
             Long userSeq,
-            PostInfo postInfo,
+            PostData postData,
             JobBoardCompany jobBoardCompany,
             LocalDateTime updatedAt
     ) {
         this.seq = seq;
         this.userSeq = userSeq;
-        this.postInfo = postInfo;
+        this.postData = postData;
         this.jobBoardCompany = jobBoardCompany;
         this.updatedAt = updatedAt;
     }
@@ -54,7 +54,7 @@ public class JobBoardEntity {
         return JobBoardEntity.builder()
                 .seq(jobBoard.getSeq())
                 .userSeq(jobBoard.getUserSeq())
-                .postInfo(jobBoard.getPostInfo())
+                .postData(jobBoard.getPostData())
                 .jobBoardCompany(jobBoard.getJobBoardCompany())
                 .updatedAt(jobBoard.getSeq() != null ? LocalDateTime.now() : null)
                 .build();
@@ -64,7 +64,7 @@ public class JobBoardEntity {
         return JobBoard.builder()
                 .seq(this.seq)
                 .userSeq(this.userSeq)
-                .postInfo(this.postInfo)
+                .postData(this.postData)
                 .jobBoardCompany(this.jobBoardCompany)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)

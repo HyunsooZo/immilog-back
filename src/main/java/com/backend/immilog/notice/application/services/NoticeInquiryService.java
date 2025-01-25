@@ -48,7 +48,7 @@ public class NoticeInquiryService {
         User user = userQueryService.getUserById(userSeq)
                 .orElseThrow(() -> new NoticeException(USER_NOT_FOUND));
         return noticeQueryService.areUnreadNoticesExist(
-                NoticeCountry.valueOf(user.getCountry().name()),
+                NoticeCountry.valueOf(user.getCountryName()),
                 user.getSeq()
         );
     }

@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services.command;
 
-import com.backend.immilog.post.domain.model.JobBoard;
+import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.post.domain.repositories.JobBoardRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

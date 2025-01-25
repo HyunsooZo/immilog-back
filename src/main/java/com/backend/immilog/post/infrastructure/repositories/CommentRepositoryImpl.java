@@ -1,10 +1,10 @@
 package com.backend.immilog.post.infrastructure.repositories;
 
 import com.backend.immilog.post.application.result.CommentResult;
-import com.backend.immilog.post.domain.model.Comment;
+import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
 import com.backend.immilog.post.infrastructure.jdbc.CommentJdbcRepository;
-import com.backend.immilog.post.infrastructure.jpa.entity.CommentEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.comment.CommentEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.CommentJpaRepository;
 import com.backend.immilog.post.infrastructure.result.CommentEntityResult;
 import org.springframework.stereotype.Repository;

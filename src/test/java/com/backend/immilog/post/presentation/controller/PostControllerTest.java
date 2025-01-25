@@ -50,10 +50,7 @@ class PostControllerTest {
                 .content("content")
                 .isPublic(true)
                 .build();
-        Location location = Location.builder()
-                .country(UserCountry.SOUTH_KOREA)
-                .region("region")
-                .build();
+        Location location = Location.of(UserCountry.SOUTH_KOREA, "region");
         User user = User.builder()
                 .seq(1L)
                 .location(location)

@@ -1,6 +1,7 @@
 package com.backend.immilog.notice.infrastructure.jpa.entities;
 
 import com.backend.immilog.notice.domain.model.Notice;
+import com.backend.immilog.notice.domain.model.NoticeDetail;
 import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
@@ -21,10 +22,7 @@ class NoticeEntityTest {
         Notice notice = Notice.builder()
                 .seq(1L)
                 .userSeq(2L)
-                .title("Title")
-                .content("Content")
-                .type(NoticeType.NOTICE)
-                .status(NoticeStatus.NORMAL)
+                .detail(NoticeDetail.of("Title", "Content", NoticeType.NOTICE, NoticeStatus.NORMAL))
                 .targetCountries(List.of(NoticeCountry.SINGAPORE))
                 .readUsers(List.of(3L))
                 .build();
@@ -74,10 +72,7 @@ class NoticeEntityTest {
         Notice notice = Notice.builder()
                 .seq(null)
                 .userSeq(null)
-                .title(null)
-                .content(null)
-                .type(null)
-                .status(null)
+                .detail(NoticeDetail.of(null, null, null, null))
                 .targetCountries(null)
                 .readUsers(null)
                 .build();

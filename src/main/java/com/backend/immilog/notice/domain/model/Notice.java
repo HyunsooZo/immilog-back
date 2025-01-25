@@ -9,7 +9,7 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Stream;
 
 @Getter
 public class Notice {
@@ -18,20 +18,14 @@ public class Notice {
     private final List<NoticeCountry> targetCountries;
     private final List<Long> readUsers;
     private final LocalDateTime createdAt;
-    private String title;
-    private String content;
-    private NoticeType type;
-    private NoticeStatus status;
+    private NoticeDetail detail;
     private LocalDateTime updatedAt;
 
     @Builder
     public Notice(
             Long seq,
             Long userSeq,
-            String title,
-            String content,
-            NoticeType type,
-            NoticeStatus status,
+            NoticeDetail detail,
             List<NoticeCountry> targetCountries,
             List<Long> readUsers,
             LocalDateTime createdAt,
@@ -39,10 +33,7 @@ public class Notice {
     ) {
         this.seq = seq;
         this.userSeq = userSeq;
-        this.title = title;
-        this.content = content;
-        this.type = type;
-        this.status = status;
+        this.detail = detail;
         this.targetCountries = targetCountries;
         this.readUsers = readUsers;
         this.createdAt = createdAt;
@@ -54,53 +45,103 @@ public class Notice {
             NoticeUploadCommand command
     ) {
         return Notice.builder()
-                .title(command.title())
+                .detail(NoticeDetail.of(
+                        command.title(),
+                        command.content(),
+                        command.type(),
+                        NoticeStatus.NORMAL
+                ))
                 .userSeq(userSeq)
-                .content(command.content())
-                .type(command.type())
                 .targetCountries(command.targetCountries())
-                .status(NoticeStatus.NORMAL)
                 .build();
     }
 
     public void updateTitle(String title) {
-        Optional.ofNullable(title).ifPresent(newTitle -> {
-            this.title = newTitle;
-            updateUpdatedAt();
-        });
+        Stream.of(this.detail)
+                .filter(detail -> !this.detail.title().equals(title))
+                .findFirst()
+                .ifPresent(detail -> {
+                            this.detail = NoticeDetail.of(
+                                    title,
+                                    this.detail.content(),
+                                    this.detail.type(),
+                                    this.detail.status()
+                            );
+                            updateUpdatedAt();
+                        }
+                );
     }
 
     public void updateContent(String content) {
-        Optional.ofNullable(content).ifPresent(newContent -> {
-            this.content = newContent;
-            updateUpdatedAt();
-        });
+        Stream.of(this.detail)
+                .filter(detail -> !this.detail.content().equals(content))
+                .findFirst()
+                .ifPresent(detail -> {
+                            this.detail = NoticeDetail.of(
+                                    this.detail.title(),
+                                    content,
+                                    this.detail.type(),
+                                    this.detail.status()
+                            );
+                            updateUpdatedAt();
+                        }
+                );
     }
 
     public void updateType(NoticeType type) {
-        Optional.ofNullable(type).ifPresent(newType -> {
-            this.type = newType;
-            updateUpdatedAt();
-        });
+        Stream.of(this.detail)
+                .filter(detail -> !this.detail.type().equals(type))
+                .findFirst()
+                .ifPresent(detail -> {
+                            this.detail = NoticeDetail.of(
+                                    this.detail.title(),
+                                    this.detail.content(),
+                                    type,
+                                    this.detail.status()
+                            );
+                            updateUpdatedAt();
+                        }
+                );
     }
 
     public void updateStatus(NoticeStatus status) {
-        Optional.ofNullable(status).ifPresent(newStatus -> {
-            this.status = newStatus;
-            updateUpdatedAt();
-        });
+        Stream.of(this.detail)
+                .filter(detail -> !this.detail.status().equals(status))
+                .findFirst()
+                .ifPresent(detail -> {
+                            this.detail = NoticeDetail.of(
+                                    this.detail.title(),
+                                    this.detail.content(),
+                                    this.detail.type(),
+                                    status
+                            );
+                            updateUpdatedAt();
+                        }
+                );
     }
 
     public void readByUser(Long userSeq) {
-        updateReadUsers(userSeq);
+        this.readUsers.add(userSeq);
     }
 
     void updateUpdatedAt() {
         this.updatedAt = LocalDateTime.now();
     }
 
-    void updateReadUsers(Long userSeq) {
-        this.readUsers.add(userSeq);
+    public String getTitle() {
+        return this.detail.title();
+    }
+
+    public String getContent() {
+        return this.detail.content();
+    }
+
+    public NoticeType getType() {
+        return this.detail.type();
+    }
+
+    public NoticeStatus getStatus() {
+        return this.detail.status();
     }
 }
 

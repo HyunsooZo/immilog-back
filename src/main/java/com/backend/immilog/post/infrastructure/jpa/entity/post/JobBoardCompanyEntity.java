@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model;
+package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Getter(AccessLevel.PROTECTED)
 @Embeddable
-public class JobBoardCompany {
+public class JobBoardCompanyEntity {
     private Long companySeq;
 
     @Enumerated(EnumType.STRING)
@@ -31,10 +31,10 @@ public class JobBoardCompany {
     private String companyHomepage;
     private String companyLogo;
 
-    protected JobBoardCompany() {}
+    protected JobBoardCompanyEntity() {}
 
     @Builder
-    JobBoardCompany(
+    JobBoardCompanyEntity(
             Long companySeq,
             Industry industry,
             Experience experience,
@@ -60,7 +60,7 @@ public class JobBoardCompany {
         this.companyLogo = companyLogo;
     }
 
-    public static JobBoardCompany of(
+    public static JobBoardCompanyEntity of(
             Long companySeq,
             Industry industry,
             Experience experience,
@@ -73,7 +73,7 @@ public class JobBoardCompany {
             String companyHomepage,
             String companyLogo
     ) {
-        return JobBoardCompany.builder()
+        return JobBoardCompanyEntity.builder()
                 .companySeq(companySeq)
                 .industry(industry)
                 .experience(experience)

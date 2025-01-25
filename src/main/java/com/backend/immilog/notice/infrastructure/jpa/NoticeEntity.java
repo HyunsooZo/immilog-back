@@ -1,6 +1,7 @@
 package com.backend.immilog.notice.infrastructure.jpa;
 
 import com.backend.immilog.notice.domain.model.Notice;
+import com.backend.immilog.notice.domain.model.NoticeDetail;
 import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
@@ -84,15 +85,11 @@ public class NoticeEntity {
                 .build();
     }
 
-    public Notice toDomain(
-    ) {
+    public Notice toDomain() {
         return Notice.builder()
                 .seq(this.seq)
                 .userSeq(this.userSeq)
-                .title(this.title)
-                .content(this.content)
-                .type(this.type)
-                .status(this.status)
+                .detail(NoticeDetail.of(this.title, this.content, this.type, this.status))
                 .targetCountries(this.targetCountries)
                 .readUsers(this.readUsers)
                 .createdAt(this.createdAt)

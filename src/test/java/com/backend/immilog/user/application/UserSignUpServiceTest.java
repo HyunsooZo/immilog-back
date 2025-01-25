@@ -4,6 +4,7 @@ import com.backend.immilog.user.application.services.UserSignUpService;
 import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
 import com.backend.immilog.user.presentation.request.UserSignUpRequest;
@@ -47,7 +48,7 @@ class UserSignUpServiceTest {
                 .profileImage("image")
                 .build();
 
-        User user = User.builder().seq(1L).nickName("test").build();
+        User user = User.builder().seq(1L).profile(Profile.of("test",null,null)).build();
         when(userCommandService.save(any(User.class))).thenReturn(user);
         when(passwordEncoder.encode(anyString())).thenReturn("test1234");
         Pair<Long, String> seqAndNickName = userSignUpService.signUp(param.toCommand());

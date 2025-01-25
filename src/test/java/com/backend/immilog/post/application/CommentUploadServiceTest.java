@@ -5,7 +5,7 @@ import com.backend.immilog.post.application.services.command.CommentCommandServi
 import com.backend.immilog.post.application.services.command.PostCommandService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.exception.PostException;
-import com.backend.immilog.post.domain.model.Post;
+import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.presentation.request.CommentUploadRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

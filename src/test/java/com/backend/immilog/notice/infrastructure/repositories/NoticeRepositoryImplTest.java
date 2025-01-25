@@ -2,7 +2,10 @@ package com.backend.immilog.notice.infrastructure.repositories;
 
 import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.domain.model.Notice;
+import com.backend.immilog.notice.domain.model.NoticeDetail;
 import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
+import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
+import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeEntity;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaRepository;
@@ -31,7 +34,9 @@ class NoticeRepositoryImplTest {
     @Test
     @DisplayName("공지사항 저장 - 성공")
     void save_savesNoticeSuccessfully() {
-        Notice notice = Notice.builder().seq(1L).build();
+        Notice notice = Notice.builder().detail(new NoticeDetail("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL)
+        ).targetCountries(List.of(NoticeCountry.SOUTH_KOREA)
+        ).seq(1L).build();
         NoticeEntity noticeEntity = NoticeEntity.from(notice);
         when(noticeJpaRepository.save(any(NoticeEntity.class))).thenReturn(noticeEntity);
         noticeRepository.save(notice);

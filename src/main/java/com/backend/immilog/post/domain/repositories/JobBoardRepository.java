@@ -4,7 +4,7 @@ import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
-import com.backend.immilog.post.domain.model.JobBoard;
+import com.backend.immilog.post.domain.model.post.JobBoard;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

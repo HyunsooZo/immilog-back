@@ -1,35 +1,23 @@
-package com.backend.immilog.post.domain.model;
+package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.PostStatus;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
-@Embeddable
-public class PostInfo {
+public class PostData {
     private String title;
-
     private String content;
-
     private Long viewCount;
-
     private Long likeCount;
-
     private String region;
-    @Enumerated(EnumType.STRING)
     private PostStatus status;
-    @Enumerated(EnumType.STRING)
     private Countries country;
 
-    protected PostInfo() {}
-
     @Builder
-    PostInfo(
+    PostData(
             String title,
             String content,
             Long viewCount,
@@ -47,13 +35,13 @@ public class PostInfo {
         this.country = country;
     }
 
-    public static <T extends Enum<T>> PostInfo of(
+    public static <T extends Enum<T>> PostData of(
             String title,
             String content,
             T country,
             String region
     ) {
-        return PostInfo.builder()
+        return PostData.builder()
                 .title(title)
                 .content(content)
                 .viewCount(0L)

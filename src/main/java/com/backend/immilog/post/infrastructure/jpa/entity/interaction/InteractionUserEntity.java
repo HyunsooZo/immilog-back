@@ -1,8 +1,8 @@
-package com.backend.immilog.post.infrastructure.jpa.entity;
+package com.backend.immilog.post.infrastructure.jpa.entity.interaction;
 
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.domain.model.InteractionUser;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;

@@ -22,8 +22,7 @@ public record UserSignInResult(
             String refreshToken,
             boolean isLocationMatch
     ) {
-        String interestCountry = user.getInterestCountry() == null ?
-                null : user.getCountry().name();
+        String interestCountry = user.getInterestCountry() == null ? null : user.getCountryName();
 
         return UserSignInResult.builder()
                 .userSeq(user.getSeq())
@@ -31,7 +30,7 @@ public record UserSignInResult(
                 .nickname(user.getNickname())
                 .accessToken(accessToken == null ? "" : accessToken)
                 .refreshToken(refreshToken == null ? "" : refreshToken)
-                .country(user.getCountry().name())
+                .country(user.getCountryName())
                 .interestCountry(interestCountry)
                 .region(user.getRegion())
                 .userProfileUrl(user.getImageUrl())

@@ -10,9 +10,7 @@ import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.exception.NoticeException;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
-import com.backend.immilog.user.domain.model.user.Location;
-import com.backend.immilog.user.domain.model.user.ReportInfo;
-import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.domain.model.user.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -88,15 +86,12 @@ class NoticeModifyServiceTest {
         NoticeModifyCommand command = mock(NoticeModifyCommand.class);
         User user = User.builder()
                 .seq(userSeq)
-                .email("email")
-                .nickName("name")
-                .password("password")
-                .interestCountry(UserCountry.SOUTH_KOREA)
+                .auth(Auth.of("email", "password"))
+                .profile(Profile.of("name", "image.png", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.ACTIVE)
                 .userRole(UserRole.ROLE_ADMIN)
-                .location(Location.builder().country(UserCountry.SOUTH_KOREA).region("seoul").build())
-                .reportInfo(ReportInfo.of(0L, Date.valueOf(LocalDate.now())))
-                .createdAt(LocalDateTime.now())
+                .location(Location.of(UserCountry.SOUTH_KOREA, "seoul"))
+                .reportData(ReportData.of(0L, Date.valueOf(LocalDate.now())))
                 .updatedAt(LocalDateTime.now())
                 .build();
         Notice notice = mock(Notice.class);

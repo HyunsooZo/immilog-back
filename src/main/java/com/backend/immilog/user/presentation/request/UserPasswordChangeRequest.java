@@ -18,9 +18,6 @@ public record UserPasswordChangeRequest(
         String newPassword
 ) {
     public UserPasswordChangeCommand toCommand() {
-        return UserPasswordChangeCommand.builder()
-                .existingPassword(existingPassword)
-                .newPassword(newPassword)
-                .build();
+        return new UserPasswordChangeCommand(existingPassword, newPassword);
     }
 }

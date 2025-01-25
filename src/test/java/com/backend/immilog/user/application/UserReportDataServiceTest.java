@@ -7,10 +7,7 @@ import com.backend.immilog.user.application.services.query.ReportQueryService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.ReportReason;
 import com.backend.immilog.user.domain.enums.UserStatus;
-import com.backend.immilog.user.domain.model.report.Report;
-import com.backend.immilog.user.domain.model.user.Location;
-import com.backend.immilog.user.domain.model.user.ReportInfo;
-import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.domain.model.user.*;
 import com.backend.immilog.user.exception.UserException;
 import com.backend.immilog.user.presentation.request.UserReportRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @DisplayName("사용자 신고 서비스 테스트")
-class UserReportServiceTest {
+class UserReportDataServiceTest {
     private final UserQueryService userQueryService = mock(UserQueryService.class);
     private final UserCommandService userCommandService = mock(UserCommandService.class);
     private final ReportCommandService reportCommandService = mock(ReportCommandService.class);
@@ -49,15 +46,13 @@ class UserReportServiceTest {
         Long reporterUserSeq = 2L;
         User user = User.builder()
                 .seq(targetUserSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "test"))
+                .profile(Profile.of("test", "image", SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(SOUTH_KOREA)
                 .location(Location.of(MALAYSIA, "KL"))
-                .reportInfo(
-                        ReportInfo.of(
+                .reportData(
+                        ReportData.of(
                                 1L,
                                 Date.valueOf(LocalDateTime.now().toLocalDate()))
                 )
@@ -76,7 +71,7 @@ class UserReportServiceTest {
         );
 
         // then
-        verify(reportCommandService, times(1)).save(any(Report.class));
+        verify(reportCommandService, times(1)).save(any(com.backend.immilog.user.domain.model.report.Report.class));
     }
 
     @Test

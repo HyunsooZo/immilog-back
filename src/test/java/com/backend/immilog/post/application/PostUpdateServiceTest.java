@@ -7,10 +7,10 @@ import com.backend.immilog.post.application.services.command.PostResourceCommand
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.model.PostInfo;
-import com.backend.immilog.post.domain.model.PostUserInfo;
-import com.backend.immilog.post.domain.model.PostResource;
+import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.post.PostData;
+import com.backend.immilog.post.domain.model.post.PostUserInfo;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +68,7 @@ class PostUpdateServiceTest {
                 .build();
         Post post = Post.builder()
                 .postUserInfo(PostUserInfo.builder().userSeq(1L).build())
-                .postInfo(PostInfo.builder().build())
+                .postData(PostData.builder().build())
                 .build();
         when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         doNothing().when(preparedStatement).setLong(eq(1), anyLong());
@@ -99,7 +99,7 @@ class PostUpdateServiceTest {
         // given
         Long postSeq = 1L;
         Post post = Post.builder()
-                .postInfo(PostInfo.builder().viewCount(0L).build())
+                .postData(PostData.builder().viewCount(0L).build())
                 .build();
         when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         // when
