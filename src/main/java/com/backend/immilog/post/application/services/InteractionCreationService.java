@@ -4,7 +4,7 @@ import com.backend.immilog.post.application.services.command.InteractionUserComm
 import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.domain.model.InteractionUser;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

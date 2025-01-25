@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services.command;
 
-import com.backend.immilog.post.domain.model.Comment;
+import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

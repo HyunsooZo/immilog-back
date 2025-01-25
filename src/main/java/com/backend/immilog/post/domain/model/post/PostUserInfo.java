@@ -1,18 +1,14 @@
-package com.backend.immilog.post.domain.model;
+package com.backend.immilog.post.domain.model.post;
 
-import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
-@Embeddable
 public class PostUserInfo {
     private Long userSeq;
     private String nickname;
     private String profileImage;
-
-    protected PostUserInfo() {}
 
     @Builder
     PostUserInfo(

@@ -5,13 +5,10 @@ import com.backend.immilog.user.application.services.CompanyInquiryService;
 import com.backend.immilog.user.application.services.query.CompanyQueryService;
 import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.enums.UserCountry;
-import com.backend.immilog.user.infrastructure.jpa.entity.CompanyEntity;
+import com.backend.immilog.user.infrastructure.jpa.entity.company.CompanyEntity;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 import java.util.Optional;
 

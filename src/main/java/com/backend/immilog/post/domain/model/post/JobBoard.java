@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model;
+package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.application.command.JobBoardUploadCommand;
 import com.backend.immilog.user.domain.model.company.Company;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class JobBoard {
     private final Long seq;
     private final Long userSeq;
-    private final PostInfo postInfo;
+    private final PostData postData;
     private final JobBoardCompany jobBoardCompany;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -20,14 +20,14 @@ public class JobBoard {
     public JobBoard(
             Long seq,
             Long userSeq,
-            PostInfo postInfo,
+            PostData postData,
             JobBoardCompany jobBoardCompany,
             LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
         this.seq = seq;
         this.userSeq = userSeq;
-        this.postInfo = postInfo;
+        this.postData = postData;
         this.jobBoardCompany = jobBoardCompany;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -38,34 +38,34 @@ public class JobBoard {
             Company company,
             JobBoardUploadCommand command
     ) {
-        PostInfo postInfo = PostInfo.of(
+        PostData postData = PostData.of(
                 command.title(),
                 command.content(),
-                company.getCompanyCountry(),
-                company.getCompanyRegion()
+                company.getCountry(),
+                company.getRegion()
         );
         JobBoardCompany jobBoardCompany = JobBoardCompany.of(
-                company.getSeq(),
+                company.getCompanySeq(),
                 company.getIndustry().toPostIndustry(),
                 command.experience(),
                 command.deadline(),
                 command.salary(),
-                company.getCompanyName(),
-                company.getCompanyEmail(),
-                company.getCompanyPhone(),
-                company.getCompanyAddress(),
-                company.getCompanyHomepage(),
-                company.getCompanyLogo()
+                company.getName(),
+                company.getEmail(),
+                company.getPhone(),
+                company.getAddress(),
+                company.getHomepage(),
+                company.getLogo()
         );
         return JobBoard.builder()
                 .userSeq(userSeq)
-                .postInfo(postInfo)
+                .postData(postData)
                 .jobBoardCompany(jobBoardCompany)
                 .build();
     }
 
     public void delete() {
-        this.postInfo.delete();
+        this.postData.delete();
     }
 
 }

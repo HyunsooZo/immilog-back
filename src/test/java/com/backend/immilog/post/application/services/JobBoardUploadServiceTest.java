@@ -8,6 +8,8 @@ import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.user.domain.model.user.Auth;
+import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,9 +47,8 @@ class JobBoardUploadServiceTest {
                 .build();
         User user = User.builder()
                 .seq(1L)
-                .email("user@email.com")
-                .nickName("user")
-                .imageUrl("image")
+                .auth(Auth.of("user@email.com",null))
+                .profile(Profile.of("user", "image", null))
                 .build();
         CompanyResult company = CompanyResult.builder()
                 .seq(1L)

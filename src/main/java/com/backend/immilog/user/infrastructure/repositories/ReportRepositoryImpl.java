@@ -2,7 +2,7 @@ package com.backend.immilog.user.infrastructure.repositories;
 
 import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.repositories.ReportRepository;
-import com.backend.immilog.user.infrastructure.jpa.entity.ReportEntity;
+import com.backend.immilog.user.infrastructure.jpa.entity.report.ReportEntity;
 import com.backend.immilog.user.infrastructure.jpa.repositories.ReportJpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -26,9 +26,7 @@ public class ReportRepositoryImpl implements ReportRepository {
     }
 
     @Override
-    public Report save(
-            Report report
-    ) {
+    public Report save(Report report) {
         return reportJpaRepository.save(ReportEntity.from(report)).toDomain();
     }
 }

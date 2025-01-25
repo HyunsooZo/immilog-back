@@ -3,6 +3,8 @@ package com.backend.immilog.user.application.result;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.company.Company;
+import com.backend.immilog.user.domain.model.company.CompanyData;
+import com.backend.immilog.user.domain.model.company.Manager;
 import lombok.Builder;
 
 @Builder
@@ -24,30 +26,38 @@ public record CompanyResult(
     ) {
         return CompanyResult.builder()
                 .industry(company.getIndustry())
-                .companyName(company.getCompanyName())
-                .companyEmail(company.getCompanyEmail())
-                .companyPhone(company.getCompanyPhone())
-                .companyAddress(company.getCompanyAddress())
-                .companyHomepage(company.getCompanyHomepage())
-                .companyCountry(company.getCompanyCountry())
-                .companyRegion(company.getCompanyRegion())
-                .companyLogo(company.getCompanyLogo())
-                .companyManagerUserSeq(company.getCompanyManagerUserSeq())
+                .companyName(company.getName())
+                .companyEmail(company.getEmail())
+                .companyPhone(company.getPhone())
+                .companyAddress(company.getAddress())
+                .companyHomepage(company.getHomepage())
+                .companyCountry(company.getCountry())
+                .companyRegion(company.getRegion())
+                .companyLogo(company.getLogo())
+                .companyManagerUserSeq(company.getManagerUserSeq())
                 .build();
     }
 
     public Company toDomain() {
         return Company.builder()
-                .industry(industry)
-                .companyName(companyName)
-                .companyEmail(companyEmail)
-                .companyPhone(companyPhone)
-                .companyAddress(companyAddress)
-                .companyHomepage(companyHomepage)
-                .companyCountry(companyCountry)
-                .companyRegion(companyRegion)
-                .companyLogo(companyLogo)
-                .companyManagerUserSeq(companyManagerUserSeq)
+                .manager(
+                        Manager.of(
+                                companyCountry,
+                                companyRegion,
+                                companyManagerUserSeq
+                        )
+                )
+                .companyData(
+                        CompanyData.of(
+                                industry,
+                                companyName,
+                                companyEmail,
+                                companyPhone,
+                                companyAddress,
+                                companyHomepage,
+                                companyLogo
+                        )
+                )
                 .build();
     }
 }

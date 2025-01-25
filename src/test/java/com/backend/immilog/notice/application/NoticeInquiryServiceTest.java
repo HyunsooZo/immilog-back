@@ -4,6 +4,7 @@ import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.application.services.NoticeInquiryService;
 import com.backend.immilog.notice.application.services.query.NoticeQueryService;
 import com.backend.immilog.notice.domain.model.Notice;
+import com.backend.immilog.notice.domain.model.NoticeDetail;
 import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
@@ -40,10 +41,8 @@ class NoticeInquiryServiceTest {
         Long userSeq = 1L;
         int page = 0;
         Notice notice = Notice.builder()
-                .title("title")
+                .detail(NoticeDetail.of("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL))
                 .userSeq(userSeq)
-                .content("content")
-                .type(NoticeType.NOTICE)
                 .targetCountries(List.of(NoticeCountry.SOUTH_KOREA))
                 .build();
 
@@ -77,12 +76,9 @@ class NoticeInquiryServiceTest {
         Long noticeSeq = 1L;
         Notice notice = Notice.builder()
                 .seq(noticeSeq)
-                .title("title")
+                .detail(NoticeDetail.of("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL))
                 .userSeq(1L)
-                .content("content")
-                .type(NoticeType.NOTICE)
                 .targetCountries(List.of(NoticeCountry.SOUTH_KOREA))
-                .status(NoticeStatus.NORMAL)
                 .build();
 
         when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(java.util.Optional.of(notice));

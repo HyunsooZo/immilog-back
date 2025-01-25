@@ -4,6 +4,8 @@ import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.exception.UserErrorCode;
+import com.backend.immilog.user.exception.UserException;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
@@ -98,6 +100,9 @@ public class UserEntity {
     }
 
     public User toDomain() {
+        if (this.seq == null || this.userRole == null || this.userStatus == null) {
+            throw new UserException(UserErrorCode.ENTITY_TO_DOMAIN_ERROR);
+        }
         return User.builder()
                 .seq(this.seq)
                 .auth(this.auth.toDomain())

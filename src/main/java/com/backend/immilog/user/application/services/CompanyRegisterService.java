@@ -50,15 +50,16 @@ public class CompanyRegisterService {
             Company company,
             CompanyRegisterCommand request
     ) {
-        company.updateCompanyAddress(request.companyAddress());
-        company.updateCompanyCountry(request.companyCountry());
-        company.updateCompanyEmail(request.companyEmail());
-        company.updateCompanyHomepage(request.companyHomepage());
-        company.updateCompanyLogo(request.companyLogo());
-        company.updateCompanyPhone(request.companyPhone());
-        company.updateCompanyName(request.companyName());
-        company.updateCompanyRegion(request.companyRegion());
-        company.updateCompanyIndustry(request.industry());
-        companyCommandService.save(company);
+        Company updatedCompany = company.updateAddress(request.companyAddress())
+                .updateCountry(request.companyCountry())
+                .updateEmail(request.companyEmail())
+                .updateHomepage(request.companyHomepage())
+                .updateLogo(request.companyLogo())
+                .updatePhone(request.companyPhone())
+                .updateName(request.companyName())
+                .updateRegion(request.companyRegion())
+                .updateIndustry(request.industry());
+
+        companyCommandService.save(updatedCompany);
     }
 }

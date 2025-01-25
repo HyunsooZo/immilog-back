@@ -17,36 +17,28 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<User> getByEmail(
-            String email
-    ) {
+    public Optional<User> getByEmail(String email) {
         return userJpaRepository
                 .findByAuth_Email(email)
                 .map(UserEntity::toDomain);
     }
 
     @Override
-    public Optional<User> getByUserNickname(
-            String nickname
-    ) {
+    public Optional<User> getByUserNickname(String nickname) {
         return userJpaRepository
                 .findByProfile_Nickname(nickname)
                 .map(UserEntity::toDomain);
     }
 
     @Override
-    public Optional<User> getById(
-            Long id
-    ) {
+    public Optional<User> getById(Long id) {
         return userJpaRepository
                 .findById(id)
                 .map(UserEntity::toDomain);
     }
 
     @Override
-    public User save(
-            User of
-    ) {
+    public User save(User of) {
         return userJpaRepository.save(UserEntity.from(of)).toDomain();
     }
 }

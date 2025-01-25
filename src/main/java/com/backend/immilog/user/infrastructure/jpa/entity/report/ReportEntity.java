@@ -1,4 +1,4 @@
-package com.backend.immilog.user.infrastructure.jpa.entity;
+package com.backend.immilog.user.infrastructure.jpa.entity.report;
 
 import com.backend.immilog.user.domain.enums.ReportReason;
 import com.backend.immilog.user.domain.model.report.Report;

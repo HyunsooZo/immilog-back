@@ -2,6 +2,8 @@ package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.user.Profile;
+import com.backend.immilog.user.exception.UserErrorCode;
+import com.backend.immilog.user.exception.UserException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -44,6 +46,9 @@ public class ProfileEntity {
     }
 
     public Profile toDomain() {
+        if (this.nickname == null) {
+            throw new UserException(UserErrorCode.ENTITY_TO_DOMAIN_ERROR);
+        }
         return Profile.of(this.nickname, this.imageUrl, this.interestCountry);
     }
 }

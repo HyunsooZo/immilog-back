@@ -7,16 +7,17 @@ import com.backend.immilog.user.domain.enums.UserStatus;
 import lombok.Builder;
 
 import java.sql.Date;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 public class User {
     private final Long seq;
-    private final Auth auth;
+    private Auth auth;
     private final UserRole userRole;
-    private final ReportData reportData;
-    private final Profile profile;
-    private final Location location;
+    private ReportData reportData;
+    private Profile profile;
+    private Location location;
     private UserStatus userStatus;
     private LocalDateTime updatedAt;
 
@@ -68,7 +69,7 @@ public class User {
         Optional.ofNullable(encodedPassword)
                 .filter(password -> !password.trim().isEmpty())
                 .ifPresent(password -> {
-                    this.auth.updatePassword(password);
+                    this.auth = Auth.of(this.auth.email(), encodedPassword);
                     updateTimestamp();
                 });
     }
@@ -86,16 +87,16 @@ public class User {
         Optional.ofNullable(nickname)
                 .filter(name -> !name.trim().isEmpty())
                 .ifPresent(name -> {
-                    this.profile.updateNickName(name);
+                    this.profile = Profile.of(nickname, this.profile.imageUrl(), this.profile.interestCountry());
                     updateTimestamp();
                 });
     }
 
     public void changeInterestCountry(UserCountry interestCountry) {
         Optional.ofNullable(interestCountry)
-                .filter(country -> !country.equals(this.profile.getInterestCountry()))
+                .filter(country -> !country.equals(this.profile.interestCountry()))
                 .ifPresent(country -> {
-                    this.profile.updateInterestCountry(country);
+                    this.profile = Profile.of(this.profile.nickname(), this.profile.imageUrl(), country);
                     updateTimestamp();
                 });
     }
@@ -104,7 +105,7 @@ public class User {
         Optional.ofNullable(imageUrl)
                 .filter(url -> !url.trim().isEmpty())
                 .ifPresent(url -> {
-                    this.profile.updateImageUrl(url);
+
                     updateTimestamp();
                 });
     }
@@ -113,16 +114,16 @@ public class User {
         Optional.ofNullable(second)
                 .filter(region -> !region.trim().isEmpty())
                 .ifPresent(region -> {
-                    this.location.updateLocation(this.location.getCountry(), region);
+                    this.location = Location.of(this.location.country(), region);
                     updateTimestamp();
                 });
     }
 
     public void changeCountry(UserCountry country) {
         Optional.ofNullable(country)
-                .filter(value -> !value.equals(this.location.getCountry()))
+                .filter(value -> !value.equals(this.location.country()))
                 .ifPresent(value -> {
-                    this.location.updateLocation(value, this.location.getRegion());
+                    this.location = Location.of(value, this.location.region());
                     updateTimestamp();
                 });
     }
@@ -134,32 +135,32 @@ public class User {
     }
 
     public Long getReportedCount() {
-        return this.reportData.getReportedCount();
+        return this.reportData.reportedCount();
     }
 
     public Date getReportedDate() {
-        return this.reportData.getReportedDate();
+        return this.reportData.reportedDate();
     }
 
     public UserCountry getCountry() {
-        return this.location.getCountry();
+        return this.location.country();
     }
 
     public String getCountryName() {
-        return this.location.getCountry().name();
+        return this.location.country().name();
     }
 
     public String getCountryNameInKorean() {
-        return this.location.getCountry().koreanName();
+        return this.location.country().koreanName();
     }
 
     public String getRegion() {
-        return this.location.getRegion();
+        return this.location.region();
     }
 
     public void increaseReportedCount() {
-        this.reportData.increaseReportCount();
-        this.reportData.updateReportedDate();
+        Long newCount = this.reportData.reportedCount() + 1;
+        this.reportData = ReportData.of(newCount, Date.valueOf(LocalDate.now()));
     }
 
     public boolean hasSameSeq(Long userSeq) {
@@ -167,23 +168,23 @@ public class User {
     }
 
     public String getNickname() {
-        return this.profile.getNickname();
+        return this.profile.nickname();
     }
 
     public String getImageUrl() {
-        return this.profile.getImageUrl();
+        return this.profile.imageUrl();
     }
 
     public UserCountry getInterestCountry() {
-        return this.profile.getInterestCountry();
+        return this.profile.interestCountry();
     }
 
     public String getEmail() {
-        return this.auth.getEmail();
+        return this.auth.email();
     }
 
     public String getPassword() {
-        return this.auth.getPassword();
+        return this.auth.password();
     }
 
     public Long getSeq() {

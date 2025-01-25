@@ -1,8 +1,8 @@
-package com.backend.immilog.post.infrastructure.jpa.entity;
+package com.backend.immilog.post.infrastructure.jpa.entity.comment;
 
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
-import com.backend.immilog.post.domain.model.Comment;
+import com.backend.immilog.post.domain.model.comment.Comment;
 import jakarta.persistence.*;
 import lombok.Builder;
 import org.hibernate.annotations.Cascade;
@@ -27,12 +27,6 @@ public class CommentEntity {
     @Column(name = "user_seq")
     private Long userSeq;
 
-    @Column(name = "post_seq")
-    private Long postSeq;
-
-    @Column(name = "parent_seq")
-    private Long parentSeq;
-
     @Column(name = "reply_count")
     private int replyCount;
 
@@ -42,9 +36,8 @@ public class CommentEntity {
     @Column(name = "content")
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "reference_type")
-    private ReferenceType referenceType;
+    @Embedded
+    private CommentRelationEntity sourceData;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -76,14 +69,17 @@ public class CommentEntity {
             List<Long> likeUsers,
             LocalDateTime updatedAt
     ) {
+        CommentRelationEntity sourceData = CommentRelationEntity.of(
+                postSeq,
+                parentSeq,
+                referenceType
+        );
         this.seq = seq;
         this.userSeq = userSeq;
-        this.postSeq = postSeq;
-        this.parentSeq = parentSeq;
         this.replyCount = replyCount;
         this.likeCount = likeCount;
         this.content = content;
-        this.referenceType = referenceType;
+        this.sourceData = sourceData;
         this.status = status;
         this.likeUsers = likeUsers;
         this.updatedAt = updatedAt;
@@ -109,13 +105,11 @@ public class CommentEntity {
         return Comment.builder()
                 .seq(this.seq)
                 .userSeq(this.userSeq)
-                .postSeq(this.postSeq)
-                .parentSeq(this.parentSeq)
                 .replyCount(this.replyCount)
                 .likeCount(this.likeCount)
                 .content(this.content)
-                .referenceType(this.referenceType)
                 .status(this.status)
+                .commentRelation(this.sourceData.toDomain())
                 .likeUsers(this.likeUsers)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)

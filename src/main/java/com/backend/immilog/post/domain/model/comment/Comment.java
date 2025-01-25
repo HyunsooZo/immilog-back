@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model;
+package com.backend.immilog.post.domain.model.comment;
 
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
@@ -14,10 +14,8 @@ import java.util.Objects;
 public class Comment {
     private final Long seq;
     private final Long userSeq;
-    private final Long postSeq;
-    private final Long parentSeq;
     private final String content;
-    private final ReferenceType referenceType;
+    private final CommentRelation commentRelation;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
     private int replyCount;
@@ -29,12 +27,10 @@ public class Comment {
     public Comment(
             Long seq,
             Long userSeq,
-            Long postSeq,
-            Long parentSeq,
             int replyCount,
             Integer likeCount,
             String content,
-            ReferenceType referenceType,
+            CommentRelation commentRelation,
             PostStatus status,
             List<Long> likeUsers,
             LocalDateTime createdAt,
@@ -42,12 +38,10 @@ public class Comment {
     ) {
         this.seq = seq;
         this.userSeq = userSeq;
-        this.postSeq = postSeq;
-        this.parentSeq = parentSeq;
         this.replyCount = replyCount;
         this.likeCount = likeCount;
         this.content = content;
-        this.referenceType = referenceType;
+        this.commentRelation = commentRelation;
         this.status = status;
         this.likeUsers = likeUsers;
         this.createdAt = createdAt;
@@ -62,12 +56,11 @@ public class Comment {
     ) {
         return Comment.builder()
                 .userSeq(userSeq)
-                .postSeq(postSeq)
                 .content(content)
                 .likeCount(0)
                 .replyCount(0)
                 .status(PostStatus.NORMAL)
-                .referenceType(referenceType)
+                .commentRelation(CommentRelation.of(postSeq, null, referenceType))
                 .likeUsers(new ArrayList<>())
                 .build();
     }
@@ -82,6 +75,18 @@ public class Comment {
         }
         this.likeUsers.add(userSeq);
         increaseLikeCount();
+    }
+
+    public Long getPostSeq() {
+        return this.commentRelation.getPostSeq();
+    }
+
+    public Long getParentSeq() {
+        return this.commentRelation.getParentSeq();
+    }
+
+    public ReferenceType getReferenceType() {
+        return this.commentRelation.getReferenceType();
     }
 
     public void increaseReplyCount() {

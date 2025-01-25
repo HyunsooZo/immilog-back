@@ -1,6 +1,6 @@
 package com.backend.immilog.post.application.services.command;
 
-import com.backend.immilog.post.domain.model.InteractionUser;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

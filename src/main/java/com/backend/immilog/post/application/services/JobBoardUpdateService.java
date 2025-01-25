@@ -8,9 +8,9 @@ import com.backend.immilog.post.application.services.command.PostResourceCommand
 import com.backend.immilog.post.application.services.query.JobBoardQueryService;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.JobBoard;
-import com.backend.immilog.post.domain.model.JobBoardCompany;
-import com.backend.immilog.post.domain.model.PostInfo;
+import com.backend.immilog.post.domain.model.post.JobBoard;
+import com.backend.immilog.post.domain.model.post.JobBoardCompany;
+import com.backend.immilog.post.domain.model.post.PostData;
 import com.backend.immilog.post.exception.PostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -72,7 +72,7 @@ public class JobBoardUpdateService {
             JobBoardUpdateCommand command,
             JobBoardResult jobBoard
     ) {
-        PostInfo postInfo = PostInfo.builder()
+        PostData postData = PostData.builder()
                 .title(command.title() != null ? command.title() : jobBoard.title())
                 .content(command.content() != null ? command.content() : jobBoard.content())
                 .viewCount(jobBoard.viewCount())
@@ -88,7 +88,7 @@ public class JobBoardUpdateService {
         return JobBoard.builder()
                 .seq(jobBoard.seq())
                 .userSeq(userSeq)
-                .postInfo(postInfo)
+                .postData(postData)
                 .jobBoardCompany(
                         JobBoardCompany.of(
                                 jobBoard.companySeq(),

@@ -2,7 +2,7 @@ package com.backend.immilog.post.infrastructure.jpa.repository;
 
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.infrastructure.jpa.entity.InteractionUserEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.interaction.InteractionUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

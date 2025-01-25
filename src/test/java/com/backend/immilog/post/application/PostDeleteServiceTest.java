@@ -4,9 +4,9 @@ import com.backend.immilog.post.application.services.PostDeleteService;
 import com.backend.immilog.post.application.services.command.PostCommandService;
 import com.backend.immilog.post.application.services.command.PostResourceCommandService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.domain.model.PostInfo;
-import com.backend.immilog.post.domain.model.PostUserInfo;
+import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.post.PostData;
+import com.backend.immilog.post.domain.model.post.PostUserInfo;
 import com.backend.immilog.post.exception.PostException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +38,7 @@ class PostDeleteServiceTest {
         Long postSeq = 1L;
         Post post = Post.builder()
                 .seq(postSeq)
-                .postInfo(PostInfo.builder().build())
+                .postData(PostData.builder().build())
                 .postUserInfo(PostUserInfo.builder().userSeq(userId).build())
                 .build();
         when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
@@ -60,7 +60,7 @@ class PostDeleteServiceTest {
         Long postSeq = 1L;
         Post post = Post.builder()
                 .seq(postSeq)
-                .postInfo(PostInfo.builder().build())
+                .postData(PostData.builder().build())
                 .postUserInfo(PostUserInfo.builder().userSeq(2L).build())
                 .build();
         when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));

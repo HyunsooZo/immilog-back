@@ -6,7 +6,7 @@ import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
-import com.backend.immilog.post.domain.model.Post;
+import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;

@@ -4,9 +4,9 @@ import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import com.backend.immilog.post.domain.enums.PostStatus;
-import com.backend.immilog.post.domain.model.JobBoard;
-import com.backend.immilog.post.domain.model.JobBoardCompany;
-import com.backend.immilog.post.domain.model.PostInfo;
+import com.backend.immilog.post.domain.model.post.JobBoard;
+import com.backend.immilog.post.domain.model.post.JobBoardCompany;
+import com.backend.immilog.post.domain.model.post.PostData;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -41,7 +41,7 @@ public record JobBoardResult(
         LocalDateTime createdAt
 ) {
     public JobBoard toDomain() {
-        PostInfo postInfo = PostInfo.builder()
+        PostData postData = PostData.builder()
                 .title(this.title)
                 .content(this.content)
                 .viewCount(this.viewCount)
@@ -69,7 +69,7 @@ public record JobBoardResult(
                 .seq(this.seq)
                 .userSeq(this.companyManagerUserSeq())
                 .jobBoardCompany(jobBoardCompany)
-                .postInfo(postInfo)
+                .postData(postData)
                 .build();
     }
 }

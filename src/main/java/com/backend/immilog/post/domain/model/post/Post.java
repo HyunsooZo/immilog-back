@@ -1,4 +1,4 @@
-package com.backend.immilog.post.domain.model;
+package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.application.command.PostUploadCommand;
 import com.backend.immilog.post.domain.enums.Badge;
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Post {
     private final Long seq;
     private final PostUserInfo postUserInfo;
-    private final PostInfo postInfo;
+    private final PostData postData;
     private final Categories category;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -28,7 +28,7 @@ public class Post {
     public Post(
             Long seq,
             PostUserInfo postUserInfo,
-            PostInfo postInfo,
+            PostData postData,
             Categories category,
             String isPublic,
             Long commentCount,
@@ -38,7 +38,7 @@ public class Post {
     ) {
         this.seq = seq;
         this.postUserInfo = postUserInfo;
-        this.postInfo = postInfo;
+        this.postData = postData;
         this.category = category;
         this.isPublic = isPublic;
         this.commentCount = commentCount;
@@ -51,7 +51,7 @@ public class Post {
             PostUploadCommand postUploadCommand,
             User user
     ) {
-        PostInfo postInfo = PostInfo.of(
+        PostData postData = PostData.of(
                 postUploadCommand.title(),
                 postUploadCommand.content(),
                 user.getCountry(),
@@ -66,7 +66,7 @@ public class Post {
 
         return Post.builder()
                 .postUserInfo(postUserInfo)
-                .postInfo(postInfo)
+                .postData(postData)
                 .category(postUploadCommand.category())
                 .isPublic(postUploadCommand.isPublic() ? "Y" : "N")
                 .commentCount(0L)
@@ -82,15 +82,15 @@ public class Post {
     }
 
     public void updateContent(String content) {
-        this.postInfo.updateContent(content);
+        this.postData.updateContent(content);
     }
 
     public void updateTitle(String title) {
-        this.postInfo.updateTitle(title);
+        this.postData.updateTitle(title);
     }
 
     public void delete() {
-        this.getPostInfo().delete();
+        this.getPostData().delete();
     }
 
     public Long getUserSeq() {
@@ -98,15 +98,15 @@ public class Post {
     }
 
     public void increaseViewCount() {
-        this.postInfo.increaseViewCount();
+        this.postData.increaseViewCount();
     }
 
     public String getTitle() {
-        return this.postInfo.getTitle();
+        return this.postData.getTitle();
     }
 
     public String getContent() {
-        return this.postInfo.getContent();
+        return this.postData.getContent();
     }
 
     public String getUserProfileImage() {
@@ -117,18 +117,18 @@ public class Post {
         return this.postUserInfo.getNickname();
     }
 
-    public String getCountryName() {return this.postInfo.getCountry().name();}
+    public String getCountryName() {return this.postData.getCountry().name();}
 
     public String getRegion() {
-        return this.postInfo.getRegion();
+        return this.postData.getRegion();
     }
 
     public Long getViewCount() {
-        return this.postInfo.getViewCount();
+        return this.postData.getViewCount();
     }
 
     public Long getLikeCount() {
-        return this.postInfo.getLikeCount();
+        return this.postData.getLikeCount();
     }
 
     public void updateBadge(Badge badge) {
@@ -139,6 +139,14 @@ public class Post {
     }
 
     public PostStatus getStatus() {
-        return this.postInfo.getStatus();
+        return this.postData.getStatus();
+    }
+
+    public String getProfileImage() {
+        return this.postUserInfo.getProfileImage();
+    }
+
+    public String getNickname() {
+        return this.postUserInfo.getNickname();
     }
 }

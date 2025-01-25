@@ -1,6 +1,6 @@
 package com.backend.immilog.user.infrastructure.jpa.repositories;
 
-import com.backend.immilog.user.infrastructure.jpa.entity.ReportEntity;
+import com.backend.immilog.user.infrastructure.jpa.entity.report.ReportEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

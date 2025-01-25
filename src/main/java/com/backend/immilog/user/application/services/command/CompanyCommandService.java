@@ -15,6 +15,6 @@ public class CompanyCommandService {
 
     @Transactional
     public void save(Company company) {
-        companyRepository.saveEntity(company);
+        companyRepository.save(company);
     }
 }

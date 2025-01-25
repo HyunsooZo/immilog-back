@@ -4,113 +4,236 @@ import com.backend.immilog.user.application.command.CompanyRegisterCommand;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import lombok.Builder;
-import lombok.Getter;
 
-import java.util.Optional;
+import java.util.Objects;
+import java.util.stream.Stream;
 
-@Getter
 public class Company {
     private final Long seq;
-    private final Long companyManagerUserSeq;
-    private Industry industry;
-    private String companyName;
-    private String companyEmail;
-    private String companyPhone;
-    private String companyAddress;
-    private String companyHomepage;
-    private UserCountry companyCountry;
-    private String companyRegion;
-    private String companyLogo;
+    private Manager manager;
+    private CompanyData companyData;
 
     @Builder
     private Company(
             Long seq,
-            Industry industry,
-            String companyName,
-            String companyEmail,
-            String companyPhone,
-            String companyAddress,
-            String companyHomepage,
-            UserCountry companyCountry,
-            String companyRegion,
-            String companyLogo,
-            Long companyManagerUserSeq
+            Manager manager,
+            CompanyData companyData
     ) {
         this.seq = seq;
-        this.industry = industry;
-        this.companyName = companyName;
-        this.companyEmail = companyEmail;
-        this.companyPhone = companyPhone;
-        this.companyAddress = companyAddress;
-        this.companyHomepage = companyHomepage;
-        this.companyCountry = companyCountry;
-        this.companyRegion = companyRegion;
-        this.companyLogo = companyLogo;
-        this.companyManagerUserSeq = companyManagerUserSeq;
+        this.manager = manager;
+        this.companyData = companyData;
     }
 
-    // 정적 팩토리 메서드
     public static Company of(
             Long userSeq,
             CompanyRegisterCommand request
     ) {
         return new Company(
                 null,
-                request.industry(),
-                request.companyName(),
-                request.companyEmail(),
-                request.companyPhone(),
-                request.companyAddress(),
-                request.companyHomepage(),
-                request.companyCountry(),
-                request.companyRegion(),
-                request.companyLogo(),
-                userSeq
+                Manager.of(
+                        request.companyCountry(),
+                        request.companyRegion(),
+                        userSeq
+                ),
+                CompanyData.of(
+                        request.industry(),
+                        request.companyName(),
+                        request.companyEmail(),
+                        request.companyPhone(),
+                        request.companyAddress(),
+                        request.companyHomepage(),
+                        request.companyLogo()
+                )
         );
     }
 
-    public void updateCompanyName(String newCompanyName) {
-        Optional.ofNullable(newCompanyName)
-                .ifPresent(name -> this.companyName = name);
+    public Company updateName(String newName) {
+        Stream.of(this.companyData)
+                .filter(Objects::nonNull)
+                .filter(name -> !this.companyData.name().equals(newName))
+                .findFirst()
+                .ifPresent(name -> this.companyData = CompanyData.of(
+                        this.companyData.industry(),
+                        newName,
+                        this.companyData.email(),
+                        this.companyData.phone(),
+                        this.companyData.address(),
+                        this.companyData.homepage(),
+                        this.companyData.logo()
+                ));
+        return this;
     }
 
-    public void updateCompanyPhone(String newCompanyPhone) {
-        Optional.ofNullable(newCompanyPhone)
-                .ifPresent(phone -> this.companyPhone = phone);
+    public Company updatePhone(String newPhone) {
+        Stream.of(this.companyData)
+                .filter(Objects::nonNull)
+                .filter(phone -> !this.companyData.phone().equals(newPhone))
+                .findFirst()
+                .ifPresent(phone -> this.companyData = CompanyData.of(
+                        this.companyData.industry(),
+                        this.companyData.name(),
+                        this.companyData.email(),
+                        newPhone,
+                        this.companyData.address(),
+                        this.companyData.homepage(),
+                        this.companyData.logo()
+                ));
+        return this;
     }
 
-    public void updateCompanyLogo(String newCompanyLogo) {
-        Optional.ofNullable(newCompanyLogo)
-                .ifPresent(logo -> this.companyLogo = logo);
+    public Company updateLogo(String newLogo) {
+        Stream.of(this.companyData)
+                .filter(Objects::nonNull)
+                .filter(logo -> !this.companyData.logo().equals(newLogo))
+                .findFirst()
+                .ifPresent(logo -> this.companyData = CompanyData.of(
+                        this.companyData.industry(),
+                        this.companyData.name(),
+                        this.companyData.email(),
+                        this.companyData.phone(),
+                        this.companyData.address(),
+                        this.companyData.homepage(),
+                        newLogo
+                ));
+        return this;
     }
 
-    public void updateCompanyHomepage(String newCompanyHomepage) {
-        Optional.ofNullable(newCompanyHomepage)
-                .ifPresent(homepage -> this.companyHomepage = homepage);
+    public Company updateHomepage(String newHomepage) {
+        Stream.of(this.companyData)
+                .filter(Objects::nonNull)
+                .filter(homepage -> !this.companyData.homepage().equals(newHomepage))
+                .findFirst()
+                .ifPresent(homepage -> this.companyData = CompanyData.of(
+                        this.companyData.industry(),
+                        this.companyData.name(),
+                        this.companyData.email(),
+                        this.companyData.phone(),
+                        this.companyData.address(),
+                        newHomepage,
+                        this.companyData.logo()
+                ));
+        return this;
     }
 
-    public void updateCompanyEmail(String newCompanyEmail) {
-        Optional.ofNullable(newCompanyEmail)
-                .ifPresent(email -> this.companyEmail = email);
+    public Company updateEmail(String newEmail) {
+        Stream.of(this.companyData)
+                .filter(Objects::nonNull)
+                .filter(email -> !this.companyData.email().equals(newEmail))
+                .findFirst()
+                .ifPresent(email -> this.companyData = CompanyData.of(
+                        this.companyData.industry(),
+                        this.companyData.name(),
+                        newEmail,
+                        this.companyData.phone(),
+                        this.companyData.address(),
+                        this.companyData.homepage(),
+                        this.companyData.logo()
+                ));
+        return this;
     }
 
-    public void updateCompanyCountry(UserCountry newCompanyCountry) {
-        Optional.ofNullable(newCompanyCountry)
-                .ifPresent(country -> this.companyCountry = country);
+    public Company updateCountry(UserCountry newCountry) {
+        Stream.of(this.manager)
+                .filter(Objects::nonNull)
+                .filter(country -> !this.manager.country().equals(newCountry))
+                .findFirst()
+                .ifPresent(country -> this.manager = Manager.of(
+                        newCountry,
+                        this.manager.region(),
+                        this.manager.UserSeq()
+                ));
+        return this;
     }
 
-    public void updateCompanyAddress(String newCompanyAddress) {
-        Optional.ofNullable(newCompanyAddress)
-                .ifPresent(address -> this.companyAddress = address);
+    public Company updateAddress(String newAddress) {
+        Stream.of(this.companyData)
+                .filter(Objects::nonNull)
+                .filter(address -> !this.companyData.address().equals(newAddress))
+                .findFirst()
+                .ifPresent(address -> this.companyData = CompanyData.of(
+                        this.companyData.industry(),
+                        this.companyData.name(),
+                        this.companyData.email(),
+                        this.companyData.phone(),
+                        newAddress,
+                        this.companyData.homepage(),
+                        this.companyData.logo()
+                ));
+        return this;
     }
 
-    public void updateCompanyRegion(String newCompanyRegion) {
-        Optional.ofNullable(newCompanyRegion)
-                .ifPresent(region -> this.companyRegion = region);
+    public Company updateRegion(String newRegion) {
+        Stream.of(this.manager)
+                .filter(Objects::nonNull)
+                .filter(region -> !this.manager.region().equals(newRegion))
+                .findFirst()
+                .ifPresent(region -> this.manager = Manager.of(
+                        this.manager.country(),
+                        newRegion,
+                        this.manager.UserSeq()
+                ));
+        return this;
     }
 
-    public void updateCompanyIndustry(Industry industry) {
-        Optional.ofNullable(industry)
-                .ifPresent(newIndustry -> this.industry = newIndustry);
+    public Company updateIndustry(Industry industry) {
+        Stream.of(this.companyData)
+                .filter(Objects::nonNull)
+                .filter(ind -> !this.companyData.industry().equals(industry))
+                .findFirst()
+                .ifPresent(ind -> this.companyData = CompanyData.of(
+                        industry,
+                        this.companyData.name(),
+                        this.companyData.email(),
+                        this.companyData.phone(),
+                        this.companyData.address(),
+                        this.companyData.homepage(),
+                        this.companyData.logo()
+                ));
+        return this;
     }
+
+    public Long getCompanySeq() {
+        return this.seq;
+    }
+
+    public Industry getIndustry() {
+        return this.companyData.industry();
+    }
+
+    public String getName() {
+        return this.companyData.name();
+    }
+
+    public String getEmail() {
+        return this.companyData.email();
+    }
+
+    public String getPhone() {
+        return this.companyData.phone();
+    }
+
+    public String getAddress() {
+        return this.companyData.address();
+    }
+
+    public String getHomepage() {
+        return this.companyData.homepage();
+    }
+
+    public UserCountry getCountry() {
+        return this.manager.country();
+    }
+
+    public String getRegion() {
+        return this.manager.region();
+    }
+
+    public String getLogo() {
+        return this.companyData.logo();
+    }
+
+    public Long getManagerUserSeq() {
+        return this.manager.UserSeq();
+    }
+    
 }

@@ -5,10 +5,10 @@ import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ResourceType;
-import com.backend.immilog.post.domain.model.Post;
-import com.backend.immilog.post.infrastructure.jpa.entity.InteractionUserEntity;
-import com.backend.immilog.post.infrastructure.jpa.entity.PostEntity;
-import com.backend.immilog.post.infrastructure.jpa.entity.PostResourceEntity;
+import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.infrastructure.jpa.entity.interaction.InteractionUserEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.post.PostEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.resource.PostResourceEntity;
 import lombok.Getter;
 import lombok.ToString;
 

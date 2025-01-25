@@ -2,9 +2,9 @@ package com.backend.immilog.post.infrastructure.querydsl;
 
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.*;
-import com.backend.immilog.post.infrastructure.jpa.entity.QInteractionUserEntity;
-import com.backend.immilog.post.infrastructure.jpa.entity.QPostEntity;
-import com.backend.immilog.post.infrastructure.jpa.entity.QPostResourceEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.interaction.QInteractionUserEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.post.QPostEntity;
+import com.backend.immilog.post.infrastructure.jpa.entity.resource.QPostResourceEntity;
 import com.backend.immilog.post.infrastructure.result.PostEntityResult;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.group.GroupBy;

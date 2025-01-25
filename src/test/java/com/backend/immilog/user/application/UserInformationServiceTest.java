@@ -7,7 +7,9 @@ import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.Auth;
 import com.backend.immilog.user.domain.model.user.Location;
+import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
 import com.backend.immilog.user.presentation.request.UserInfoUpdateRequest;
@@ -46,14 +48,12 @@ class UserInformationServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
 
         UserInfoUpdateRequest param =
@@ -87,19 +87,14 @@ class UserInformationServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
-        UserPasswordChangeCommand param = UserPasswordChangeCommand.builder()
-                .existingPassword("existingPassword")
-                .newPassword("newPassword")
-                .build();
+        UserPasswordChangeCommand param = new UserPasswordChangeCommand("existingPassword", "newPassword");
 
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("existingPassword", user.getPassword())).thenReturn(true);
@@ -119,14 +114,12 @@ class UserInformationServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
         UserPasswordChangeRequest param = UserPasswordChangeRequest.builder()
                 .existingPassword("existingPassword")
@@ -151,26 +144,22 @@ class UserInformationServiceTest {
         UserStatus userStatus = UserStatus.BLOCKED;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .userStatus(UserStatus.ACTIVE)
                 .build();
         User admin = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_ADMIN)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(userQueryService.getUserById(adminSeq)).thenReturn(Optional.of(admin));
@@ -191,14 +180,12 @@ class UserInformationServiceTest {
         UserStatus userStatus = UserStatus.BLOCKED;
         User admin = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
         when(userQueryService.getUserById(adminSeq)).thenReturn(Optional.of(admin));
 
@@ -219,14 +206,12 @@ class UserInformationServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
 
         UserInfoUpdateRequest param =
@@ -258,19 +243,14 @@ class UserInformationServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
-        UserPasswordChangeCommand param = UserPasswordChangeCommand.builder()
-                .existingPassword("wrongPassword")
-                .newPassword("newPassword")
-                .build();
+        UserPasswordChangeCommand param = new UserPasswordChangeCommand("wrongPassword", "newPassword");
 
         when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
         when(passwordEncoder.matches("wrongPassword", user.getPassword())).thenReturn(false);
@@ -288,14 +268,12 @@ class UserInformationServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("test")
-                .imageUrl("oldImage")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("test", "oldImage", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
         UserInfoUpdateRequest param =
                 UserInfoUpdateRequest.builder()
@@ -340,14 +318,12 @@ class UserInformationServiceTest {
         Long userSeq = 1L;
         User user = User.builder()
                 .seq(userSeq)
-                .email("test@email.com")
-                .nickName("testNickName")
-                .imageUrl("image")
+                .auth(Auth.of("test@email.com", "password"))
+                .profile(Profile.of("testNickName", "image", UserCountry.SOUTH_KOREA))
                 .userStatus(UserStatus.PENDING)
                 .userRole(ROLE_USER)
-                .interestCountry(UserCountry.SOUTH_KOREA)
                 .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportInfo(null)
+                .reportData(null)
                 .build();
 
         UserInfoUpdateRequest param =

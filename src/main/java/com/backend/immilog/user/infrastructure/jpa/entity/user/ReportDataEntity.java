@@ -1,6 +1,8 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
 import com.backend.immilog.user.domain.model.user.ReportData;
+import com.backend.immilog.user.exception.UserErrorCode;
+import com.backend.immilog.user.exception.UserException;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;

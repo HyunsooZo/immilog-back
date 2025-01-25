@@ -2,6 +2,8 @@ package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.user.Location;
+import com.backend.immilog.user.exception.UserErrorCode;
+import com.backend.immilog.user.exception.UserException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -38,6 +40,9 @@ public class LocationEntity {
     }
 
     public Location toDomain() {
+        if (this.country == null && this.region == null) {
+            throw new UserException(UserErrorCode.ENTITY_TO_DOMAIN_ERROR);
+        }
         return Location.of(this.country, this.region);
     }
 }
