@@ -99,7 +99,7 @@ public class PostController {
     @GetMapping("/{postSeq}")
     @Operation(summary = "게시물 상세 조회", description = "게시물 상세 정보를 조회합다.")
     public ResponseEntity<PostApiResponse> getPost(@PathVariable("postSeq") Long postSeq) {
-        PostResult post = postInquiryService.getPost(postSeq);
+        PostResult post = postInquiryService.getPostDetail(postSeq);
         return ResponseEntity.status(OK).body(PostApiResponse.of(post));
     }
 

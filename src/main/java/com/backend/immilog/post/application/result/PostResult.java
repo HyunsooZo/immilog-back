@@ -1,7 +1,11 @@
 package com.backend.immilog.post.application.result;
 
 import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
@@ -142,5 +146,30 @@ public final class PostResult {
         this.content = contentResult;
         this.tags.addAll(tagResult);
         this.keyword = keyword;
+    }
+
+    public void addInteractionUsers(List<InteractionUser> interactionUserList) {
+        this.likeUsers.addAll(interactionUserList.stream()
+                .filter(interactionUser -> interactionUser.getInteractionType().equals(InteractionType.LIKE))
+                .map(InteractionUser::getUserSeq)
+                .toList());
+        this.bookmarkUsers.addAll(interactionUserList.stream()
+                .filter(interactionUser -> interactionUser.getInteractionType().equals(InteractionType.BOOKMARK))
+                .map(InteractionUser::getUserSeq)
+                .toList()
+        );
+    }
+
+    public void addResources(List<PostResource> resources) {
+        this.tags.addAll(resources.stream()
+                .filter(resource -> resource.getResourceType().equals(ResourceType.TAG))
+                .map(PostResource::getContent)
+                .toList()
+        );
+        this.attachments.addAll(resources.stream()
+                .filter(resource -> resource.getResourceType().equals(ResourceType.ATTACHMENT))
+                .map(PostResource::getContent)
+                .toList()
+        );
     }
 }

@@ -4,28 +4,39 @@ import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
 import com.backend.immilog.post.domain.repositories.PostRepository;
+import com.backend.immilog.post.domain.repositories.PostResourceRepository;
+import com.backend.immilog.post.infrastructure.jdbc.PostJdbcRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.post.PostEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.PostJpaRepository;
-import com.backend.immilog.post.infrastructure.querydsl.PostQueryDslRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public class PostRepositoryImpl implements PostRepository {
-    private final PostQueryDslRepository postQueryDslRepository;
+    private final PostJdbcRepository postJdbcRepository;
     private final PostJpaRepository postJpaRepository;
+    private final PostResourceRepository postResourceRepository;
+    private final InteractionUserRepository interactionUserRepository;
 
     public PostRepositoryImpl(
-            PostQueryDslRepository postQueryDslRepository,
-            PostJpaRepository postJpaRepository
+            PostJdbcRepository postJdbcRepository,
+            PostJpaRepository postJpaRepository,
+            PostResourceRepository postResourceRepository,
+            InteractionUserRepository interactionUserRepository
     ) {
-        this.postQueryDslRepository = postQueryDslRepository;
+        this.postJdbcRepository = postJdbcRepository;
         this.postJpaRepository = postJpaRepository;
+        this.postResourceRepository = postResourceRepository;
+        this.interactionUserRepository = interactionUserRepository;
     }
 
     @Override
@@ -36,12 +47,53 @@ public class PostRepositoryImpl implements PostRepository {
             Categories category,
             Pageable pageable
     ) {
-        return postQueryDslRepository.getPosts(country, sortingMethod, isPublic, category, pageable);
+        Page<PostResult> postResults = postJdbcRepository.getPostResults(country, sortingMethod, isPublic, category, pageable);
+
+        List<Long> postSeqList = postResults.stream()
+                .map(PostResult::getSeq)
+                .toList();
+
+        List<PostResource> postResources = postResourceRepository.findAllByPostSeqList(postSeqList);
+        List<InteractionUser> interactionUsers = interactionUserRepository.findAllByPostSeqList(postSeqList);
+
+        return postResults.map(postResult -> {
+            List<PostResource> resources = postResources.stream()
+                    .filter(postResource -> postResource.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            List<InteractionUser> interactionUserList = interactionUsers.stream()
+                    .filter(interactionUser -> interactionUser.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            postResult.addInteractionUsers(interactionUserList);
+            postResult.addResources(resources);
+
+            return postResult;
+        });
     }
 
     @Override
-    public Optional<PostResult> getPost(Long postSeq) {
-        return postQueryDslRepository.getPost(postSeq);
+    public Optional<PostResult> getPostDetail(Long postSeq) {
+        Optional<PostResult> post = postJdbcRepository.getSinglePost(postSeq);
+        List<Long> postSeqList = List.of(postSeq);
+
+        List<PostResource> postResources = postResourceRepository.findAllByPostSeqList(postSeqList);
+        List<InteractionUser> interactionUsers = interactionUserRepository.findAllByPostSeqList(postSeqList);
+
+        return post.map(postResult -> {
+            List<PostResource> resources = postResources.stream()
+                    .filter(postResource -> postResource.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            List<InteractionUser> interactionUserList = interactionUsers.stream()
+                    .filter(interactionUser -> interactionUser.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            postResult.addInteractionUsers(interactionUserList);
+            postResult.addResources(resources);
+
+            return postResult;
+        });
     }
 
     @Override
@@ -49,7 +101,28 @@ public class PostRepositoryImpl implements PostRepository {
             String keyword,
             Pageable pageable
     ) {
-        return postQueryDslRepository.getPostsByKeyword(keyword, pageable);
+        Page<PostResult> posts = postJdbcRepository.getPostsByKeyword(keyword, pageable);
+        posts.getContent().forEach(post -> post.addKeywords(keyword));
+
+        List<Long> postSeqList = posts.stream().map(PostResult::getSeq).toList();
+
+        List<PostResource> postResources = postResourceRepository.findAllByPostSeqList(postSeqList);
+        List<InteractionUser> interactionUsers = interactionUserRepository.findAllByPostSeqList(postSeqList);
+
+        return posts.map(postResult -> {
+            List<PostResource> resources = postResources.stream()
+                    .filter(postResource -> postResource.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            List<InteractionUser> interactionUserList = interactionUsers.stream()
+                    .filter(interactionUser -> interactionUser.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            postResult.addInteractionUsers(interactionUserList);
+            postResult.addResources(resources);
+
+            return postResult;
+        });
     }
 
     @Override
@@ -57,13 +130,32 @@ public class PostRepositoryImpl implements PostRepository {
             Long userSeq,
             Pageable pageable
     ) {
-        return postQueryDslRepository.getPostsByUserSeq(userSeq, pageable);
+        Page<PostResult> posts = postJdbcRepository.getPostsByUserSeq(userSeq, pageable);
+        List<Long> postSeqList = posts.stream()
+                .map(PostResult::getSeq)
+                .toList();
+
+        List<PostResource> postResources = postResourceRepository.findAllByPostSeqList(postSeqList);
+        List<InteractionUser> interactionUsers = interactionUserRepository.findAllByPostSeqList(postSeqList);
+
+        return posts.map(postResult -> {
+            List<PostResource> resources = postResources.stream()
+                    .filter(postResource -> postResource.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            List<InteractionUser> interactionUserList = interactionUsers.stream()
+                    .filter(interactionUser -> interactionUser.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            postResult.addInteractionUsers(interactionUserList);
+            postResult.addResources(resources);
+
+            return postResult;
+        });
     }
 
     @Override
-    public Optional<Post> getById(Long postSeq) {
-        return postJpaRepository.findById(postSeq).map(PostEntity::toDomain);
-    }
+    public Optional<Post> getById(Long postSeq) {return postJpaRepository.findById(postSeq).map(PostEntity::toDomain);}
 
     @Override
     public Post save(Post post) {

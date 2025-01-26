@@ -16,7 +16,6 @@ import org.springframework.data.domain.Pageable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +33,7 @@ class PostInquiryServiceTest {
 
     @Test
     @DisplayName("게시물 조회 - 성공")
-    void getPosts() {
+    void getPostsDetail() {
         // given
         Countries country = Countries.SOUTH_KOREA;
         SortingMethods sortingMethod = SortingMethods.CREATED_DATE;
@@ -65,14 +64,14 @@ class PostInquiryServiceTest {
 
     @Test
     @DisplayName("게시물 조회(단일 게시물)")
-    void getPost() {
+    void getPostDetail() {
         // given
         Long postSeq = 1L;
         PostResult postResult = PostResult.builder().build();
-        when(postQueryService.getPost(postSeq)).thenReturn(java.util.Optional.of(postResult));
+        when(postQueryService.getPostDetail(postSeq)).thenReturn(java.util.Optional.of(postResult));
         when(commentQueryService.getComments(postSeq)).thenReturn(List.of());
         // when
-        PostResult result = postInquiryService.getPost(postSeq);
+        PostResult result = postInquiryService.getPostDetail(postSeq);
         // then
         assertThat(result).isNotNull();
     }

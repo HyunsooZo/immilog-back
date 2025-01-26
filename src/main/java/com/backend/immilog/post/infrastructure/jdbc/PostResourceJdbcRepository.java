@@ -2,6 +2,7 @@ package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
@@ -44,10 +45,21 @@ public class PostResourceJdbcRepository {
 
     public void deleteAllByPostSeq(Long seq) {
         jdbcClient.sql("""
-                        DELETE FROM post_resource_entity
+                        DELETE FROM post_resource
                         WHERE post_seq = ?
                         """)
                 .param(seq)
                 .update();
+    }
+
+    public List<PostResource> findAllByPostSeqList(List<Long> postSeqList){
+        return jdbcClient.sql("""
+                        SELECT *
+                        FROM post_resource
+                        WHERE post_seq IN (:postSeqList)
+                        """)
+                .params(postSeqList)
+                .query(PostResource.class)
+                .list();
     }
 }

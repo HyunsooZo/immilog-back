@@ -26,4 +26,6 @@ public interface InteractionUserRepository {
             PostType postType,
             InteractionType interactionType
     );
+
+    List<InteractionUser> findAllByPostSeqList(List<Long> postSeqList);
 }

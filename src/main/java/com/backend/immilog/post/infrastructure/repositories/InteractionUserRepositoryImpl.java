@@ -4,6 +4,7 @@ import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
+import com.backend.immilog.post.infrastructure.jdbc.InteractionUserJdbcRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.interaction.InteractionUserEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.InteractionUserJpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,9 +15,14 @@ import java.util.Optional;
 @Repository
 public class InteractionUserRepositoryImpl implements InteractionUserRepository {
     private final InteractionUserJpaRepository interactionUserJpaRepository;
+    private final InteractionUserJdbcRepository interactionUserJdbcRepository;
 
-    public InteractionUserRepositoryImpl(InteractionUserJpaRepository interactionUserJpaRepository) {
+    public InteractionUserRepositoryImpl(
+            InteractionUserJpaRepository interactionUserJpaRepository,
+            InteractionUserJdbcRepository interactionUserJdbcRepository
+    ) {
         this.interactionUserJpaRepository = interactionUserJpaRepository;
+        this.interactionUserJdbcRepository = interactionUserJdbcRepository;
     }
 
     @Override
@@ -50,5 +56,10 @@ public class InteractionUserRepositoryImpl implements InteractionUserRepository 
                 postType,
                 interactionType
         ).map(InteractionUserEntity::toDomain);
+    }
+
+    @Override
+    public List<InteractionUser> findAllByPostSeqList(List<Long> postSeqList) {
+        return interactionUserJdbcRepository.findAllByPostSeqList(postSeqList);
     }
 }

@@ -4,7 +4,7 @@ import com.backend.immilog.global.infrastructure.persistence.repository.RedisDat
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.repositories.PopularPostRepository;
-import com.backend.immilog.post.infrastructure.querydsl.PostQueryDslRepository;
+import com.backend.immilog.post.infrastructure.jdbc.PostJdbcRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Repository;
@@ -14,16 +14,16 @@ import java.util.List;
 
 @Repository
 public class PopularPostRepositoryImpl implements PopularPostRepository {
-    private final PostQueryDslRepository postQueryDslRepository;
+    private final PostJdbcRepository postJdbcRepository;
     private final RedisDataRepository redisDataRepository;
     private final ObjectMapper objectMapper;
 
     public PopularPostRepositoryImpl(
-            PostQueryDslRepository postQueryDslRepository,
+            PostJdbcRepository postJdbcRepository,
             RedisDataRepository redisDataRepository,
             ObjectMapper objectMapper
     ) {
-        this.postQueryDslRepository = postQueryDslRepository;
+        this.postJdbcRepository = postJdbcRepository;
         this.redisDataRepository = redisDataRepository;
         this.objectMapper = objectMapper;
     }
@@ -53,7 +53,7 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             LocalDateTime from,
             LocalDateTime to
     ) {
-        return postQueryDslRepository.getPopularPosts(
+        return postJdbcRepository.getPopularPosts(
                 from,
                 to,
                 SortingMethods.VIEW_COUNT
@@ -65,7 +65,7 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             LocalDateTime from,
             LocalDateTime to
     ) {
-        return postQueryDslRepository.getPopularPosts(
+        return postJdbcRepository.getPopularPosts(
                 from,
                 to,
                 SortingMethods.COMMENT_COUNT

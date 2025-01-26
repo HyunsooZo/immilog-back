@@ -17,4 +17,6 @@ public interface PostResourceRepository {
     void deleteAllByPostSeq(Long seq);
 
     List<PostResource> findAllByPostSeq(Long seq);
+
+    List<PostResource> findAllByPostSeqList(List<Long> postSeqList);
 }
