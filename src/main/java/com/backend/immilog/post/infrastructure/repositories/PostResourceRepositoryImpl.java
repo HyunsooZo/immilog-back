@@ -51,4 +51,9 @@ public class PostResourceRepositoryImpl implements PostResourceRepository {
                 .map(PostResourceEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<PostResource> findAllByPostSeqList(List<Long> postSeqList) {
+        return postResourceJdbcRepository.findAllByPostSeqList(postSeqList);
+    }
 }

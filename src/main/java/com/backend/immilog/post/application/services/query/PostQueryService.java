@@ -70,8 +70,8 @@ public class PostQueryService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<PostResult> getPost(Long postSeq) {
-        return postRepository.getPost(postSeq);
+    public Optional<PostResult> getPostDetail(Long postSeq) {
+        return postRepository.getPostDetail(postSeq);
     }
 
     @Transactional(readOnly = true)

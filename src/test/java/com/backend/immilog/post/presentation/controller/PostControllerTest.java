@@ -191,7 +191,7 @@ class PostControllerTest {
                 .commentCount(0L)
                 .createdAt("2021-08-01T:00:00:00")
                 .build();
-        when(postInquiryService.getPost(postSeq)).thenReturn(postResult);
+        when(postInquiryService.getPostDetail(postSeq)).thenReturn(postResult);
 
         // when
         ResponseEntity<PostApiResponse> response = postController.getPost(postSeq);

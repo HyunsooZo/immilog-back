@@ -52,8 +52,10 @@ public class PostInquiryService {
     }
 
     @Transactional(readOnly = true)
-    public PostResult getPost(Long postSeq) {
-        PostResult post = getPostResult(postSeq);
+    public PostResult getPostDetail(Long postSeq) {
+        PostResult post =  postQueryService
+                .getPostDetail(postSeq)
+                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
         List<CommentResult> comments = commentQueryService.getComments(postSeq);
         post.addComments(comments);
         return post;
@@ -75,12 +77,6 @@ public class PostInquiryService {
     ) {
         Pageable pageable = PageRequest.of(Objects.requireNonNullElseGet(page, () -> 0), 10);
         return postQueryService.getPostsByUserSeq(userSeq, pageable);
-    }
-
-    private PostResult getPostResult(Long postSeq) {
-        return postQueryService
-                .getPost(postSeq)
-                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
     }
 
     public List<PostResult> getMostViewedPosts() {

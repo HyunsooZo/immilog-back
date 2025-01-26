@@ -20,7 +20,7 @@ public interface PostRepository {
             Pageable pageable
     );
 
-    Optional<PostResult> getPost(Long postSeq);
+    Optional<PostResult> getPostDetail(Long postSeq);
 
     Page<PostResult> getPostsByKeyword(
             String keyword,

@@ -168,9 +168,9 @@ class PostQueryServiceTest {
                 "",
                 null
         );
-        when(postRepository.getPost(postSeq)).thenReturn(Optional.of(expectedPostResult));
+        when(postRepository.getPostDetail(postSeq)).thenReturn(Optional.of(expectedPostResult));
 
-        Optional<PostResult> actualPostResult = postQueryService.getPost(postSeq);
+        Optional<PostResult> actualPostResult = postQueryService.getPostDetail(postSeq);
 
         assertThat(actualPostResult).isPresent();
         assertThat(actualPostResult.get()).isEqualTo(expectedPostResult);
