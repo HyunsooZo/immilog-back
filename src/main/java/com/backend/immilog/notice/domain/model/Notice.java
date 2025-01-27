@@ -56,7 +56,7 @@ public class Notice {
                 .build();
     }
 
-    public void updateTitle(String title) {
+    public Notice updateTitle(String title) {
         Stream.of(this.detail)
                 .filter(detail -> !this.detail.title().equals(title))
                 .findFirst()
@@ -70,9 +70,10 @@ public class Notice {
                             updateUpdatedAt();
                         }
                 );
+        return this;
     }
 
-    public void updateContent(String content) {
+    public Notice updateContent(String content) {
         Stream.of(this.detail)
                 .filter(detail -> !this.detail.content().equals(content))
                 .findFirst()
@@ -86,9 +87,10 @@ public class Notice {
                             updateUpdatedAt();
                         }
                 );
+        return this;
     }
 
-    public void updateType(NoticeType type) {
+    public Notice updateType(NoticeType type) {
         Stream.of(this.detail)
                 .filter(detail -> !this.detail.type().equals(type))
                 .findFirst()
@@ -102,9 +104,10 @@ public class Notice {
                             updateUpdatedAt();
                         }
                 );
+        return this;
     }
 
-    public void updateStatus(NoticeStatus status) {
+    public Notice updateStatus(NoticeStatus status) {
         Stream.of(this.detail)
                 .filter(detail -> !this.detail.status().equals(status))
                 .findFirst()
@@ -118,10 +121,12 @@ public class Notice {
                             updateUpdatedAt();
                         }
                 );
+        return this;
     }
 
-    public void readByUser(Long userSeq) {
+    public Notice readByUser(Long userSeq) {
         this.readUsers.add(userSeq);
+        return this;
     }
 
     void updateUpdatedAt() {

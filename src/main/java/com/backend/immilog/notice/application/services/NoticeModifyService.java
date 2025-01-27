@@ -40,11 +40,11 @@ public class NoticeModifyService {
     ) {
         validateAdmin(token);
         Notice notice = getNoticeBySeq(noticeSeq);
-        notice.updateTitle(command.title());
-        notice.updateContent(command.content());
-        notice.updateType(command.type());
-        notice.updateStatus(command.status());
-        noticeCommandService.save(notice);
+        Notice updatedNotice = notice.updateTitle(command.title())
+                .updateContent(command.content())
+                .updateType(command.type())
+                .updateStatus(command.status());
+        noticeCommandService.save(updatedNotice);
     }
 
     private void validateAdmin(String token) {
@@ -60,13 +60,14 @@ public class NoticeModifyService {
                 .orElseThrow(() -> new NoticeException(NOTICE_NOT_FOUND));
     }
 
+    @Transactional
     public void readNotice(
             Long userSeq,
             Long noticeSeq
     ) {
         Notice notice = getNoticeBySeq(noticeSeq);
-        notice.readByUser(userSeq);
-        noticeCommandService.save(notice);
+        Notice updatedNotice = notice.readByUser(userSeq);
+        noticeCommandService.save(updatedNotice);
     }
 }
 

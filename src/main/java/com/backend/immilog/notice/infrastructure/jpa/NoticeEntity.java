@@ -23,16 +23,24 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class NoticeEntity {
     @Id
     @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "seq")
     private Long seq;
 
+    @Column(name = "user_seq")
     private Long userSeq;
 
+    @Column(name = "title")
     private String title;
 
+    @Column(name = "content")
     private String content;
 
+    @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private NoticeType type;
 
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private NoticeStatus status;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -44,9 +52,11 @@ public class NoticeEntity {
     private List<Long> readUsers;
 
     @CreatedDate
-    private LocalDateTime createdAt;
+    @Column(name = "created_at")
+    private final LocalDateTime createdAt = LocalDateTime.now();
 
     @LastModifiedDate
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     protected NoticeEntity() {}
@@ -70,6 +80,7 @@ public class NoticeEntity {
         this.status = status;
         this.targetCountries = targetCountries;
         this.readUsers = readUsers;
+        this.updatedAt = seq == null ? null : LocalDateTime.now();
     }
 
     public static NoticeEntity from(Notice notice) {
