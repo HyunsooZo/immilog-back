@@ -13,13 +13,17 @@ import org.hibernate.annotations.DynamicUpdate;
 public class ImageEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "seq")
     private Long seq;
 
+    @Column(name = "path")
     private String path;
 
+    @Column(name = "image_type")
     @Enumerated(EnumType.STRING)
     private ImageType imageType;
 
+    @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private ImageStatus status;
 
