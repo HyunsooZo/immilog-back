@@ -1,8 +1,7 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
 import com.backend.immilog.user.domain.model.user.ReportData;
-import com.backend.immilog.user.exception.UserErrorCode;
-import com.backend.immilog.user.exception.UserException;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -11,13 +10,16 @@ import java.sql.Date;
 
 @Getter(AccessLevel.PROTECTED)
 @Embeddable
-public class ReportDataEntity {
+public class ReportValue {
+    @Column(name = "reported_count")
     private Long reportedCount;
+
+    @Column(name = "reported_date")
     private Date reportedDate;
 
-    protected ReportDataEntity() {}
+    protected ReportValue() {}
 
-    ReportDataEntity(
+    ReportValue(
             Long reportedCount,
             Date reportedDate
     ) {
@@ -25,11 +27,11 @@ public class ReportDataEntity {
         this.reportedDate = reportedDate;
     }
 
-    public static ReportDataEntity of(
+    public static ReportValue of(
             Long reportedCount,
             Date reportedDate
     ) {
-        return new ReportDataEntity(reportedCount, reportedDate);
+        return new ReportValue(reportedCount, reportedDate);
     }
 
     public ReportData toDomain() {

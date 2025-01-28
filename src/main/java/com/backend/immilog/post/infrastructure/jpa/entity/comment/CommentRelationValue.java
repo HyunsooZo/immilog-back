@@ -8,7 +8,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 @Embeddable
-public class CommentRelationEntity {
+public class CommentRelationValue {
+
     @Column(name = "post_seq")
     private Long postSeq;
 
@@ -19,9 +20,9 @@ public class CommentRelationEntity {
     @Column(name = "reference_type")
     private ReferenceType referenceType;
 
-    protected CommentRelationEntity() {}
+    protected CommentRelationValue() {}
 
-    private CommentRelationEntity(
+    private CommentRelationValue(
             Long postSeq,
             Long parentSeq,
             ReferenceType referenceType
@@ -31,12 +32,12 @@ public class CommentRelationEntity {
         this.referenceType = referenceType;
     }
 
-    public static CommentRelationEntity of(
+    public static CommentRelationValue of(
             Long postSeq,
             Long parentSeq,
             ReferenceType referenceType
     ) {
-        return new CommentRelationEntity(postSeq, parentSeq, referenceType);
+        return new CommentRelationValue(postSeq, parentSeq, referenceType);
     }
 
     public CommentRelation toDomain() {

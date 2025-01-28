@@ -1,17 +1,23 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
 import com.backend.immilog.post.domain.model.post.PostUserInfo;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-public class PostUserInfoEntity {
+public class PostUserInfoValue {
+    @Column(name = "user_seq")
     private Long userSeq;
+
+    @Column(name = "nickname")
     private String nickname;
+
+    @Column(name = "profile_image")
     private String profileImage;
 
-    protected PostUserInfoEntity() {}
+    protected PostUserInfoValue() {}
 
-    PostUserInfoEntity(
+    PostUserInfoValue(
             Long userSeq,
             String nickname,
             String profileImage
@@ -21,12 +27,12 @@ public class PostUserInfoEntity {
         this.profileImage = profileImage;
     }
 
-    public static PostUserInfoEntity of(
+    public static PostUserInfoValue of(
             Long userSeq,
             String nickname,
             String profileImage
     ) {
-        return new PostUserInfoEntity(
+        return new PostUserInfoValue(
                 userSeq,
                 nickname,
                 profileImage

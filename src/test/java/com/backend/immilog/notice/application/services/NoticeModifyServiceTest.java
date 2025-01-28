@@ -7,6 +7,7 @@ import com.backend.immilog.notice.application.services.command.NoticeCommandServ
 import com.backend.immilog.notice.application.services.query.NoticeQueryService;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
+import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import com.backend.immilog.notice.exception.NoticeException;
 import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
@@ -83,7 +84,12 @@ class NoticeModifyServiceTest {
         Long userSeq = 1L;
         Long noticeSeq = 1L;
         String token = "token";
-        NoticeModifyCommand command = mock(NoticeModifyCommand.class);
+        NoticeModifyCommand command = new NoticeModifyCommand(
+                "title",
+                "content",
+                NoticeType.NOTICE,
+                NoticeStatus.NORMAL
+        );
         User user = User.builder()
                 .seq(userSeq)
                 .auth(Auth.of("email", "password"))
@@ -95,13 +101,20 @@ class NoticeModifyServiceTest {
                 .updatedAt(LocalDateTime.now())
                 .build();
         Notice notice = mock(Notice.class);
-        when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
         when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.of(notice));
         when(notice.getStatus()).thenReturn(mock(NoticeStatus.class));
+        Notice updatedNotice1 = mock(Notice.class);
+        Notice updatedNotice2 = mock(Notice.class);
+        Notice updatedNotice3 = mock(Notice.class);
+        Notice updatedNotice4 = mock(Notice.class);
+        when(notice.updateTitle(anyString())).thenReturn(updatedNotice1);
+        when(updatedNotice1.updateContent(anyString())).thenReturn(updatedNotice2);
+        when(updatedNotice2.updateType(any(NoticeType.class))).thenReturn(updatedNotice3);
+        when(updatedNotice3.updateStatus(any(NoticeStatus.class))).thenReturn(updatedNotice4);
         when(tokenProvider.getIdFromToken(token)).thenReturn(userSeq);
         when(tokenProvider.getUserRoleFromToken(token)).thenReturn(UserRole.ROLE_ADMIN);
         noticeModifyService.modifyNotice(token, noticeSeq, command);
 
-        verify(noticeCommandService).save(notice);
+        verify(noticeCommandService).save(updatedNotice4);
     }
 }

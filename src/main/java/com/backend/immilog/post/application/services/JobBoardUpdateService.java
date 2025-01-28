@@ -10,7 +10,7 @@ import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.post.domain.model.post.JobBoardCompany;
-import com.backend.immilog.post.domain.model.post.PostData;
+import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.exception.PostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -62,7 +62,7 @@ public class JobBoardUpdateService {
         JobBoardResult jobBoardResult = getJobBoard(jobBoardSeq);
         verifyIfUserIsOwner(userSeq, jobBoardResult);
         JobBoard jobBoard = jobBoardResult.toDomain();
-        jobBoard.delete();
+        JobBoard updatedJobBoard = jobBoard.delete();
         jobBoardCommandService.save(jobBoard);
     }
 
@@ -72,7 +72,7 @@ public class JobBoardUpdateService {
             JobBoardUpdateCommand command,
             JobBoardResult jobBoard
     ) {
-        PostData postData = PostData.builder()
+        PostInfo postInfo = PostInfo.builder()
                 .title(command.title() != null ? command.title() : jobBoard.title())
                 .content(command.content() != null ? command.content() : jobBoard.content())
                 .viewCount(jobBoard.viewCount())
@@ -88,7 +88,7 @@ public class JobBoardUpdateService {
         return JobBoard.builder()
                 .seq(jobBoard.seq())
                 .userSeq(userSeq)
-                .postData(postData)
+                .postInfo(postInfo)
                 .jobBoardCompany(
                         JobBoardCompany.of(
                                 jobBoard.companySeq(),

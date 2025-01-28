@@ -10,16 +10,16 @@ import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
 @Embeddable
-public class AuthEntity {
+public class AuthValue {
     @Column(name = "email")
     private String email;
 
     @Column(name = "password")
     private String password;
 
-    protected AuthEntity() {}
+    protected AuthValue() {}
 
-    protected AuthEntity(
+    protected AuthValue(
             String email,
             String password
     ) {
@@ -27,11 +27,11 @@ public class AuthEntity {
         this.password = password;
     }
 
-    public static AuthEntity of(
+    public static AuthValue of(
             String email,
             String password
     ) {
-        return new AuthEntity(email, password);
+        return new AuthValue(email, password);
     }
 
     public Auth toDomain() {

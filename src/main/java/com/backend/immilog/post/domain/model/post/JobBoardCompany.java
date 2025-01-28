@@ -2,56 +2,24 @@ package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import lombok.AccessLevel;
 import lombok.Builder;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 
-@Getter(AccessLevel.PROTECTED)
-public class JobBoardCompany {
-    private Long companySeq;
-    private Industry industry;
-    private Experience experience;
-    private LocalDateTime deadline;
-    private String salary;
-    private String company;
-    private String companyEmail;
-    private String companyPhone;
-    private String companyAddress;
-    private String companyHomepage;
-    private String companyLogo;
-
-    @Builder
-    JobBoardCompany(
-            Long companySeq,
-            Industry industry,
-            Experience experience,
-            LocalDateTime deadline,
-            String salary,
-            String company,
-            String companyEmail,
-            String companyPhone,
-            String companyAddress,
-            String companyHomepage,
-            String companyLogo
-    ) {
-        this.companySeq = companySeq;
-        this.industry = industry;
-        this.experience = experience;
-        this.deadline = deadline;
-        this.salary = salary;
-        this.company = company;
-        this.companyEmail = companyEmail;
-        this.companyPhone = companyPhone;
-        this.companyAddress = companyAddress;
-        this.companyHomepage = companyHomepage;
-        this.companyLogo = companyLogo;
-    }
-
+@Builder
+public record JobBoardCompany(
+        Long companySeq,
+        Industry industry,
+        Experience experience,
+        LocalDateTime deadline,
+        String salary,
+        String company,
+        String companyEmail,
+        String companyPhone,
+        String companyAddress,
+        String companyHomepage,
+        String companyLogo
+) {
     public static JobBoardCompany of(
             Long companySeq,
             Industry industry,

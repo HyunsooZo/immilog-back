@@ -14,18 +14,23 @@ import org.hibernate.annotations.DynamicUpdate;
 public class PostResourceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "seq")
     private Long seq;
 
+    @Column(name = "post_seq")
     private Long postSeq;
 
+    @Column(name = "post_type")
     @Enumerated(EnumType.STRING)
     private PostType postType;
 
     @Getter
+    @Column(name = "resource_type")
     @Enumerated(EnumType.STRING)
     private ResourceType resourceType;
 
     @Getter
+    @Column(name = "content")
     private String content;
 
     protected PostResourceEntity() {}

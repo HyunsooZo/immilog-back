@@ -24,7 +24,7 @@ public class UserEntity {
     private Long seq;
 
     @Embedded
-    private AuthEntity auth;
+    private AuthValue auth;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "user_status")
@@ -35,13 +35,13 @@ public class UserEntity {
     private UserRole userRole;
 
     @Embedded
-    private LocationEntity location;
+    private LocationValue location;
 
     @Embedded
-    private ReportDataEntity report;
+    private ReportValue report;
 
     @Embedded
-    private ProfileEntity profile;
+    private ProfileValue profile;
 
     @Column(name = "created_at")
     private final LocalDateTime createdAt = LocalDateTime.now();
@@ -67,10 +67,10 @@ public class UserEntity {
             UserCountry interestCountry,
             LocalDateTime updatedAt
     ) {
-        AuthEntity auth = AuthEntity.of(email, password);
-        ProfileEntity profile = ProfileEntity.of(nickname, imageUrl, interestCountry);
-        LocationEntity location = LocationEntity.of(country, region);
-        ReportDataEntity reportData = ReportDataEntity.of(reportedCount, reportedDate);
+        AuthValue auth = AuthValue.of(email, password);
+        ProfileValue profile = ProfileValue.of(nickname, imageUrl, interestCountry);
+        LocationValue location = LocationValue.of(country, region);
+        ReportValue reportData = ReportValue.of(reportedCount, reportedDate);
         this.seq = seq;
         this.auth = auth;
         this.userStatus = userStatus;

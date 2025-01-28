@@ -37,7 +37,7 @@ public class CommentEntity {
     private String content;
 
     @Embedded
-    private CommentRelationEntity sourceData;
+    private CommentRelationValue sourceData;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
@@ -69,7 +69,7 @@ public class CommentEntity {
             List<Long> likeUsers,
             LocalDateTime updatedAt
     ) {
-        CommentRelationEntity sourceData = CommentRelationEntity.of(
+        CommentRelationValue sourceData = CommentRelationValue.of(
                 postSeq,
                 parentSeq,
                 referenceType

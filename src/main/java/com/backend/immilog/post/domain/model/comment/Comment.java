@@ -78,15 +78,15 @@ public class Comment {
     }
 
     public Long getPostSeq() {
-        return this.commentRelation.getPostSeq();
+        return this.commentRelation.postSeq();
     }
 
     public Long getParentSeq() {
-        return this.commentRelation.getParentSeq();
+        return this.commentRelation.parentSeq();
     }
 
     public ReferenceType getReferenceType() {
-        return this.commentRelation.getReferenceType();
+        return this.commentRelation.referenceType();
     }
 
     public void increaseReplyCount() {

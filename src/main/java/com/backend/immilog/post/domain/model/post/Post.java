@@ -18,7 +18,7 @@ import java.util.Optional;
 public class Post {
     private final Long seq;
     private final PostUserInfo postUserInfo;
-    private final PostData postData;
+    private PostInfo postInfo;
     private final Categories category;
     private final LocalDateTime createdAt;
     private final LocalDateTime updatedAt;
@@ -30,7 +30,7 @@ public class Post {
     public Post(
             Long seq,
             PostUserInfo postUserInfo,
-            PostData postData,
+            PostInfo postInfo,
             Categories category,
             String isPublic,
             Long commentCount,
@@ -40,7 +40,7 @@ public class Post {
     ) {
         this.seq = seq;
         this.postUserInfo = postUserInfo;
-        this.postData = postData;
+        this.postInfo = postInfo;
         this.category = category;
         this.isPublic = isPublic;
         this.commentCount = commentCount;
@@ -53,7 +53,7 @@ public class Post {
             PostUploadCommand postUploadCommand,
             User user
     ) {
-        PostData postData = PostData.of(
+        PostInfo postInfo = PostInfo.of(
                 postUploadCommand.title(),
                 postUploadCommand.content(),
                 user.getCountry(),
@@ -68,70 +68,133 @@ public class Post {
 
         return Post.builder()
                 .postUserInfo(postUserInfo)
-                .postData(postData)
+                .postInfo(postInfo)
                 .category(postUploadCommand.category())
                 .isPublic(postUploadCommand.isPublic() ? "Y" : "N")
                 .commentCount(0L)
                 .build();
     }
 
-    public void updateCommentCount() {
+    public Post updateCommentCount() {
         this.commentCount++;
+        return this;
     }
 
-    public void updateIsPublic(String isPublic) {this.isPublic = isPublic;}
+    public Post updateIsPublic(Boolean isPublic) {
+        if (isPublic != null) {
+            String value = isPublic ? "Y" : "N";
+            if (!this.isPublic.equals(value)) {
+                this.isPublic = value;
+            }
+        }
+        return this;
+    }
 
-    public void updateContent(String content) {this.postData.updateContent(content);}
 
-    public void updateTitle(String title) {this.postData.updateTitle(title);}
+    public Post updateContent(String content) {
+        if (content == null || this.postInfo.content().equals(content)) {
+            return this;
+        }
+        this.postInfo = new PostInfo(
+                this.postInfo.title(),
+                content,
+                this.postInfo.viewCount(),
+                this.postInfo.likeCount(),
+                this.postInfo.region(),
+                this.postInfo.status(),
+                this.postInfo.country()
+        );
+        return this;
+    }
 
-    public void delete() {this.getPostData().delete();}
+    public Post updateTitle(String title) {
+        if (title == null || this.postInfo.title().equals(title)) {
+            return this;
+        }
+        this.postInfo = new PostInfo(
+                title,
+                this.postInfo.content(),
+                this.postInfo.viewCount(),
+                this.postInfo.likeCount(),
+                this.postInfo.region(),
+                this.postInfo.status(),
+                this.postInfo.country()
+        );
+        return this;
+    }
 
-    public Long getUserSeq() {return this.postUserInfo.getUserSeq();}
+    public Post delete() {
+        if (this.postInfo.status() == PostStatus.DELETED) {
+            throw new PostException(PostErrorCode.POST_ALREADY_DELETED);
+        }
+        this.postInfo = new PostInfo(
+                this.postInfo.title(),
+                this.postInfo.content(),
+                this.postInfo.viewCount(),
+                this.postInfo.likeCount(),
+                this.postInfo.region(),
+                PostStatus.DELETED,
+                this.postInfo.country()
+        );
+        return this;
+    }
 
-    public void increaseViewCount() {this.postData.increaseViewCount();}
+    public Long getUserSeq() {return this.postUserInfo.userSeq();}
 
-    public String getTitle() {return this.postData.getTitle();}
+    public Post increaseViewCount() {
+        this.postInfo = new PostInfo(
+                this.postInfo.title(),
+                this.postInfo.content(),
+                this.postInfo.viewCount() + 1,
+                this.postInfo.likeCount(),
+                this.postInfo.region(),
+                this.postInfo.status(),
+                this.postInfo.country()
+        );
+        return this;
+    }
 
-    public String getContent() {return this.postData.getContent();}
+    public String getTitle() {return this.postInfo.title();}
 
-    public String getUserProfileImage() {return this.postUserInfo.getProfileImage();}
+    public String getContent() {return this.postInfo.content();}
 
-    public String getUserNickname() {return this.postUserInfo.getNickname();}
+    public String getUserProfileImage() {return this.postUserInfo.profileImage();}
 
-    public String getCountryName() {return this.postData.getCountry().name();}
+    public String getUserNickname() {return this.postUserInfo.nickname();}
 
-    public String getRegion() {return this.postData.getRegion();}
+    public String getCountryName() {return this.postInfo.country().name();}
 
-    public Long getViewCount() {return this.postData.getViewCount();}
+    public String getRegion() {return this.postInfo.region();}
 
-    public Long getLikeCount() {return this.postData.getLikeCount();}
+    public Long getViewCount() {return this.postInfo.viewCount();}
+
+    public Long getLikeCount() {return this.postInfo.likeCount();}
 
     public void updateBadge(Badge badge) {
         this.badge = Optional.ofNullable(badge)
                 .orElseThrow(() -> new PostException(PostErrorCode.BADGE_NOT_FOUND));
     }
 
-    public PostStatus getStatus() {return this.postData.getStatus();}
+    public PostStatus getStatus() {return this.postInfo.status();}
 
-    public String getProfileImage() {return this.postUserInfo.getProfileImage();}
+    public String getProfileImage() {return this.postUserInfo.profileImage();}
 
-    public String getNickname() {return this.postUserInfo.getNickname();}
+    public String getNickname() {return this.postUserInfo.nickname();}
 
     public PostResult toResult() {
         return PostResult.builder()
                 .seq(this.seq)
-                .userProfileUrl(this.postUserInfo.getProfileImage())
-                .userNickName(this.postUserInfo.getNickname())
+                .userProfileUrl(this.postUserInfo.profileImage())
+                .userNickName(this.postUserInfo.nickname())
                 .country(this.getCountryName())
                 .region(this.getRegion())
                 .category(this.category)
                 .isPublic(this.isPublic)
                 .commentCount(this.commentCount)
-                .likeCount(this.postData.getLikeCount())
-                .viewCount(this.postData.getViewCount())
-                .title(this.postData.getTitle())
-                .content(this.postData.getContent())
+                .likeCount(this.postInfo.likeCount())
+                .viewCount(this.postInfo.viewCount())
+                .title(this.postInfo.title())
+                .content(this.postInfo.content())
                 .createdAt(this.createdAt.toString())
                 .build();
     }
