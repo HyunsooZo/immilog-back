@@ -23,10 +23,10 @@ public class PostEntity {
     private Long seq;
 
     @Embedded
-    private PostUserInfoEntity postUserInfo;
+    private PostUserInfoValue postUserInfo;
 
     @Embedded
-    private PostInfoEntity postInfo;
+    private PostInfoValue postInfo;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "category")
@@ -65,8 +65,8 @@ public class PostEntity {
             LocalDateTime updatedAt
     ) {
         this.seq = seq;
-        this.postUserInfo = PostUserInfoEntity.of(userSeq, nickname, profileImage);
-        this.postInfo = PostInfoEntity.of(title, content, country, region);
+        this.postUserInfo = PostUserInfoValue.of(userSeq, nickname, profileImage);
+        this.postInfo = PostInfoValue.of(title, content, country, region);
         this.category = category;
         this.isPublic = isPublic;
         this.commentCount = commentCount;
@@ -95,7 +95,7 @@ public class PostEntity {
         return Post.builder()
                 .seq(this.seq)
                 .postUserInfo(this.postUserInfo.toDomain())
-                .postData(this.postInfo.toDomain())
+                .postInfo(this.postInfo.toDomain())
                 .category(this.category)
                 .isPublic(this.isPublic)
                 .commentCount(this.commentCount)

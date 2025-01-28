@@ -4,6 +4,7 @@ import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
@@ -14,18 +15,23 @@ import org.hibernate.annotations.DynamicUpdate;
 public class InteractionUserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "seq")
     private Long seq;
 
+    @Column(name = "post_seq")
     private Long postSeq;
 
+    @Column(name="post_type")
     @Enumerated(EnumType.STRING)
     private PostType postType;
 
     @Getter
+    @Column(name="interaction_type")
     @Enumerated(EnumType.STRING)
     private InteractionType interactionType;
 
     @Getter
+    @Column(name="user_seq")
     private Long userSeq;
 
     protected InteractionUserEntity() {}

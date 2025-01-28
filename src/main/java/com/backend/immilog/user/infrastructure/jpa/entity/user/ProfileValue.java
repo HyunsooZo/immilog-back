@@ -13,7 +13,7 @@ import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
 @Embeddable
-public class ProfileEntity {
+public class ProfileValue {
 
     @Column(name = "nickname")
     private String nickname;
@@ -25,9 +25,9 @@ public class ProfileEntity {
     @Column(name = "interest_country")
     private UserCountry interestCountry;
 
-    protected ProfileEntity() {}
+    protected ProfileValue() {}
 
-    protected ProfileEntity(
+    protected ProfileValue(
             String nickname,
             String imageUrl,
             UserCountry interestCountry
@@ -37,12 +37,12 @@ public class ProfileEntity {
         this.interestCountry = interestCountry;
     }
 
-    public static ProfileEntity of(
+    public static ProfileValue of(
             String nickname,
             String imageUrl,
             UserCountry interestCountry
     ) {
-        return new ProfileEntity(nickname, imageUrl, interestCountry);
+        return new ProfileValue(nickname, imageUrl, interestCountry);
     }
 
     public Profile toDomain() {

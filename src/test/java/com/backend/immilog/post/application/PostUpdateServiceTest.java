@@ -8,7 +8,7 @@ import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.post.Post;
-import com.backend.immilog.post.domain.model.post.PostData;
+import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.domain.model.post.PostUserInfo;
 import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
@@ -66,15 +66,19 @@ class PostUpdateServiceTest {
                 .content("content")
                 .isPublic(true)
                 .build();
-        Post post = Post.builder()
-                .postUserInfo(PostUserInfo.builder().userSeq(1L).build())
-                .postData(PostData.builder().build())
-                .build();
+        Post post = mock(Post.class);
+        when(post.getUserSeq()).thenReturn(userSeq);
         when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
         doNothing().when(preparedStatement).setLong(eq(1), anyLong());
         doNothing().when(preparedStatement).setString(eq(2), anyString());
         doNothing().when(preparedStatement).setString(eq(3), anyString());
         doNothing().when(preparedStatement).setString(eq(4), anyString());
+        Post post1 = mock(Post.class);
+        Post post2 = mock(Post.class);
+        Post post3 = mock(Post.class);
+        when(post.updateTitle(anyString())).thenReturn(post1);
+        when(post1.updateContent(anyString())).thenReturn(post2);
+        when(post2.updateIsPublic(anyBoolean())).thenReturn(post3);
 
         ArgumentCaptor<BiConsumer<PreparedStatement, PostResource>> captor =
                 ArgumentCaptor.forClass(BiConsumer.class);
@@ -98,14 +102,14 @@ class PostUpdateServiceTest {
     void increaseViewCount() {
         // given
         Long postSeq = 1L;
-        Post post = Post.builder()
-                .postData(PostData.builder().viewCount(0L).build())
-                .build();
+        Post post = mock(Post.class);
+        Post post1 = mock(Post.class);
         when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
-        // when
+        when(post.increaseViewCount()).thenReturn(post1);
+        // whenx
         postUpdateService.increaseViewCount(postSeq);
 
         // then
-        assertThat(post.getViewCount()).isEqualTo(1L);
+        verify(postCommandService,times(1)).save(post1);
     }
 }

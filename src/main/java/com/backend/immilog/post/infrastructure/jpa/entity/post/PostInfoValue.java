@@ -2,14 +2,14 @@ package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.PostStatus;
-import com.backend.immilog.post.domain.model.post.PostData;
+import com.backend.immilog.post.domain.model.post.PostInfo;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 @Embeddable
-public class PostInfoEntity {
+public class PostInfoValue {
     @Column(name = "title")
     private String title;
 
@@ -33,9 +33,9 @@ public class PostInfoEntity {
     @Enumerated(EnumType.STRING)
     private Countries country;
 
-    protected PostInfoEntity() {}
+    protected PostInfoValue() {}
 
-    PostInfoEntity(
+    PostInfoValue(
             String title,
             String content,
             Long viewCount,
@@ -53,13 +53,13 @@ public class PostInfoEntity {
         this.country = country;
     }
 
-    public static <T extends Enum<T>> PostInfoEntity of(
+    public static <T extends Enum<T>> PostInfoValue of(
             String title,
             String content,
             T country,
             String region
     ) {
-        return new PostInfoEntity(
+        return new PostInfoValue(
                 title,
                 content,
                 0L,
@@ -70,8 +70,8 @@ public class PostInfoEntity {
         );
     }
 
-    public PostData toDomain() {
-        return PostData.builder()
+    public PostInfo toDomain() {
+        return PostInfo.builder()
                 .title(title)
                 .content(content)
                 .viewCount(viewCount)

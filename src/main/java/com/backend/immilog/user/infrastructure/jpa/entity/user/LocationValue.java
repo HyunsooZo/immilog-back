@@ -13,7 +13,7 @@ import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
 @Embeddable
-public class LocationEntity {
+public class LocationValue {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "country")
@@ -22,9 +22,9 @@ public class LocationEntity {
     @Column(name = "region")
     private String region;
 
-    protected LocationEntity() {}
+    protected LocationValue() {}
 
-    protected LocationEntity(
+    protected LocationValue(
             UserCountry country,
             String region
     ) {
@@ -32,11 +32,11 @@ public class LocationEntity {
         this.region = region;
     }
 
-    public static LocationEntity of(
+    public static LocationValue of(
             UserCountry country,
             String region
     ) {
-        return new LocationEntity(country, region);
+        return new LocationValue(country, region);
     }
 
     public Location toDomain() {
