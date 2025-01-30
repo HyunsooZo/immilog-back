@@ -47,7 +47,7 @@ public class PostUpdateService {
             Long postSeq,
             PostUpdateCommand command
     ) {
-        Post post = getPost(postSeq);
+        Post post = postQueryService.getPostById(postSeq);
         if (!Objects.equals(post.getUserSeq(), userId)) {
             throw new PostException(PostErrorCode.NO_AUTHORITY);
         }
@@ -62,7 +62,7 @@ public class PostUpdateService {
     @Async
     @DistributedLock(key = VIEW_LOCK_KEY, identifier = "#postSeq", expireTime = 5)
     public void increaseViewCount(Long postSeq) {
-        Post post = getPost(postSeq);
+        Post post = postQueryService.getPostById(postSeq);
         Post updatedPost = post.increaseViewCount();
         postCommandService.save(updatedPost);
     }
@@ -123,11 +123,5 @@ public class PostUpdateService {
                     }
             );
         }
-    }
-
-    private Post getPost(Long postSeq) {
-        return postQueryService
-                .getPostById(postSeq)
-                .orElseThrow(() -> new PostException(PostErrorCode.POST_NOT_FOUND));
     }
 }

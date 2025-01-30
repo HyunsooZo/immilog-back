@@ -53,7 +53,10 @@ public class PostResourceRepositoryImpl implements PostResourceRepository {
     }
 
     @Override
-    public List<PostResource> findAllByPostSeqList(List<Long> postSeqList) {
-        return postResourceJdbcRepository.findAllByPostSeqList(postSeqList);
+    public List<PostResource> findAllByPostSeqList(
+            List<Long> postSeqList,
+            PostType postType
+    ) {
+        return postResourceJdbcRepository.findAllByPostSeqList(postSeqList, postType);
     }
 }

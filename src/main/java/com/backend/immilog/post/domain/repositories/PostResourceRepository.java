@@ -18,5 +18,8 @@ public interface PostResourceRepository {
 
     List<PostResource> findAllByPostSeq(Long seq);
 
-    List<PostResource> findAllByPostSeqList(List<Long> postSeqList);
+    List<PostResource> findAllByPostSeqList(
+            List<Long> postSeqList,
+            PostType postType
+    );
 }

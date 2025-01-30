@@ -2,6 +2,8 @@ package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.exception.PostErrorCode;
+import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.infrastructure.result.CommentEntityResult;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.enums.UserCountry;
@@ -28,7 +30,8 @@ public class CommentJdbcRepository {
             ResultSet rs,
             long commentSeq,
             UserInfoResult user
-    ) throws SQLException {
+    ) {
+        try {
         String prefix = commentSeq == rs.getLong("c.seq") ? "c" : "cc";
         return CommentEntityResult.builder()
                 .seq(commentSeq)
@@ -42,12 +45,16 @@ public class CommentJdbcRepository {
                 .status(PostStatus.valueOf(rs.getString(prefix + ".status")))
                 .createdAt(rs.getTimestamp(prefix + ".created_at").toLocalDateTime())
                 .build();
+        } catch (SQLException e) {
+            throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
+        }
     }
 
     private static UserInfoResult getUserInfoResult(
             ResultSet rs,
             String prefix
-    ) throws SQLException {
+    ) {
+        try {
         return new UserInfoResult(
                 rs.getLong(prefix + ".seq"),
                 rs.getString(prefix + ".nickname"),
@@ -61,6 +68,9 @@ public class CommentJdbcRepository {
                 UserRole.valueOf(rs.getString(prefix + ".user_role")),
                 UserStatus.valueOf(rs.getString(prefix + ".user_status"))
         );
+        } catch (SQLException e) {
+            throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
+        }
     }
 
     public List<CommentEntityResult> getComments(Long postSeq) {
@@ -87,18 +97,22 @@ public class CommentJdbcRepository {
                 .toList();
     }
 
-    private List<CommentEntityResult> mapParentCommentWithChildren(ResultSet rs) throws SQLException {
+    private List<CommentEntityResult> mapParentCommentWithChildren(ResultSet rs) {
         Map<Long, CommentEntityResult> commentMap = new HashMap<>();
-        do {
-            Long commentSeq = rs.getLong("c.seq");
-            commentMap.putIfAbsent(commentSeq, getCommentEntityResult(rs, commentSeq, getUserInfoResult(rs, "u")));
+        try {
+            do {
+                Long commentSeq = rs.getLong("c.seq");
+                commentMap.putIfAbsent(commentSeq, getCommentEntityResult(rs, commentSeq, getUserInfoResult(rs, "u")));
 
-            long childCommentSeq = rs.getLong("cc.seq");
-            if (childCommentSeq != 0) {
-                CommentEntityResult childComment = getCommentEntityResult(rs, childCommentSeq, getUserInfoResult(rs, "cu"));
-                commentMap.get(commentSeq).addChildComment(childComment);
-            }
-        } while (rs.next());
+                long childCommentSeq = rs.getLong("cc.seq");
+                if (childCommentSeq != 0) {
+                    CommentEntityResult childComment = getCommentEntityResult(rs, childCommentSeq, getUserInfoResult(rs, "cu"));
+                    commentMap.get(commentSeq).addChildComment(childComment);
+                }
+            } while (rs.next());
+        } catch (Exception e) {
+            throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
+        }
         return new ArrayList<>(commentMap.values());
     }
 }

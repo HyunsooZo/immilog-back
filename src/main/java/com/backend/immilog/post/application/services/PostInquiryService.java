@@ -7,7 +7,6 @@ import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
-import com.backend.immilog.post.exception.PostException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -17,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
-
-import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -53,9 +50,7 @@ public class PostInquiryService {
 
     @Transactional(readOnly = true)
     public PostResult getPostDetail(Long postSeq) {
-        PostResult post =  postQueryService
-                .getPostDetail(postSeq)
-                .orElseThrow(() -> new PostException(POST_NOT_FOUND));
+        PostResult post = postQueryService.getPostDetail(postSeq);
         List<CommentResult> comments = commentQueryService.getComments(postSeq);
         post.addComments(comments);
         return post;
