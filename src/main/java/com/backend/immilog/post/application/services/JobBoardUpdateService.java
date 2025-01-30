@@ -20,7 +20,8 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
-import static com.backend.immilog.post.exception.PostErrorCode.*;
+import static com.backend.immilog.post.exception.PostErrorCode.FAILED_TO_SAVE_POST;
+import static com.backend.immilog.post.exception.PostErrorCode.NO_AUTHORITY;
 
 @Slf4j
 @Service
@@ -48,7 +49,7 @@ public class JobBoardUpdateService {
             Long jobBoardSeq,
             JobBoardUpdateCommand command
     ) {
-        JobBoardResult jobBoard = getJobBoard(jobBoardSeq);
+        JobBoardResult jobBoard = jobBoardQueryService.getJobBoardBySeq(jobBoardSeq);
         verifyIfUserIsOwner(userSeq, jobBoard);
         JobBoard updatedJobBoard = createUpdatedJobBoard(userSeq, command, jobBoard);
         jobBoardCommandService.save(updatedJobBoard);
@@ -59,11 +60,11 @@ public class JobBoardUpdateService {
             Long userSeq,
             Long jobBoardSeq
     ) {
-        JobBoardResult jobBoardResult = getJobBoard(jobBoardSeq);
+        JobBoardResult jobBoardResult = jobBoardQueryService.getJobBoardBySeq(jobBoardSeq);
         verifyIfUserIsOwner(userSeq, jobBoardResult);
-        JobBoard jobBoard = jobBoardResult.toDomain();
+        JobBoard jobBoard = JobBoard.from(jobBoardResult);
         JobBoard updatedJobBoard = jobBoard.delete();
-        jobBoardCommandService.save(jobBoard);
+        jobBoardCommandService.save(updatedJobBoard);
     }
 
 
@@ -73,35 +74,35 @@ public class JobBoardUpdateService {
             JobBoardResult jobBoard
     ) {
         PostInfo postInfo = PostInfo.builder()
-                .title(command.title() != null ? command.title() : jobBoard.title())
-                .content(command.content() != null ? command.content() : jobBoard.content())
-                .viewCount(jobBoard.viewCount())
-                .likeCount(jobBoard.likeCount())
-                .status(jobBoard.status())
-                .country(jobBoard.country())
-                .region(jobBoard.region())
+                .title(command.title() != null ? command.title() : jobBoard.getTitle())
+                .content(command.content() != null ? command.content() : jobBoard.getContent())
+                .viewCount(jobBoard.getViewCount())
+                .likeCount(jobBoard.getLikeCount())
+                .status(jobBoard.getStatus())
+                .country(jobBoard.getCountry())
+                .region(jobBoard.getRegion())
                 .build();
 
         updateTags(command, jobBoard);
         updateAttachments(command, jobBoard);
 
         return JobBoard.builder()
-                .seq(jobBoard.seq())
+                .seq(jobBoard.getSeq())
                 .userSeq(userSeq)
                 .postInfo(postInfo)
                 .jobBoardCompany(
                         JobBoardCompany.of(
-                                jobBoard.companySeq(),
-                                jobBoard.industry(),
-                                command.experience() != null ? command.experience() : jobBoard.experience(),
-                                command.deadline() != null ? command.deadline() : jobBoard.deadline(),
-                                command.salary() != null ? command.salary() : jobBoard.salary(),
-                                jobBoard.companyName(),
-                                jobBoard.companyEmail(),
-                                jobBoard.companyPhone(),
-                                jobBoard.companyAddress(),
-                                jobBoard.companyHomepage(),
-                                jobBoard.companyLogo()
+                                jobBoard.getCompanySeq(),
+                                jobBoard.getIndustry(),
+                                command.experience() != null ? command.experience() : jobBoard.getExperience(),
+                                command.deadline() != null ? command.deadline() : jobBoard.getDeadline(),
+                                command.salary() != null ? command.salary() : jobBoard.getSalary(),
+                                jobBoard.getCompanyName(),
+                                jobBoard.getCompanyEmail(),
+                                jobBoard.getCompanyPhone(),
+                                jobBoard.getCompanyAddress(),
+                                jobBoard.getCompanyHomepage(),
+                                jobBoard.getCompanyLogo()
                         )
                 )
                 .build();
@@ -111,20 +112,20 @@ public class JobBoardUpdateService {
             JobBoardUpdateCommand command,
             JobBoardResult jobBoard
     ) {
-        List<String> attachmentToDelete = jobBoard.attachments()
+        List<String> attachmentToDelete = jobBoard.getAttachments()
                 .stream()
                 .filter(attachment -> command.deleteAttachments().contains(attachment))
                 .toList();
 
         postResourceCommandService.deleteAllEntities(
-                jobBoard.seq(),
+                jobBoard.getSeq(),
                 PostType.JOB_BOARD,
                 ResourceType.ATTACHMENT,
                 attachmentToDelete
         );
 
         saveAllPostResources(
-                jobBoard.seq(),
+                jobBoard.getSeq(),
                 PostType.JOB_BOARD,
                 ResourceType.ATTACHMENT,
                 command.addAttachments()
@@ -135,20 +136,20 @@ public class JobBoardUpdateService {
             JobBoardUpdateCommand command,
             JobBoardResult jobBoard
     ) {
-        List<String> tagToDelete = jobBoard.tags()
+        List<String> tagToDelete = jobBoard.getTags()
                 .stream()
                 .filter(tag -> command.deleteAttachments().contains(tag))
                 .toList();
 
         postResourceCommandService.deleteAllEntities(
-                jobBoard.seq(),
+                jobBoard.getSeq(),
                 PostType.JOB_BOARD,
                 ResourceType.TAG,
                 tagToDelete
         );
 
         saveAllPostResources(
-                jobBoard.seq(),
+                jobBoard.getSeq(),
                 PostType.JOB_BOARD,
                 ResourceType.TAG,
                 command.addTags()
@@ -189,14 +190,8 @@ public class JobBoardUpdateService {
             Long userSeq,
             JobBoardResult jobBoard
     ) {
-        if (!Objects.equals(jobBoard.companyManagerUserSeq(), userSeq)) {
+        if (!Objects.equals(jobBoard.getCompanyManagerUserSeq(), userSeq)) {
             throw new PostException(NO_AUTHORITY);
         }
-    }
-
-    private JobBoardResult getJobBoard(Long jobBoardSeq) {
-        return jobBoardQueryService
-                .getJobBoardBySeq(jobBoardSeq)
-                .orElseThrow(() -> new PostException(JOB_BOARD_NOT_FOUND));
     }
 }

@@ -52,11 +52,15 @@ public class PostResourceJdbcRepository {
                 .update();
     }
 
-    public List<PostResource> findAllByPostSeqList(List<Long> postSeqList){
+    public List<PostResource> findAllByPostSeqList(
+            List<Long> postSeqList,
+            PostType postType
+    ) {
         return jdbcClient.sql("""
                         SELECT *
                         FROM post_resource
                         WHERE post_seq IN (:postSeqList)
+                        AND post_type = :postType
                         """)
                 .params(postSeqList)
                 .query(PostResource.class)

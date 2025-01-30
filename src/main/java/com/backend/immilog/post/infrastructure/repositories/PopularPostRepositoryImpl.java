@@ -3,6 +3,7 @@ package com.backend.immilog.post.infrastructure.repositories;
 import com.backend.immilog.global.infrastructure.persistence.repository.RedisDataRepository;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.repositories.PopularPostRepository;
 import com.backend.immilog.post.infrastructure.jdbc.PostJdbcRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -53,11 +54,12 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             LocalDateTime from,
             LocalDateTime to
     ) {
-        return postJdbcRepository.getPopularPosts(
+        List<Post> posts = postJdbcRepository.getPopularPosts(
                 from,
                 to,
                 SortingMethods.VIEW_COUNT
         );
+        return posts.stream().map(Post::toResult).toList();
     }
 
     @Override
@@ -65,10 +67,11 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             LocalDateTime from,
             LocalDateTime to
     ) {
-        return postJdbcRepository.getPopularPosts(
+        List<Post> posts = postJdbcRepository.getPopularPosts(
                 from,
                 to,
                 SortingMethods.COMMENT_COUNT
         );
+        return posts.stream().map(Post::toResult).toList();
     }
 }

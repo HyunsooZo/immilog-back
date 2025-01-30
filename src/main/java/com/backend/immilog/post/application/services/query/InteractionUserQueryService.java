@@ -7,6 +7,7 @@ import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,6 +30,17 @@ public class InteractionUserQueryService {
                 userSeq,
                 postType,
                 interactionType
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public List<InteractionUser> getInteractionUsersByPostSeqList(
+            List<Long> resultSeqList,
+            PostType postType
+    ) {
+        return interactionUserRepository.getInteractionsByPostSeqList(
+                resultSeqList,
+                postType
         );
     }
 }

@@ -36,6 +36,7 @@ public final class PostResult {
     private final Categories category;
     private final PostStatus status;
     private final String createdAt;
+    private final String updatedAt;
     private String title;
     private String content;
     private String keyword;
@@ -62,6 +63,7 @@ public final class PostResult {
             Categories category,
             PostStatus status,
             String createdAt,
+            String updatedAt,
             String keyword
     ) {
         this.seq = seq;
@@ -88,6 +90,7 @@ public final class PostResult {
         this.category = category;
         this.status = status;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.keyword = keyword;
     }
 

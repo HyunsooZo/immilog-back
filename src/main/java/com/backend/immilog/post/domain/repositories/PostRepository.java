@@ -1,6 +1,5 @@
 package com.backend.immilog.post.domain.repositories;
 
-import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
@@ -8,11 +7,9 @@ import com.backend.immilog.post.domain.model.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import java.util.Optional;
-
 public interface PostRepository {
 
-    Page<PostResult> getPosts(
+    Page<Post> getPosts(
             Countries country,
             SortingMethods sortingMethod,
             String isPublic,
@@ -20,19 +17,19 @@ public interface PostRepository {
             Pageable pageable
     );
 
-    Optional<PostResult> getPostDetail(Long postSeq);
+    Post getPostDetail(Long postSeq);
 
-    Page<PostResult> getPostsByKeyword(
+    Page<Post> getPostsByKeyword(
             String keyword,
             Pageable pageable
     );
 
-    Page<PostResult> getPostsByUserSeq(
+    Page<Post> getPostsByUserSeq(
             Long userSeq,
             Pageable pageable
     );
 
-    Optional<Post> getById(Long postSeq);
+    Post getById(Long postSeq);
 
     Post save(Post postEntity);
 

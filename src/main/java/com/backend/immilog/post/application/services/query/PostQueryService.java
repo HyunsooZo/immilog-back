@@ -1,45 +1,54 @@
 package com.backend.immilog.post.application.services.query;
 
 import com.backend.immilog.global.aop.monitor.PerformanceMonitor;
-import com.backend.immilog.global.infrastructure.persistence.repository.RedisDataRepository;
+import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
 public class PostQueryService {
     private final PostRepository postRepository;
-    private final RedisDataRepository redisDataRepository;
+    private final DataRepository redisDataRepository;
     private final ObjectMapper objectMapper;
+    private final InteractionUserQueryService interactionUserQueryService;
+    private final PostResourceQueryService postResourceQueryService;
 
     public PostQueryService(
             PostRepository postRepository,
-            RedisDataRepository redisDataRepository,
-            ObjectMapper objectMapper
+            DataRepository redisDataRepository,
+            ObjectMapper objectMapper,
+            InteractionUserQueryService interactionUserQueryService,
+            PostResourceQueryService postResourceQueryService
     ) {
         this.postRepository = postRepository;
         this.redisDataRepository = redisDataRepository;
         this.objectMapper = objectMapper;
+        this.interactionUserQueryService = interactionUserQueryService;
+        this.postResourceQueryService = postResourceQueryService;
     }
 
     @Transactional(readOnly = true)
-    public Optional<Post> getPostById(Long postSeq) {
+    public Post getPostById(Long postSeq) {
         return postRepository.getById(postSeq);
     }
 
@@ -52,13 +61,16 @@ public class PostQueryService {
             Categories category,
             Pageable pageable
     ) {
-        return postRepository.getPosts(
+        Page<Post> posts = postRepository.getPosts(
                 country,
                 sortingMethod,
                 isPublic,
                 category,
                 pageable
         );
+        List<Long> postSeqList = getSeqList(posts);
+        Page<PostResult> postResults = posts.map(Post::toResult);
+        return assemblePostResult(postSeqList, postResults);
     }
 
     @Transactional(readOnly = true)
@@ -66,12 +78,18 @@ public class PostQueryService {
             String keyword,
             PageRequest pageRequest
     ) {
-        return postRepository.getPostsByKeyword(keyword, pageRequest);
+        Page<Post> posts = postRepository.getPostsByKeyword(keyword, pageRequest);
+        List<Long> postSeqList = getSeqList(posts);
+        Page<PostResult> postResults = posts.map(Post::toResult);
+        postResults.getContent().forEach(post -> post.addKeywords(keyword));
+        return assemblePostResult(postSeqList, postResults);
     }
 
     @Transactional(readOnly = true)
-    public Optional<PostResult> getPostDetail(Long postSeq) {
-        return postRepository.getPostDetail(postSeq);
+    public PostResult getPostDetail(Long postSeq) {
+        Page<Post> posts = new PageImpl<>(List.of(postRepository.getById(postSeq)));
+        Page<PostResult> postResult = posts.map(Post::toResult);
+        return assemblePostResult(List.of(postSeq), postResult).getContent().getFirst();
     }
 
     @Transactional(readOnly = true)
@@ -79,7 +97,9 @@ public class PostQueryService {
             Long userSeq,
             Pageable pageable
     ) {
-        return postRepository.getPostsByUserSeq(userSeq, pageable);
+        Page<Post> posts = postRepository.getPostsByUserSeq(userSeq, pageable);
+        Page<PostResult> postResults = posts.map(Post::toResult);
+        return assemblePostResult(getSeqList(posts), postResults);
     }
 
     public List<PostResult> getPostsFromRedis(String key) {
@@ -96,6 +116,39 @@ public class PostQueryService {
             log.error("Failed to get popular posts with key {}", key, e);
         }
         return List.of();
+    }
+
+    private static List<Long> getSeqList(Page<Post> posts) {
+        return posts.stream().map(Post::getSeq).toList();
+    }
+
+    private Page<PostResult> assemblePostResult(
+            List<Long> resultSeqList,
+            Page<PostResult> postResults
+    ) {
+        List<InteractionUser> interactionUsers = interactionUserQueryService.getInteractionUsersByPostSeqList(
+                resultSeqList,
+                PostType.POST
+        );
+        List<PostResource> postResources = postResourceQueryService.getResourcesByPostSeqList(
+                resultSeqList,
+                PostType.POST
+        );
+
+        return postResults.map(postResult -> {
+            List<PostResource> resources = postResources.stream()
+                    .filter(postResource -> postResource.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            List<InteractionUser> interactionUserList = interactionUsers.stream()
+                    .filter(interactionUser -> interactionUser.getPostSeq().equals(postResult.getSeq()))
+                    .toList();
+
+            postResult.addInteractionUsers(interactionUserList);
+            postResult.addResources(resources);
+
+            return postResult;
+        });
     }
 
 }

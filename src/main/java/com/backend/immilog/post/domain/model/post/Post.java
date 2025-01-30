@@ -4,6 +4,7 @@ import com.backend.immilog.post.application.command.PostUploadCommand;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Badge;
 import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.exception.PostErrorCode;
 import com.backend.immilog.post.exception.PostException;
@@ -199,4 +200,28 @@ public class Post {
                 .build();
     }
 
+    public static Post from(PostResult postResult) {
+        return Post.builder()
+                .seq(postResult.getSeq())
+                .postUserInfo(new PostUserInfo(
+                        postResult.getUserSeq(),
+                        postResult.getUserProfileUrl(),
+                        postResult.getUserNickName()
+                ))
+                .postInfo(new PostInfo(
+                        postResult.getTitle(),
+                        postResult.getContent(),
+                        postResult.getViewCount(),
+                        postResult.getLikeCount(),
+                        postResult.getRegion(),
+                        postResult.getStatus(),
+                        Countries.valueOf(postResult.getCountry())
+                ))
+                .category(postResult.getCategory())
+                .isPublic(postResult.getIsPublic())
+                .commentCount(postResult.getCommentCount())
+                .createdAt(LocalDateTime.parse(postResult.getCreatedAt()))
+                .updatedAt(LocalDateTime.parse(postResult.getUpdatedAt()))
+                .build();
+    }
 }

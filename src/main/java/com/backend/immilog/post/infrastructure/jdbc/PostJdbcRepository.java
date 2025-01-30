@@ -1,10 +1,10 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
-import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.infrastructure.jpa.entity.post.PostEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +21,7 @@ public class PostJdbcRepository {
 
     public PostJdbcRepository(JdbcClient jdbcClient) {this.jdbcClient = jdbcClient;}
 
-    public Page<PostResult> getPostResults(
+    public Page<Post> getPosts(
             Countries country,
             SortingMethods sortingMethod,
             String isPublic,
@@ -39,13 +39,13 @@ public class PostJdbcRepository {
                 OFFSET ?
                 """;
 
-        List<Post> posts = jdbcClient.sql(sql)
+        List<PostEntity> posts = jdbcClient.sql(sql)
                 .param(country)
                 .param(isPublic)
                 .param(category)
                 .param(pageable.getPageSize())
                 .param(pageable.getOffset())
-                .query(Post.class)
+                .query(PostEntity.class)
                 .list();
 
         int count = jdbcClient.sql("""
@@ -62,13 +62,13 @@ public class PostJdbcRepository {
                 .single();
 
         return new PageImpl<>(
-                posts.stream().map(Post::toResult).toList(),
+                posts.stream().map(PostEntity::toDomain).toList(),
                 pageable,
                 count
         );
     }
 
-    public Page<PostResult> getPostsByUserSeq(
+    public Page<Post> getPostsByUserSeq(
             Long userSeq,
             Pageable pageable
     ) {
@@ -81,11 +81,11 @@ public class PostJdbcRepository {
                 OFFSET ?
                 """;
 
-        List<Post> posts = jdbcClient.sql(sql)
+        List<PostEntity> posts = jdbcClient.sql(sql)
                 .param(userSeq)
                 .param(pageable.getPageSize())
                 .param(pageable.getOffset())
-                .query(Post.class)
+                .query(PostEntity.class)
                 .list();
 
         int count = jdbcClient.sql("""
@@ -98,7 +98,7 @@ public class PostJdbcRepository {
                 .single();
 
         return new PageImpl<>(
-                posts.stream().map(Post::toResult).toList(),
+                posts.stream().map(PostEntity::toDomain).toList(),
                 pageable,
                 count
         );
@@ -116,7 +116,7 @@ public class PostJdbcRepository {
                 """.formatted(column);
     }
 
-    public Page<PostResult> getPostsByKeyword(
+    public Page<Post> getPostsByKeyword(
             String keyword,
             Pageable pageable
     ) {
@@ -128,12 +128,12 @@ public class PostJdbcRepository {
                 LIMIT ?
                 OFFSET ?
                 """;
-        List<Post> posts = jdbcClient.sql(sql)
+        List<PostEntity> posts = jdbcClient.sql(sql)
                 .param("%" + keyword + "%")
                 .param("%" + keyword + "%")
                 .param(pageable.getPageSize())
                 .param(pageable.getOffset())
-                .query(Post.class)
+                .query(PostEntity.class)
                 .list();
 
         int count = jdbcClient.sql("""
@@ -148,13 +148,13 @@ public class PostJdbcRepository {
                 .single();
 
         return new PageImpl<>(
-                posts.stream().map(Post::toResult).toList(),
+                posts.stream().map(PostEntity::toDomain).toList(),
                 pageable,
                 count
         );
     }
 
-    public Optional<PostResult> getSinglePost(Long postSeq) {
+    public Optional<Post> getSinglePost(Long postSeq) {
         String sql = """
                 SELECT * 
                 FROM post
@@ -163,12 +163,12 @@ public class PostJdbcRepository {
 
         return Optional.of(jdbcClient.sql(sql)
                 .param(postSeq)
-                .query(Post.class)
+                .query(PostEntity.class)
                 .single()
-                .toResult());
+                .toDomain());
     }
 
-    public List<PostResult> getPopularPosts(
+    public List<Post> getPopularPosts(
             LocalDateTime from,
             LocalDateTime to,
             SortingMethods sortingMethods
@@ -184,10 +184,10 @@ public class PostJdbcRepository {
         return jdbcClient.sql(sql)
                 .param(from)
                 .param(to)
-                .query(Post.class)
+                .query(PostEntity.class)
                 .list()
                 .stream()
-                .map(Post::toResult)
+                .map(PostEntity::toDomain)
                 .toList();
     }
 }

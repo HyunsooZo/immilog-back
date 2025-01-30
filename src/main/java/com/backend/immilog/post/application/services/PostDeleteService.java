@@ -34,18 +34,13 @@ public class PostDeleteService {
             Long userId,
             Long postSeq
     ) {
-        Post post = getPost(postSeq);
+        Post post = postQueryService.getPostById(postSeq);
         if (!Objects.equals(post.getUserSeq(), userId)) {
             throw new PostException(PostErrorCode.NO_AUTHORITY);
         }
         Post deletedPost = post.delete();
         postCommandService.save(deletedPost);
         postResourceCommandService.deleteAllByPostSeq(deletedPost.getSeq());
-    }
-
-    private Post getPost(Long postSeq) {
-        return postQueryService.getPostById(postSeq)
-                .orElseThrow(() -> new PostException(PostErrorCode.POST_NOT_FOUND));
     }
 
 }

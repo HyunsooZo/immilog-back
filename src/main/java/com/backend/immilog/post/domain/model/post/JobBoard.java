@@ -1,6 +1,7 @@
 package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.post.application.command.JobBoardUploadCommand;
+import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
@@ -124,4 +125,59 @@ public class JobBoard {
     public PostStatus getStatus() {return this.postInfo.status();}
 
     public Countries getCountry() {return this.postInfo.country();}
+
+    public JobBoardResult toResult() {
+        return JobBoardResult.builder()
+                .seq(this.seq)
+                .title(this.postInfo.title())
+                .content(this.postInfo.content())
+                .viewCount(this.postInfo.viewCount())
+                .likeCount(this.postInfo.likeCount())
+                .country(this.postInfo.country())
+                .region(this.postInfo.region())
+                .industry(this.jobBoardCompany.industry())
+                .experience(this.jobBoardCompany.experience())
+                .deadline(this.jobBoardCompany.deadline())
+                .salary(this.jobBoardCompany.salary())
+                .companySeq(this.jobBoardCompany.companySeq())
+                .companyName(this.jobBoardCompany.company())
+                .companyEmail(this.jobBoardCompany.companyEmail())
+                .companyPhone(this.jobBoardCompany.companyPhone())
+                .companyAddress(this.jobBoardCompany.companyAddress())
+                .companyHomepage(this.jobBoardCompany.companyHomepage())
+                .companyLogo(this.jobBoardCompany.companyLogo())
+                .status(this.postInfo.status())
+                .createdAt(this.createdAt)
+                .build();
+    }
+
+    public static JobBoard from(JobBoardResult jobBoardResult) {
+        return JobBoard.builder()
+                .seq(jobBoardResult.getSeq())
+                .userSeq(jobBoardResult.getCompanyManagerUserSeq())
+                .postInfo(PostInfo.builder()
+                        .title(jobBoardResult.getTitle())
+                        .content(jobBoardResult.getContent())
+                        .viewCount(jobBoardResult.getViewCount())
+                        .likeCount(jobBoardResult.getLikeCount())
+                        .status(jobBoardResult.getStatus())
+                        .country(jobBoardResult.getCountry())
+                        .region(jobBoardResult.getRegion())
+                        .build())
+                .jobBoardCompany(JobBoardCompany.builder()
+                        .companySeq(jobBoardResult.getCompanySeq())
+                        .industry(jobBoardResult.getIndustry())
+                        .experience(jobBoardResult.getExperience())
+                        .deadline(jobBoardResult.getDeadline())
+                        .salary(jobBoardResult.getSalary())
+                        .company(jobBoardResult.getCompanyName())
+                        .companyEmail(jobBoardResult.getCompanyEmail())
+                        .companyPhone(jobBoardResult.getCompanyPhone())
+                        .companyAddress(jobBoardResult.getCompanyAddress())
+                        .companyHomepage(jobBoardResult.getCompanyHomepage())
+                        .companyLogo(jobBoardResult.getCompanyLogo())
+                        .build())
+                .createdAt(jobBoardResult.getCreatedAt())
+                .build();
+    }
 }
