@@ -1,7 +1,7 @@
 package com.backend.immilog.user.application.result;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.enums.Industry;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.model.company.CompanyData;
 import com.backend.immilog.user.domain.model.company.Manager;
@@ -16,7 +16,7 @@ public record CompanyResult(
         String companyPhone,
         String companyAddress,
         String companyHomepage,
-        UserCountry companyCountry,
+        Country companyCountry,
         String companyRegion,
         String companyLogo,
         Long companyManagerUserSeq
@@ -25,16 +25,16 @@ public record CompanyResult(
             Company company
     ) {
         return CompanyResult.builder()
-                .industry(company.getIndustry())
-                .companyName(company.getName())
-                .companyEmail(company.getEmail())
-                .companyPhone(company.getPhone())
-                .companyAddress(company.getAddress())
-                .companyHomepage(company.getHomepage())
-                .companyCountry(company.getCountry())
-                .companyRegion(company.getRegion())
-                .companyLogo(company.getLogo())
-                .companyManagerUserSeq(company.getManagerUserSeq())
+                .industry(company.industry())
+                .companyName(company.name())
+                .companyEmail(company.email())
+                .companyPhone(company.phone())
+                .companyAddress(company.address())
+                .companyHomepage(company.homepage())
+                .companyCountry(company.country())
+                .companyRegion(company.region())
+                .companyLogo(company.logo())
+                .companyManagerUserSeq(company.managerUserSeq())
                 .build();
     }
 

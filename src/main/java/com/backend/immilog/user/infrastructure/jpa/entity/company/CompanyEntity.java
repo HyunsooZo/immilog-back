@@ -1,12 +1,9 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.company;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.enums.Industry;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.company.Company;
-import com.backend.immilog.user.domain.model.company.CompanyData;
-import com.backend.immilog.user.domain.model.company.Manager;
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
 @DynamicUpdate
@@ -18,14 +15,13 @@ public class CompanyEntity {
     private Long seq;
 
     @Embedded
-    private ManagerEntity manager;
+    private ManagerValue manager;
 
     @Embedded
-    private CompanyDataEntity companyData;
+    private CompanyDataValue companyData;
 
     protected CompanyEntity() {}
 
-    @Builder
     protected CompanyEntity(
             Long seq,
             Industry industry,
@@ -34,12 +30,12 @@ public class CompanyEntity {
             String companyPhone,
             String companyAddress,
             String companyHomepage,
-            UserCountry companyCountry,
+            Country companyCountry,
             String companyRegion,
             String companyLogo,
             Long companyManagerUserSeq
     ) {
-        CompanyDataEntity companyData = CompanyDataEntity.of(
+        CompanyDataValue companyData = CompanyDataValue.of(
                 industry,
                 companyName,
                 companyEmail,
@@ -48,7 +44,7 @@ public class CompanyEntity {
                 companyHomepage,
                 companyLogo
         );
-        ManagerEntity manager = ManagerEntity.of(
+        ManagerValue manager = ManagerValue.of(
                 companyCountry,
                 companyRegion,
                 companyManagerUserSeq
@@ -59,41 +55,22 @@ public class CompanyEntity {
     }
 
     public static CompanyEntity from(Company company) {
-        return CompanyEntity.builder()
-                .industry(company.getIndustry())
-                .companyName(company.getName())
-                .companyEmail(company.getEmail())
-                .companyPhone(company.getPhone())
-                .companyAddress(company.getAddress())
-                .companyHomepage(company.getHomepage())
-                .companyCountry(company.getCountry())
-                .companyRegion(company.getRegion())
-                .companyLogo(company.getLogo())
-                .companyManagerUserSeq(company.getManagerUserSeq())
-                .build();
+        return new CompanyEntity(
+                company.seq(),
+                company.industry(),
+                company.name(),
+                company.email(),
+                company.phone(),
+                company.address(),
+                company.homepage(),
+                company.country(),
+                company.region(),
+                company.logo(),
+                company.managerUserSeq()
+        );
     }
 
     public Company toDomain() {
-        return Company.builder()
-                .seq(seq)
-                .companyData(
-                        CompanyData.of(
-                                companyData.getIndustry(),
-                                companyData.getCompanyName(),
-                                companyData.getCompanyEmail(),
-                                companyData.getCompanyPhone(),
-                                companyData.getCompanyAddress(),
-                                companyData.getCompanyHomepage(),
-                                companyData.getCompanyLogo()
-                        )
-                )
-                .manager(
-                        Manager.of(
-                                manager.getCompanyCountry(),
-                                manager.getCompanyRegion(),
-                                manager.getCompanyManagerUserSeq()
-                        )
-                )
-                .build();
+        return new Company(this.seq, this.manager.toDomain(), this.companyData.toDomain());
     }
 }

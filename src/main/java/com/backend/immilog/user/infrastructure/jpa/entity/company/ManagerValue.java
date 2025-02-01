@@ -1,6 +1,7 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.company;
 
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.user.domain.model.company.Manager;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -10,10 +11,10 @@ import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
 @Embeddable
-public class ManagerEntity {
+public class ManagerValue {
     @Enumerated(EnumType.STRING)
     @Column(name = "company_country")
-    private UserCountry companyCountry;
+    private Country companyCountry;
 
     @Column(name = "company_region")
     private String companyRegion;
@@ -21,10 +22,10 @@ public class ManagerEntity {
     @Column(name = "company_manager_user_seq")
     private Long companyManagerUserSeq;
 
-    protected ManagerEntity() {}
+    protected ManagerValue() {}
 
-    protected ManagerEntity(
-            UserCountry companyCountry,
+    protected ManagerValue(
+            Country companyCountry,
             String companyRegion,
             Long companyManagerUserSeq
     ) {
@@ -33,15 +34,19 @@ public class ManagerEntity {
         this.companyManagerUserSeq = companyManagerUserSeq;
     }
 
-    public static ManagerEntity of(
-            UserCountry companyCountry,
+    public static ManagerValue of(
+            Country companyCountry,
             String companyRegion,
             Long companyManagerUserSeq
     ) {
-        return new ManagerEntity(
+        return new ManagerValue(
                 companyCountry,
                 companyRegion,
                 companyManagerUserSeq
         );
+    }
+
+    public Manager toDomain() {
+        return Manager.of(companyCountry, companyRegion, companyManagerUserSeq);
     }
 }

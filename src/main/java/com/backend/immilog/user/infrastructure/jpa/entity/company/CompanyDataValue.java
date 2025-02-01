@@ -1,6 +1,7 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.company;
 
 import com.backend.immilog.user.domain.enums.Industry;
+import com.backend.immilog.user.domain.model.company.CompanyData;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -10,7 +11,7 @@ import lombok.Getter;
 
 @Getter(AccessLevel.PROTECTED)
 @Embeddable
-public class CompanyDataEntity {
+public class CompanyDataValue {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "industry")
@@ -34,9 +35,9 @@ public class CompanyDataEntity {
     @Column(name = "company_logo")
     private String companyLogo;
 
-    protected CompanyDataEntity() {}
+    protected CompanyDataValue() {}
 
-    protected CompanyDataEntity(
+    protected CompanyDataValue(
             Industry industry,
             String companyName,
             String companyEmail,
@@ -54,7 +55,7 @@ public class CompanyDataEntity {
         this.companyLogo = companyLogo;
     }
 
-    public static CompanyDataEntity of(
+    public static CompanyDataValue of(
             Industry industry,
             String companyName,
             String companyEmail,
@@ -63,7 +64,7 @@ public class CompanyDataEntity {
             String companyHomepage,
             String companyLogo
     ) {
-        return new CompanyDataEntity(
+        return new CompanyDataValue(
                 industry,
                 companyName,
                 companyEmail,
@@ -71,6 +72,18 @@ public class CompanyDataEntity {
                 companyAddress,
                 companyHomepage,
                 companyLogo
+        );
+    }
+
+    public CompanyData toDomain() {
+        return new CompanyData(
+                this.industry,
+                this.companyName,
+                this.companyEmail,
+                this.companyPhone,
+                this.companyAddress,
+                this.companyHomepage,
+                this.companyLogo
         );
     }
 }

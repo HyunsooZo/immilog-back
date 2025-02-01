@@ -30,4 +30,8 @@ public record CompanyData(
                 logo
         );
     }
+
+    public static CompanyData empty() {
+        return new CompanyData(null, null, null, null, null, null, null);
+    }
 }

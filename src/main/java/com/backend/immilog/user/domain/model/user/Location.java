@@ -1,13 +1,13 @@
 package com.backend.immilog.user.domain.model.user;
 
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 
 public record Location(
-        UserCountry country,
+        Country country,
         String region
 ) {
     public static Location of(
-            UserCountry country,
+            Country country,
             String region
     ) {
         return new Location(country, region);

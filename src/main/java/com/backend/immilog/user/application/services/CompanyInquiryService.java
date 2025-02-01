@@ -2,7 +2,10 @@ package com.backend.immilog.user.application.services;
 
 import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.query.CompanyQueryService;
+import com.backend.immilog.user.domain.model.company.Company;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class CompanyInquiryService {
@@ -13,8 +16,7 @@ public class CompanyInquiryService {
     }
 
     public CompanyResult getCompany(Long userSeq) {
-        return companyQueryService.getByCompanyManagerUserSeq(userSeq)
-                .map(CompanyResult::from)
-                .orElse(CompanyResult.builder().build());
+        Company company = companyQueryService.getByCompanyManagerUserSeq(userSeq);
+        return Optional.ofNullable(CompanyResult.from(company)).orElse(CompanyResult.builder().build());
     }
 }

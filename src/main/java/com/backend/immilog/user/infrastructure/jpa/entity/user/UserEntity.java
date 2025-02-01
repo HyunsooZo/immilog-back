@@ -1,13 +1,12 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserErrorCode;
 import com.backend.immilog.user.exception.UserException;
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.sql.Date;
@@ -51,7 +50,6 @@ public class UserEntity {
 
     protected UserEntity() {}
 
-    @Builder
     protected UserEntity(
             Long seq,
             String email,
@@ -62,9 +60,9 @@ public class UserEntity {
             Date reportedDate,
             String nickname,
             String imageUrl,
-            UserCountry country,
+            Country country,
             String region,
-            UserCountry interestCountry,
+            Country interestCountry,
             LocalDateTime updatedAt
     ) {
         AuthValue auth = AuthValue.of(email, password);
@@ -82,37 +80,37 @@ public class UserEntity {
     }
 
     public static UserEntity from(User user) {
-        return UserEntity.builder()
-                .seq(user.getSeq())
-                .email(user.getEmail())
-                .password(user.getPassword())
-                .userStatus(user.getUserStatus())
-                .userRole(user.getUserRole())
-                .country(user.getCountry())
-                .region(user.getRegion())
-                .reportedCount(user.getReportedCount())
-                .reportedDate(user.getReportedDate())
-                .nickname(user.getNickname())
-                .imageUrl(user.getImageUrl())
-                .interestCountry(user.getInterestCountry())
-                .updatedAt(user.getSeq() != null ? LocalDateTime.now() : null)
-                .build();
+        return new UserEntity(
+                user.seq(),
+                user.auth().email(),
+                user.auth().password(),
+                user.userStatus(),
+                user.userRole(),
+                user.reportedCount(),
+                user.reportedDate(),
+                user.nickname(),
+                user.imageUrl(),
+                user.country(),
+                user.region(),
+                user.interestCountry(),
+                user.updatedAt()
+        );
     }
 
     public User toDomain() {
         if (this.seq == null || this.userRole == null || this.userStatus == null) {
             throw new UserException(UserErrorCode.ENTITY_TO_DOMAIN_ERROR);
         }
-        return User.builder()
-                .seq(this.seq)
-                .auth(this.auth.toDomain())
-                .userStatus(this.userStatus)
-                .userRole(this.userRole)
-                .location(this.location.toDomain())
-                .reportData(this.report.toDomain())
-                .profile(this.profile.toDomain())
-                .updatedAt(this.updatedAt)
-                .build();
+        return new User(
+                this.seq,
+                this.auth.toDomain(),
+                this.userRole,
+                this.report.toDomain(),
+                this.profile.toDomain(),
+                this.location.toDomain(),
+                this.userStatus,
+                this.updatedAt
+        );
     }
 }
 

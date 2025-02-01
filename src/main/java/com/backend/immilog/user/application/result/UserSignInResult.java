@@ -22,18 +22,18 @@ public record UserSignInResult(
             String refreshToken,
             boolean isLocationMatch
     ) {
-        String interestCountry = user.getInterestCountry() == null ? null : user.getCountryName();
+        String interestCountry = user.interestCountry() == null ? null : user.countryName();
 
         return UserSignInResult.builder()
-                .userSeq(user.getSeq())
-                .email(user.getEmail())
-                .nickname(user.getNickname())
+                .userSeq(user.seq())
+                .email(user.email())
+                .nickname(user.nickname())
                 .accessToken(accessToken == null ? "" : accessToken)
                 .refreshToken(refreshToken == null ? "" : refreshToken)
-                .country(user.getCountryName())
+                .country(user.countryName())
                 .interestCountry(interestCountry)
-                .region(user.getRegion())
-                .userProfileUrl(user.getImageUrl())
+                .region(user.region())
+                .userProfileUrl(user.imageUrl())
                 .isLocationMatch(isLocationMatch)
                 .build();
     }
