@@ -1,58 +1,59 @@
 package com.backend.immilog.user.domain.model.company;
 
-import com.backend.immilog.user.application.command.CompanyRegisterCommand;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.enums.Industry;
-import com.backend.immilog.user.domain.enums.UserCountry;
-import lombok.Builder;
 
-import java.util.Objects;
-import java.util.stream.Stream;
-
-public class Company {
-    private final Long seq;
-    private Manager manager;
-    private CompanyData companyData;
-
-    @Builder
-    private Company(
-            Long seq,
-            Manager manager,
-            CompanyData companyData
-    ) {
-        this.seq = seq;
-        this.manager = manager;
-        this.companyData = companyData;
+public record Company(
+        Long seq,
+        Manager manager,
+        CompanyData companyData
+) {
+    public static Company withNew() {
+        return new Company(null, Manager.empty(), CompanyData.empty());
     }
 
-    public static Company of(
-            Long userSeq,
-            CompanyRegisterCommand request
+    public Company seq(Long seq) {
+        return new Company(seq, this.manager, this.companyData);
+    }
+
+    public Company manager(
+            Country country,
+            String region,
+            Long userSeq
     ) {
-        return new Company(
-                null,
-                Manager.of(
-                        request.companyCountry(),
-                        request.companyRegion(),
-                        userSeq
-                ),
-                CompanyData.of(
-                        request.industry(),
-                        request.companyName(),
-                        request.companyEmail(),
-                        request.companyPhone(),
-                        request.companyAddress(),
-                        request.companyHomepage(),
-                        request.companyLogo()
-                )
+        Manager manager = Manager.of(country, region, userSeq);
+        return new Company(this.seq, manager, this.companyData);
+    }
+
+    public Company companyData(
+            Industry industry,
+            String name,
+            String email,
+            String phone,
+            String address,
+            String homepage,
+            String logo
+    ) {
+        CompanyData companyData = CompanyData.of(
+                industry,
+                name,
+                email,
+                phone,
+                address,
+                homepage,
+                logo
         );
+        return new Company(this.seq, this.manager, companyData);
     }
 
     public Company updateName(String newName) {
-        Stream.of(this.companyData)
-                .filter(Objects::nonNull)
-                .filter(name -> !this.companyData.name().equals(newName))
-                .findFirst()
-                .ifPresent(name -> this.companyData = CompanyData.of(
+        if (newName == null || this.companyData.name().equals(newName)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                this.manager,
+                CompanyData.of(
                         this.companyData.industry(),
                         newName,
                         this.companyData.email(),
@@ -60,16 +61,18 @@ public class Company {
                         this.companyData.address(),
                         this.companyData.homepage(),
                         this.companyData.logo()
-                ));
-        return this;
+                )
+        );
     }
 
     public Company updatePhone(String newPhone) {
-        Stream.of(this.companyData)
-                .filter(Objects::nonNull)
-                .filter(phone -> !this.companyData.phone().equals(newPhone))
-                .findFirst()
-                .ifPresent(phone -> this.companyData = CompanyData.of(
+        if (newPhone == null || this.companyData.phone().equals(newPhone)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                this.manager,
+                CompanyData.of(
                         this.companyData.industry(),
                         this.companyData.name(),
                         this.companyData.email(),
@@ -77,16 +80,18 @@ public class Company {
                         this.companyData.address(),
                         this.companyData.homepage(),
                         this.companyData.logo()
-                ));
-        return this;
+                )
+        );
     }
 
     public Company updateLogo(String newLogo) {
-        Stream.of(this.companyData)
-                .filter(Objects::nonNull)
-                .filter(logo -> !this.companyData.logo().equals(newLogo))
-                .findFirst()
-                .ifPresent(logo -> this.companyData = CompanyData.of(
+        if (newLogo == null || this.companyData.logo().equals(newLogo)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                this.manager,
+                CompanyData.of(
                         this.companyData.industry(),
                         this.companyData.name(),
                         this.companyData.email(),
@@ -94,16 +99,18 @@ public class Company {
                         this.companyData.address(),
                         this.companyData.homepage(),
                         newLogo
-                ));
-        return this;
+                )
+        );
     }
 
     public Company updateHomepage(String newHomepage) {
-        Stream.of(this.companyData)
-                .filter(Objects::nonNull)
-                .filter(homepage -> !this.companyData.homepage().equals(newHomepage))
-                .findFirst()
-                .ifPresent(homepage -> this.companyData = CompanyData.of(
+        if (newHomepage == null || this.companyData.homepage().equals(newHomepage)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                this.manager,
+                CompanyData.of(
                         this.companyData.industry(),
                         this.companyData.name(),
                         this.companyData.email(),
@@ -111,16 +118,18 @@ public class Company {
                         this.companyData.address(),
                         newHomepage,
                         this.companyData.logo()
-                ));
-        return this;
+                )
+        );
     }
 
     public Company updateEmail(String newEmail) {
-        Stream.of(this.companyData)
-                .filter(Objects::nonNull)
-                .filter(email -> !this.companyData.email().equals(newEmail))
-                .findFirst()
-                .ifPresent(email -> this.companyData = CompanyData.of(
+        if (newEmail == null || this.companyData.email().equals(newEmail)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                this.manager,
+                CompanyData.of(
                         this.companyData.industry(),
                         this.companyData.name(),
                         newEmail,
@@ -128,29 +137,33 @@ public class Company {
                         this.companyData.address(),
                         this.companyData.homepage(),
                         this.companyData.logo()
-                ));
-        return this;
+                )
+        );
     }
 
-    public Company updateCountry(UserCountry newCountry) {
-        Stream.of(this.manager)
-                .filter(Objects::nonNull)
-                .filter(country -> !this.manager.country().equals(newCountry))
-                .findFirst()
-                .ifPresent(country -> this.manager = Manager.of(
+    public Company updateCountry(Country newCountry) {
+        if (newCountry == null || this.manager.country().equals(newCountry)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                Manager.of(
                         newCountry,
                         this.manager.region(),
                         this.manager.UserSeq()
-                ));
-        return this;
+                ),
+                this.companyData
+        );
     }
 
     public Company updateAddress(String newAddress) {
-        Stream.of(this.companyData)
-                .filter(Objects::nonNull)
-                .filter(address -> !this.companyData.address().equals(newAddress))
-                .findFirst()
-                .ifPresent(address -> this.companyData = CompanyData.of(
+        if (newAddress == null || this.companyData.address().equals(newAddress)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                this.manager,
+                CompanyData.of(
                         this.companyData.industry(),
                         this.companyData.name(),
                         this.companyData.email(),
@@ -158,29 +171,33 @@ public class Company {
                         newAddress,
                         this.companyData.homepage(),
                         this.companyData.logo()
-                ));
-        return this;
+                )
+        );
     }
 
     public Company updateRegion(String newRegion) {
-        Stream.of(this.manager)
-                .filter(Objects::nonNull)
-                .filter(region -> !this.manager.region().equals(newRegion))
-                .findFirst()
-                .ifPresent(region -> this.manager = Manager.of(
+        if (newRegion == null || this.manager.region().equals(newRegion)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                Manager.of(
                         this.manager.country(),
                         newRegion,
                         this.manager.UserSeq()
-                ));
-        return this;
+                ),
+                this.companyData
+        );
     }
 
     public Company updateIndustry(Industry industry) {
-        Stream.of(this.companyData)
-                .filter(Objects::nonNull)
-                .filter(ind -> !this.companyData.industry().equals(industry))
-                .findFirst()
-                .ifPresent(ind -> this.companyData = CompanyData.of(
+        if (industry == null || this.companyData.industry().equals(industry)) {
+            return this;
+        }
+        return new Company(
+                this.seq,
+                this.manager,
+                CompanyData.of(
                         industry,
                         this.companyData.name(),
                         this.companyData.email(),
@@ -188,52 +205,28 @@ public class Company {
                         this.companyData.address(),
                         this.companyData.homepage(),
                         this.companyData.logo()
-                ));
-        return this;
+                )
+        );
     }
 
-    public Long getCompanySeq() {
-        return this.seq;
-    }
+    public Industry industry() {return this.companyData.industry();}
 
-    public Industry getIndustry() {
-        return this.companyData.industry();
-    }
+    public String name() {return this.companyData.name();}
 
-    public String getName() {
-        return this.companyData.name();
-    }
+    public String email() {return this.companyData.email();}
 
-    public String getEmail() {
-        return this.companyData.email();
-    }
+    public String phone() {return this.companyData.phone();}
 
-    public String getPhone() {
-        return this.companyData.phone();
-    }
+    public String address() {return this.companyData.address();}
 
-    public String getAddress() {
-        return this.companyData.address();
-    }
+    public String homepage() {return this.companyData.homepage();}
 
-    public String getHomepage() {
-        return this.companyData.homepage();
-    }
+    public Country country() {return this.manager.country();}
 
-    public UserCountry getCountry() {
-        return this.manager.country();
-    }
+    public String region() {return this.manager.region();}
 
-    public String getRegion() {
-        return this.manager.region();
-    }
+    public String logo() {return this.companyData.logo();}
 
-    public String getLogo() {
-        return this.companyData.logo();
-    }
-
-    public Long getManagerUserSeq() {
-        return this.manager.UserSeq();
-    }
+    public Long managerUserSeq() {return this.manager.UserSeq();}
     
 }

@@ -1,6 +1,6 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.exception.UserErrorCode;
 import com.backend.immilog.user.exception.UserException;
@@ -23,14 +23,14 @@ public class ProfileValue {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "interest_country")
-    private UserCountry interestCountry;
+    private Country interestCountry;
 
     protected ProfileValue() {}
 
     protected ProfileValue(
             String nickname,
             String imageUrl,
-            UserCountry interestCountry
+            Country interestCountry
     ) {
         this.nickname = nickname;
         this.imageUrl = imageUrl;
@@ -40,7 +40,7 @@ public class ProfileValue {
     public static ProfileValue of(
             String nickname,
             String imageUrl,
-            UserCountry interestCountry
+            Country interestCountry
     ) {
         return new ProfileValue(nickname, imageUrl, interestCountry);
     }

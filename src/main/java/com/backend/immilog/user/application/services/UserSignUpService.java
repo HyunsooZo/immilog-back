@@ -1,9 +1,13 @@
 package com.backend.immilog.user.application.services;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.command.UserSignUpCommand;
 import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.Auth;
+import com.backend.immilog.user.domain.model.user.Location;
+import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +17,6 @@ import org.springframework.stereotype.Service;
 
 import static com.backend.immilog.user.domain.enums.UserStatus.ACTIVE;
 import static com.backend.immilog.user.exception.UserErrorCode.EXISTING_USER;
-import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -32,30 +35,40 @@ public class UserSignUpService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public Pair<Long, String> signUp(UserSignUpCommand userSignUpCommand) {
-        validateUserNotExists(userSignUpCommand.email());
-        String password = passwordEncoder.encode(userSignUpCommand.password());
-        User user = userCommandService.save(User.of(userSignUpCommand, password));
-        return Pair.of(user.getSeq(), user.getNickname());
+    public Pair<Long, String> signUp(UserSignUpCommand command) {
+        validateExistingUser(command.email());
+        User user = createUser(command);
+        User savedUser = userCommandService.save(user);
+        return Pair.of(savedUser.seq(), savedUser.nickname());
     }
 
-    public Boolean checkNickname(String nickname) {
-        return userQueryService.getUserByNickname(nickname).isEmpty();
+    public Boolean isNicknameAvailable(String nickname) {
+        return userQueryService.isNicknameAvailable(nickname);
     }
 
     public Pair<String, Boolean> verifyEmail(Long userSeq) {
-        User user = userQueryService.getUserById(userSeq).orElseThrow(() -> new UserException(USER_NOT_FOUND));
+        User user = userQueryService.getUserById(userSeq);
         String resultString = "이메일 인증이 완료되었습니다.";
-        UserStatus currentUserStatus = user.getUserStatus();
+        UserStatus currentUserStatus = user.userStatus();
         return getVerificationResult(currentUserStatus, user, resultString);
     }
 
-    private void validateUserNotExists(String email) {
-        userQueryService
-                .getUserByEmail(email)
-                .ifPresent(user -> {
-                    throw new UserException(EXISTING_USER);
-                });
+    private User createUser(UserSignUpCommand command) {
+        final String password = passwordEncoder.encode(command.password());
+        final Country country = Country.valueOf(command.country());
+        final String interestCountryValue = command.interestCountry();
+        final boolean isInterestCountryNull = interestCountryValue == null || interestCountryValue.isEmpty();
+        final Country interestCountry = isInterestCountryNull ? null : country;
+        Auth auth = Auth.of(command.email(), password);
+        Location location = Location.of(country, command.region());
+        Profile profile = Profile.of(command.nickName(), command.profileImage(), interestCountry);
+        return User.of(auth, location, profile);
+    }
+
+    private void validateExistingUser(String email) {
+        if (userQueryService.isUserAlreadyExist(email)) {
+            throw new UserException(EXISTING_USER);
+        }
     }
 
     private Pair<String, Boolean> getVerificationResult(
@@ -67,7 +80,7 @@ public class UserSignUpService {
         switch (userStatus) {
             case ACTIVE -> resultString = "이미 인증된 사용자입니다.";
             case PENDING -> {
-                user.changeUserStatus(ACTIVE);
+                user.updateStatus(ACTIVE);
                 userCommandService.save(user);
             }
             case BLOCKED -> {

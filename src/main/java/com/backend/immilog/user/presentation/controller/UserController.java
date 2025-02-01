@@ -2,7 +2,6 @@ package com.backend.immilog.user.presentation.controller;
 
 import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.*;
-import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.presentation.request.*;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,6 +55,7 @@ public class UserController {
         final String url = String.format(API_LINK, userSeq);
         final String mailForm = String.format(HTML_SIGN_UP_CONTENT, userName, url);
         emailService.sendHtmlEmail(email, EMAIL_SIGN_UP_SUBJECT, mailForm);
+
         return ResponseEntity.status(CREATED).build();
     }
 
@@ -64,8 +64,7 @@ public class UserController {
     public ResponseEntity<UserApiResponse> signIn(
             @Valid @RequestBody UserSignInRequest request
     ) {
-        CompletableFuture<Pair<String, String>> country =
-                locationService.getCountry(
+        CompletableFuture<Pair<String, String>> country = locationService.getCountry(
                         request.latitude(),
                         request.longitude()
                 );
@@ -77,16 +76,13 @@ public class UserController {
     @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정 진행")
     public ResponseEntity<UserApiResponse> updateInformation(
             @PathVariable("userSeq") Long userSeq,
-            @RequestBody UserInfoUpdateRequest userInfoUpdateRequest
+            @RequestBody UserInfoUpdateRequest request
     ) {
-        CompletableFuture<Pair<String, String>> country =
-                locationService.getCountry(
-                        userInfoUpdateRequest.latitude(),
-                        userInfoUpdateRequest.longitude()
-                );
-        userInformationService.updateInformation(
-                userSeq, country, userInfoUpdateRequest.toCommand()
+        CompletableFuture<Pair<String, String>> country = locationService.getCountry(
+                request.latitude(),
+                request.longitude()
         );
+        userInformationService.updateInformation(userSeq, country, request.toCommand());
         return ResponseEntity.status(OK).body(UserApiResponse.of(OK.value()));
     }
 
@@ -94,12 +90,9 @@ public class UserController {
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경 진행")
     public ResponseEntity<UserApiResponse> changePassword(
             @PathVariable("userSeq") Long userSeq,
-            @RequestBody UserPasswordChangeRequest userPasswordChangeRequest
+            @RequestBody UserPasswordChangeRequest request
     ) {
-        userInformationService.changePassword(
-                userSeq,
-                userPasswordChangeRequest.toCommand()
-        );
+        userInformationService.changePassword(userSeq, request.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -108,8 +101,8 @@ public class UserController {
     public ResponseEntity<UserApiResponse> checkNickname(
             @RequestParam("nickname") String nickname
     ) {
-        Boolean isNickNameAvailable = userSignUpService.checkNickname(nickname);
-        return ResponseEntity.status(OK).body(UserApiResponse.of(isNickNameAvailable));
+        Boolean isNicknameAvailable = userSignUpService.isNicknameAvailable(nickname);
+        return ResponseEntity.status(OK).body(UserApiResponse.of(isNicknameAvailable));
     }
 
     @PatchMapping("/{userSeq}/targets/{targetSeq}/{status}")
@@ -119,8 +112,7 @@ public class UserController {
             @PathVariable("targetSeq") Long targetSeq,
             @PathVariable("status") String status
     ) {
-        UserStatus userStatus = UserStatus.valueOf(status);
-        userInformationService.blockOrUnblockUser(targetSeq, userSeq, userStatus);
+        userInformationService.blockOrUnblockUser(targetSeq, userSeq, status);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -129,13 +121,9 @@ public class UserController {
     public ResponseEntity<Void> reportUser(
             @PathVariable("userSeq") Long userSeq,
             @PathVariable("targetSeq") Long targetSeq,
-            @Valid @RequestBody UserReportRequest userReportRequest
+            @Valid @RequestBody UserReportRequest request
     ) {
-        userReportService.reportUser(
-                targetSeq,
-                userSeq,
-                userReportRequest.toCommand()
-        );
+        userReportService.reportUser(targetSeq, userSeq, request.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
 

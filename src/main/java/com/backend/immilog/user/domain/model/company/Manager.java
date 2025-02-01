@@ -1,17 +1,21 @@
 package com.backend.immilog.user.domain.model.company;
 
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 
 public record Manager(
-        UserCountry country,
+        Country country,
         String region,
         Long UserSeq
 ) {
     public static Manager of(
-            UserCountry country,
+            Country country,
             String region,
             Long userSeq
     ) {
         return new Manager(country, region, userSeq);
+    }
+
+    public static Manager empty() {
+        return new Manager(null, null, null);
     }
 }

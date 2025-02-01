@@ -1,6 +1,6 @@
 package com.backend.immilog.user.infrastructure.jpa.entity.user;
 
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.exception.UserErrorCode;
 import com.backend.immilog.user.exception.UserException;
@@ -17,7 +17,7 @@ public class LocationValue {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "country")
-    private UserCountry country;
+    private Country country;
 
     @Column(name = "region")
     private String region;
@@ -25,7 +25,7 @@ public class LocationValue {
     protected LocationValue() {}
 
     protected LocationValue(
-            UserCountry country,
+            Country country,
             String region
     ) {
         this.country = country;
@@ -33,7 +33,7 @@ public class LocationValue {
     }
 
     public static LocationValue of(
-            UserCountry country,
+            Country country,
             String region
     ) {
         return new LocationValue(country, region);

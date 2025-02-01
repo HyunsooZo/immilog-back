@@ -7,6 +7,7 @@ import com.backend.immilog.user.domain.model.company.Company;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Service
@@ -28,20 +29,42 @@ public class CompanyRegisterService {
             CompanyRegisterCommand command
     ) {
         AtomicBoolean isExistingCompany = new AtomicBoolean(false);
-        checkIfExistingAndProceedWithUpdate(userSeq, command, isExistingCompany);
+        validateExistingCompany(userSeq, command, isExistingCompany);
         if (!isExistingCompany.get()) {
-            companyCommandService.save(Company.of(userSeq, command));
+            Company newCompany = createCompany(userSeq, command);
+            companyCommandService.save(newCompany);
         }
     }
 
-    private void checkIfExistingAndProceedWithUpdate(
+    private static Company createCompany(
             Long userSeq,
-            CompanyRegisterCommand request,
+            CompanyRegisterCommand command
+    ) {
+        return Company.withNew()
+                .manager(
+                        command.country(),
+                        command.region(),
+                        userSeq
+                )
+                .companyData(
+                        command.industry(),
+                        command.name(),
+                        command.email(),
+                        command.phone(),
+                        command.address(),
+                        command.homepage(),
+                        command.logo()
+                );
+    }
+
+    private void validateExistingCompany(
+            Long userSeq,
+            CompanyRegisterCommand command,
             AtomicBoolean isExistingCompany
     ) {
-        companyQueryService.getByCompanyManagerUserSeq(userSeq)
+        Optional.ofNullable(companyQueryService.getByCompanyManagerUserSeq(userSeq))
                 .ifPresent(company -> {
-                    updateCompany(company, request);
+                    updateCompany(company, command);
                     isExistingCompany.set(true);
                 });
     }
@@ -50,14 +73,14 @@ public class CompanyRegisterService {
             Company company,
             CompanyRegisterCommand request
     ) {
-        Company updatedCompany = company.updateAddress(request.companyAddress())
-                .updateCountry(request.companyCountry())
-                .updateEmail(request.companyEmail())
-                .updateHomepage(request.companyHomepage())
-                .updateLogo(request.companyLogo())
-                .updatePhone(request.companyPhone())
-                .updateName(request.companyName())
-                .updateRegion(request.companyRegion())
+        Company updatedCompany = company.updateAddress(request.address())
+                .updateCountry(request.country())
+                .updateEmail(request.email())
+                .updateHomepage(request.homepage())
+                .updateLogo(request.logo())
+                .updatePhone(request.phone())
+                .updateName(request.name())
+                .updateRegion(request.region())
                 .updateIndustry(request.industry());
 
         companyCommandService.save(updatedCompany);

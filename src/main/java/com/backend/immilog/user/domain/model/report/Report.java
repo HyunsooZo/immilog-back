@@ -1,6 +1,5 @@
 package com.backend.immilog.user.domain.model.report;
 
-import com.backend.immilog.user.application.command.UserReportCommand;
 import com.backend.immilog.user.domain.enums.ReportReason;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,19 +38,15 @@ public class Report {
     public static Report of(
             Long targetUserSeq,
             Long reporterUserSeq,
-            UserReportCommand reportUserCommand,
-            boolean isOther
+            String description,
+            ReportReason reason
     ) {
-        String description = isOther
-                ? reportUserCommand.description()
-                : reportUserCommand.reason().reason();
-
         return new Report(
                 null,
                 targetUserSeq,
                 reporterUserSeq,
                 description,
-                reportUserCommand.reason(),
+                reason,
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

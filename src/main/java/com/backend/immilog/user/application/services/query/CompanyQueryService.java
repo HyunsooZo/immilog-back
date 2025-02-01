@@ -5,8 +5,6 @@ import com.backend.immilog.user.domain.repositories.CompanyRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
 @Service
 public class CompanyQueryService {
     private final CompanyRepository companyRepository;
@@ -16,8 +14,10 @@ public class CompanyQueryService {
     }
 
     @Transactional(readOnly = true)
-    public Optional<Company> getByCompanyManagerUserSeq(Long userSeq) {
-        return companyRepository.getByCompanyManagerUserSeq(userSeq);
+    public Company getByCompanyManagerUserSeq(Long userSeq) {
+        return companyRepository
+                .getByCompanyManagerUserSeq(userSeq)
+                .orElse(null);
     }
 
 

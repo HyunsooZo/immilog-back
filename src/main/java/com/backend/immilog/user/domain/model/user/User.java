@@ -1,213 +1,205 @@
 package com.backend.immilog.user.domain.model.user;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.user.application.command.UserSignUpCommand;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
-import lombok.Builder;
+import com.backend.immilog.user.exception.UserErrorCode;
+import com.backend.immilog.user.exception.UserException;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-public class User {
-    private final Long seq;
-    private Auth auth;
-    private final UserRole userRole;
-    private ReportData reportData;
-    private Profile profile;
-    private Location location;
-    private UserStatus userStatus;
-    private LocalDateTime updatedAt;
-
-    @Builder
-    private User(
-            Long seq,
-            Auth auth,
-            UserStatus userStatus,
-            UserRole userRole,
-            Location location,
-            ReportData reportData,
-            Profile profile,
-            LocalDateTime updatedAt
-    ) {
-        this.seq = seq;
-        this.auth = auth;
-        this.userStatus = userStatus;
-        this.userRole = userRole;
-        this.location = location;
-        this.reportData = reportData;
-        this.profile = profile;
-        this.updatedAt = updatedAt;
-    }
+public record User(
+        Long seq,
+        Auth auth,
+        UserRole userRole,
+        ReportData reportData,
+        Profile profile,
+        Location location,
+        UserStatus userStatus,
+        LocalDateTime updatedAt
+) {
 
     public static User of(
-            UserSignUpCommand command,
-            String encodedPassword
+            Auth auth,
+            Location location,
+            Profile profile
     ) {
-        final UserCountry country = UserCountry.valueOf(command.country());
-        final String interestCountryValue = command.interestCountry();
-        final boolean isInterestCountryNull = interestCountryValue == null || interestCountryValue.isEmpty();
-        final UserCountry interestCountry = isInterestCountryNull ? null : country;
-        Auth auth = Auth.of(command.email(), encodedPassword);
-        Location location = Location.of(country, command.region());
-        Profile profile = Profile.of(command.nickName(), command.profileImage(), interestCountry);
+        ReportData reportData = new ReportData(0L, null);
         return new User(
                 null,
                 auth,
-                UserStatus.PENDING,
                 UserRole.ROLE_USER,
-                location,
-                new ReportData(0L, null),
+                reportData,
                 profile,
+                location,
+                UserStatus.PENDING,
                 null
         );
     }
 
-    public void changePassword(String encodedPassword) {
-        Optional.ofNullable(encodedPassword)
-                .filter(password -> !password.trim().isEmpty())
-                .ifPresent(password -> {
-                    this.auth = Auth.of(this.auth.email(), encodedPassword);
-                    updateTimestamp();
-                });
+    public User changePassword(String encodedPassword) {
+        if (encodedPassword == null || encodedPassword.trim().isEmpty()) {
+            return this;
+        }
+        Auth newAuth = Auth.of(this.auth.email(), encodedPassword);
+        return new User(
+                this.seq,
+                newAuth,
+                this.userRole,
+                this.reportData,
+                this.profile,
+                this.location,
+                this.userStatus,
+                LocalDateTime.now()
+        );
     }
 
-    public void changeUserStatus(UserStatus userStatus) {
-        Optional.ofNullable(userStatus)
-                .filter(status -> !status.equals(this.userStatus))
-                .ifPresent(status -> {
-                    this.userStatus = status;
-                    updateTimestamp();
-                });
+    public User updateStatus(UserStatus userStatus) {
+        if (userStatus == null || userStatus.equals(this.userStatus)) {
+            return this;
+        }
+        return new User(
+                this.seq,
+                this.auth,
+                this.userRole,
+                this.reportData,
+                this.profile,
+                this.location,
+                userStatus,
+                LocalDateTime.now()
+        );
     }
 
-    public void changeNickname(String nickname) {
-        Optional.ofNullable(nickname)
-                .filter(name -> !name.trim().isEmpty())
-                .ifPresent(name -> {
-                    this.profile = Profile.of(nickname, this.profile.imageUrl(), this.profile.interestCountry());
-                    updateTimestamp();
-                });
+    public User updateNickname(String nickname) {
+        if (nickname == null || nickname.trim().isEmpty() || nickname.equals(this.profile.nickname())) {
+            return this;
+        }
+        Profile newProfile = Profile.of(nickname, this.profile.imageUrl(), this.profile.interestCountry());
+        return new User(
+                this.seq,
+                this.auth,
+                this.userRole,
+                this.reportData,
+                newProfile,
+                this.location,
+                this.userStatus,
+                LocalDateTime.now()
+        );
     }
 
-    public void changeInterestCountry(UserCountry interestCountry) {
-        Optional.ofNullable(interestCountry)
-                .filter(country -> !country.equals(this.profile.interestCountry()))
-                .ifPresent(country -> {
-                    this.profile = Profile.of(this.profile.nickname(), this.profile.imageUrl(), country);
-                    updateTimestamp();
-                });
+    public User updateInterestCountry(Country interestCountry) {
+        if (interestCountry == null || interestCountry.equals(this.profile.interestCountry())) {
+            return this;
+        }
+        Profile newProfile = Profile.of(this.profile.nickname(), this.profile.imageUrl(), interestCountry);
+        return new User(
+                this.seq,
+                this.auth,
+                this.userRole,
+                this.reportData,
+                newProfile,
+                this.location,
+                this.userStatus,
+                LocalDateTime.now()
+        );
     }
 
-    public void changeImageUrl(String imageUrl) {
-        Optional.ofNullable(imageUrl)
-                .filter(url -> !url.trim().isEmpty())
-                .ifPresent(url -> {
-
-                    updateTimestamp();
-                });
+    public User updateImageUrl(String imageUrl) {
+        if (imageUrl.equals(this.profile.imageUrl())) {
+            return this;
+        }
+        Profile newProfile = Profile.of(this.profile.nickname(), imageUrl, this.profile.interestCountry());
+        return new User(
+                this.seq,
+                this.auth,
+                this.userRole,
+                this.reportData,
+                newProfile,
+                this.location,
+                this.userStatus,
+                LocalDateTime.now()
+        );
     }
 
-    public void changeRegion(String second) {
-        Optional.ofNullable(second)
-                .filter(region -> !region.trim().isEmpty())
-                .ifPresent(region -> {
-                    this.location = Location.of(this.location.country(), region);
-                    updateTimestamp();
-                });
+    public User updateRegion(String region) {
+        if (region == null || region.trim().isEmpty() || region.equals(this.location.region())) {
+            return this;
+        }
+        return new User(
+                this.seq,
+                this.auth,
+                this.userRole,
+                this.reportData,
+                this.profile,
+                Location.of(this.location.country(), region),
+                this.userStatus,
+                LocalDateTime.now()
+        );
     }
 
-    public void changeCountry(UserCountry country) {
-        Optional.ofNullable(country)
-                .filter(value -> !value.equals(this.location.country()))
-                .ifPresent(value -> {
-                    this.location = Location.of(value, this.location.region());
-                    updateTimestamp();
-                });
+    public User updateCountry(Country country) {
+        if (country == null || country.equals(this.location.country())) {
+            return this;
+        }
+        Location newLocation = Location.of(country, this.location.region());
+        return new User(
+                this.seq,
+                this.auth,
+                this.userRole,
+                this.reportData,
+                this.profile,
+                newLocation,
+                this.userStatus,
+                LocalDateTime.now()
+        );
     }
 
-    private void updateTimestamp() {
-        if (this.seq != null) {
-            this.updatedAt = LocalDateTime.now();
+
+    public User increaseReportedCount() {
+        Long newCount = this.reportData.reportedCount() + 1;
+        ReportData newReport = ReportData.of(newCount, Date.valueOf(LocalDate.now()));
+        return new User(
+                this.seq,
+                this.auth,
+                this.userRole,
+                newReport,
+                this.profile,
+                this.location,
+                this.userStatus,
+                this.updatedAt
+        );
+    }
+
+    public void validateAdmin() {
+        if (!this.userRole.equals(UserRole.ROLE_ADMIN)) {
+            throw new UserException(UserErrorCode.NOT_AN_ADMIN_USER);
         }
     }
 
-    public Long getReportedCount() {
-        return this.reportData.reportedCount();
-    }
+    public Long reportedCount() {return this.reportData.reportedCount();}
 
-    public Date getReportedDate() {
-        return this.reportData.reportedDate();
-    }
+    public Date reportedDate() {return this.reportData.reportedDate();}
 
-    public UserCountry getCountry() {
-        return this.location.country();
-    }
+    public Country country() {return this.location.country();}
 
-    public String getCountryName() {
-        return this.location.country().name();
-    }
+    public String countryName() {return this.location.country().name();}
 
-    public String getCountryNameInKorean() {
-        return this.location.country().koreanName();
-    }
+    public String countryNameInKorean() {return this.location.country().koreanName();}
 
-    public String getRegion() {
-        return this.location.region();
-    }
+    public String region() {return this.location.region();}
 
-    public void increaseReportedCount() {
-        Long newCount = this.reportData.reportedCount() + 1;
-        this.reportData = ReportData.of(newCount, Date.valueOf(LocalDate.now()));
-    }
+    public boolean hasSameSeq(Long userSeq) {return this.seq.equals(userSeq);}
 
-    public boolean hasSameSeq(Long userSeq) {
-        return this.seq.equals(userSeq);
-    }
+    public String nickname() {return this.profile.nickname();}
 
-    public String getNickname() {
-        return this.profile.nickname();
-    }
+    public String imageUrl() {return this.profile.imageUrl();}
 
-    public String getImageUrl() {
-        return this.profile.imageUrl();
-    }
+    public Country interestCountry() {return this.profile.interestCountry();}
 
-    public UserCountry getInterestCountry() {
-        return this.profile.interestCountry();
-    }
+    public String email() {return this.auth.email();}
 
-    public String getEmail() {
-        return this.auth.email();
-    }
+    public String password() {return this.auth.password();}
 
-    public String getPassword() {
-        return this.auth.password();
-    }
-
-    public Long getSeq() {
-        return this.seq;
-    }
-
-    public UserRole getUserRole() {
-        return this.userRole;
-    }
-
-    public UserStatus getUserStatus() {
-        return this.userStatus;
-    }
-
-    public Location getLocation() {
-        return this.location;
-    }
-
-    public ReportData getReportData() {
-        return this.reportData;
-    }
-
-    public Profile getProfile() {
-        return this.profile;
-    }
 }

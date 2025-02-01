@@ -6,6 +6,7 @@ import com.backend.immilog.user.application.services.command.ReportCommandServic
 import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.ReportQueryService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
+import com.backend.immilog.user.domain.enums.ReportReason;
 import com.backend.immilog.user.domain.model.report.Report;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
@@ -13,8 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import static com.backend.immilog.user.domain.enums.ReportReason.OTHER;
-import static com.backend.immilog.user.exception.UserErrorCode.*;
+import static com.backend.immilog.user.exception.UserErrorCode.ALREADY_REPORTED;
+import static com.backend.immilog.user.exception.UserErrorCode.CANNOT_REPORT_MYSELF;
 
 @Slf4j
 @Service
@@ -42,24 +43,29 @@ public class UserReportService {
     public void reportUser(
             Long targetUserSeq,
             Long reporterUserSeq,
-            UserReportCommand userReportCommand
+            UserReportCommand command
     ) {
         validateDifferentUsers(targetUserSeq, reporterUserSeq);
-        validateItsNotDuplicatedReport(targetUserSeq, reporterUserSeq);
-        User user = getUser(targetUserSeq);
-        user.increaseReportedCount();
-        Report report = Report.of(
-                targetUserSeq,
-                reporterUserSeq,
-                userReportCommand,
-                userReportCommand.reason().equals(OTHER)
-        );
+        validateDuplicatedRepost(targetUserSeq, reporterUserSeq);
+        User user = userQueryService.getUserById(targetUserSeq);
+        User updatedUser = user.increaseReportedCount();
+        Report report = createReport(targetUserSeq, reporterUserSeq, command);
         reportCommandService.save(report);
-        userCommandService.save(user);
+        userCommandService.save(updatedUser);
         log.info("User {} reported by {}", targetUserSeq, reporterUserSeq);
     }
 
-    private void validateItsNotDuplicatedReport(
+    private static Report createReport(
+            Long targetUserSeq,
+            Long reporterUserSeq,
+            UserReportCommand command
+    ) {
+        boolean isOther = command.reason().equals(ReportReason.OTHER);
+        String description = isOther ? command.description() : command.reason().reason();
+        return Report.of(targetUserSeq, reporterUserSeq, description, command.reason());
+    }
+
+    private void validateDuplicatedRepost(
             Long targetUserSeq,
             Long reporterUserSeq
     ) {
@@ -72,18 +78,8 @@ public class UserReportService {
             Long targetUserSeq,
             Long reporterUserSeq
     ) {
-        boolean isExist = reportQueryService.existsByUserSeqNumbers(
-                targetUserSeq,
-                reporterUserSeq
-        );
-        if (isExist) {
+        if (reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)) {
             throw new UserException(ALREADY_REPORTED);
         }
-    }
-
-    private User getUser(Long targetUserSeq) {
-        return userQueryService
-                .getUserById(targetUserSeq)
-                .orElseThrow(() -> new UserException(USER_NOT_FOUND));
     }
 }

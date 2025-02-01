@@ -1,7 +1,7 @@
 package com.backend.immilog.user.presentation.request;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.command.UserInfoUpdateCommand;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -11,8 +11,8 @@ import lombok.Builder;
 public record UserInfoUpdateRequest(
         String nickName,
         String profileImage,
-        UserCountry country,
-        UserCountry interestCountry,
+        Country country,
+        Country interestCountry,
         Double latitude,
         Double longitude,
         UserStatus status

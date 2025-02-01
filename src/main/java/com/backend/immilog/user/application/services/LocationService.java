@@ -61,9 +61,7 @@ public class LocationService {
         });
     }
 
-    private String extractCompoundCode(
-            String jsonResponse
-    ) {
+    private String extractCompoundCode(String jsonResponse) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             JsonNode rootNode = objectMapper.readTree(jsonResponse);
@@ -77,9 +75,7 @@ public class LocationService {
         return null;
     }
 
-    public Pair<String, String> joinCompletableFutureLocation(
-            CompletableFuture<Pair<String, String>> countryFuture
-    ) {
+    public Pair<String, String> joinCompletableFutureLocation(CompletableFuture<Pair<String, String>> countryFuture) {
         return countryFuture
                 .orTimeout(5, TimeUnit.SECONDS) // 5초 이내에 완료되지 않으면 타임아웃
                 .exceptionally(throwable -> Pair.of("Error", "Timeout"))

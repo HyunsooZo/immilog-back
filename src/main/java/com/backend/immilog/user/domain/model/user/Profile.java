@@ -1,16 +1,16 @@
 package com.backend.immilog.user.domain.model.user;
 
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 
 public record Profile(
         String nickname,
         String imageUrl,
-        UserCountry interestCountry
+        Country interestCountry
 ) {
     public static Profile of(
             String nickname,
             String imageUrl,
-            UserCountry interestCountry
+            Country interestCountry
     ) {
         return new Profile(nickname, imageUrl, interestCountry);
     }
