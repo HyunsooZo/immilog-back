@@ -107,18 +107,18 @@ public class JobBoardCompanyValue {
     }
 
     public JobBoardCompany toDomain() {
-        return JobBoardCompany.builder()
-                .companySeq(this.companySeq)
-                .industry(this.industry)
-                .experience(this.experience)
-                .deadline(this.deadline)
-                .salary(this.salary)
-                .company(this.company)
-                .companyEmail(this.companyEmail)
-                .companyPhone(this.companyPhone)
-                .companyAddress(this.companyAddress)
-                .companyHomepage(this.companyHomepage)
-                .companyLogo(this.companyLogo)
-                .build();
+        return new JobBoardCompany(
+                this.companySeq,
+                this.industry,
+                this.experience,
+                this.deadline,
+                this.salary,
+                this.company,
+                this.companyEmail,
+                this.companyPhone,
+                this.companyAddress,
+                this.companyHomepage,
+                this.companyLogo
+        );
     }
 }

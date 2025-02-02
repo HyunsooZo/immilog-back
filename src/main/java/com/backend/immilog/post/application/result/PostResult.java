@@ -7,12 +7,12 @@ import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -22,12 +22,12 @@ public final class PostResult {
     private final Long userSeq;
     private final String userProfileUrl;
     private final String userNickName;
-    private final List<CommentResult> comments = new ArrayList<>();
+    private final List<CommentResult> comments;
     private final Long commentCount;
     private final Long viewCount;
     private final Long likeCount;
     private final List<String> tags;
-    private final List<String> attachments = new ArrayList<>();
+    private final List<String> attachments;
     private final List<Long> likeUsers;
     private final List<Long> bookmarkUsers;
     private final String isPublic;
@@ -41,7 +41,6 @@ public final class PostResult {
     private String content;
     private String keyword;
 
-    @Builder
     public PostResult(
             Long seq,
             String title,
@@ -72,18 +71,14 @@ public final class PostResult {
         this.userSeq = userSeq;
         this.userProfileUrl = userProfileUrl;
         this.userNickName = userNickName;
-        if (comments != null && !comments.isEmpty()) {
-            this.comments.addAll(comments);
-        }
+        this.comments = Optional.ofNullable(comments).orElseGet(ArrayList::new);
         this.commentCount = commentCount;
         this.viewCount = viewCount;
         this.likeCount = likeCount;
-        this.tags = tags;
-        if (attachments != null && !attachments.isEmpty()) {
-            this.attachments.addAll(attachments);
-        }
-        this.likeUsers = likeUsers;
-        this.bookmarkUsers = bookmarkUsers;
+        this.tags = Optional.ofNullable(tags).orElseGet(ArrayList::new);
+        this.attachments = Optional.ofNullable(attachments).orElseGet(ArrayList::new);
+        this.likeUsers = Optional.ofNullable(likeUsers).orElseGet(ArrayList::new);
+        this.bookmarkUsers = Optional.ofNullable(bookmarkUsers).orElseGet(ArrayList::new);
         this.isPublic = isPublic;
         this.country = country;
         this.region = region;
@@ -94,85 +89,135 @@ public final class PostResult {
         this.keyword = keyword;
     }
 
+    public PostResult(
+            Long seq,
+            Long userSeq,
+            String userProfileUrl,
+            String userNickName,
+            Long commentCount,
+            Long viewCount,
+            Long likeCount,
+            String isPublic,
+            String country,
+            String region,
+            Categories category,
+            PostStatus status,
+            String title,
+            String content,
+            String createdAt,
+            String updatedAt
+    ) {
+        this.seq = seq;
+        this.userSeq = userSeq;
+        this.userProfileUrl = userProfileUrl;
+        this.userNickName = userNickName;
+        this.commentCount = commentCount;
+        this.viewCount = viewCount;
+        this.likeCount = likeCount;
+        this.isPublic = isPublic;
+        this.country = country;
+        this.region = region;
+        this.category = category;
+        this.status = status;
+        this.title = title;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.comments = new ArrayList<>();
+        this.tags = new ArrayList<>();
+        this.attachments = new ArrayList<>();
+        this.likeUsers = new ArrayList<>();
+        this.bookmarkUsers = new ArrayList<>();
+    }
+
     private static String extractKeyword(
             String text,
             String keyword,
             int after,
             int before
     ) {
+        if (text == null || keyword == null) {
+            return "";
+        }
         int keywordIndex = text.indexOf(keyword);
-        if (keywordIndex != -1) {
-            int start = Math.max(keywordIndex - before, 0);
-            int end = Math.min(keywordIndex + keyword.length() + after, text.length());
-            return text.substring(start, end);
-        } else {
+        if (keywordIndex == -1) {
             return text.substring(0, Math.min(text.length(), after));
         }
+        int start = Math.max(keywordIndex - before, 0);
+        int end = Math.min(keywordIndex + keyword.length() + after, text.length());
+        return text.substring(start, end);
     }
 
     private static List<String> extractTags(
             List<String> tags,
             String keyword
     ) {
-        if (tags.isEmpty()) {
+        if (tags == null || tags.isEmpty()) {
             return Collections.emptyList();
         }
-        List<String> keywordTagList = tags.stream()
+
+        List<String> keywordTags = tags.stream()
                 .filter(tag -> tag.contains(keyword))
                 .limit(1)
                 .toList();
-        boolean isAdded = !keywordTagList.isEmpty();
-        List<String> shuffledTags = tags.stream()
-                .filter(tag -> !keywordTagList.contains(tag)) // 이미 추가된 태그는 제외
-                .collect(Collectors.collectingAndThen(
-                        Collectors.toList(),
-                        collected -> {
-                            Collections.shuffle(collected);
-                            return collected.stream().limit(isAdded ? Math.min(2, collected.size()) : Math.min(3, collected.size())).toList();
-                        }
-                ));
 
-        List<String> result = new ArrayList<>(keywordTagList);
-        result.addAll(shuffledTags);
-        return result;
+        List<String> shuffledTags = tags.stream()
+                .filter(tag -> !keywordTags.contains(tag))
+                .collect(Collectors.collectingAndThen(Collectors.toList(), list -> {
+                    Collections.shuffle(list);
+                    return list.stream().limit(keywordTags.isEmpty() ? 3 : 2).toList();
+                }));
+
+        return new ArrayList<>(keywordTags) {{
+            addAll(shuffledTags);
+        }};
     }
 
     public void addComments(List<CommentResult> comments) {
-        this.comments.addAll(comments);
+        if (comments != null) {
+            this.comments.addAll(comments);
+        }
     }
 
     public void addKeywords(String keyword) {
-        String contentResult = extractKeyword(this.content, keyword, 50, 5);
-        String titleResult = extractKeyword(this.title, keyword, 20, 5);
-        List<String> tagResult = extractTags(this.tags, keyword);
-        this.title = titleResult;
-        this.content = contentResult;
-        this.tags.addAll(tagResult);
+        if (keyword == null) {
+            return;
+        }
+        this.title = extractKeyword(this.title, keyword, 20, 5);
+        this.content = extractKeyword(this.content, keyword, 50, 5);
+        this.tags.addAll(extractTags(this.tags, keyword));
         this.keyword = keyword;
     }
 
-    public void addInteractionUsers(List<InteractionUser> interactionUserList) {
-        this.likeUsers.addAll(interactionUserList.stream()
-                .filter(interactionUser -> interactionUser.getInteractionType().equals(InteractionType.LIKE))
-                .map(InteractionUser::getUserSeq)
+    public void addInteractionUsers(List<InteractionUser> interactionUsers) {
+        if (interactionUsers == null || interactionUsers.isEmpty()) {
+            return;
+        }
+
+        this.likeUsers.addAll(interactionUsers.stream()
+                .filter(u -> u.interactionType() == InteractionType.LIKE)
+                .map(InteractionUser::userSeq)
                 .toList());
-        this.bookmarkUsers.addAll(interactionUserList.stream()
-                .filter(interactionUser -> interactionUser.getInteractionType().equals(InteractionType.BOOKMARK))
-                .map(InteractionUser::getUserSeq)
-                .toList()
-        );
+
+        this.bookmarkUsers.addAll(interactionUsers.stream()
+                .filter(u -> u.interactionType() == InteractionType.BOOKMARK)
+                .map(InteractionUser::userSeq)
+                .toList());
     }
 
     public void addResources(List<PostResource> resources) {
+        if (resources == null || resources.isEmpty()) {
+            return;
+        }
+
         this.tags.addAll(resources.stream()
-                .filter(resource -> resource.getResourceType().equals(ResourceType.TAG))
-                .map(PostResource::getContent)
-                .toList()
-        );
+                .filter(r -> r.resourceType() == ResourceType.TAG)
+                .map(PostResource::content)
+                .toList());
+
         this.attachments.addAll(resources.stream()
-                .filter(resource -> resource.getResourceType().equals(ResourceType.ATTACHMENT))
-                .map(PostResource::getContent)
-                .toList()
-        );
+                .filter(r -> r.resourceType() == ResourceType.ATTACHMENT)
+                .map(PostResource::content)
+                .toList());
     }
 }

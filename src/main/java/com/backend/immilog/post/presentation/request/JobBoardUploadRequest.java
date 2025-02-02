@@ -22,19 +22,19 @@ public record JobBoardUploadRequest(
         PostStatus status
 ) {
     public JobBoardUploadCommand toCommand() {
-        return JobBoardUploadCommand.builder()
-                .seq(seq)
-                .title(title)
-                .content(content)
-                .viewCount(viewCount)
-                .likeCount(likeCount)
-                .tags(tags)
-                .attachments(attachments)
-                .deadline(deadline)
-                .experience(experience)
-                .salary(salary)
-                .companySeq(companySeq)
-                .status(status)
-                .build();
+        return new JobBoardUploadCommand(
+                this.seq,
+                this.title,
+                this.content,
+                this.viewCount,
+                this.likeCount,
+                this.tags,
+                this.attachments,
+                this.deadline,
+                this.experience,
+                this.salary,
+                this.companySeq,
+                this.status
+        );
     }
 }

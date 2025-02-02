@@ -32,18 +32,10 @@ public class PostUserInfoValue {
             String nickname,
             String profileImage
     ) {
-        return new PostUserInfoValue(
-                userSeq,
-                nickname,
-                profileImage
-        );
+        return new PostUserInfoValue(userSeq, nickname, profileImage);
     }
 
     public PostUserInfo toDomain() {
-        return PostUserInfo.builder()
-                .userSeq(userSeq)
-                .nickname(nickname)
-                .profileImage(profileImage)
-                .build();
+        return new PostUserInfo(this.userSeq, this.nickname, this.profileImage);
     }
 }

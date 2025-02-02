@@ -4,8 +4,6 @@ import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -36,7 +34,6 @@ public class InteractionUserEntity {
 
     protected InteractionUserEntity() {}
 
-    @Builder
     protected InteractionUserEntity(
             Long seq,
             Long postSeq,
@@ -52,20 +49,22 @@ public class InteractionUserEntity {
     }
 
     public static InteractionUserEntity from(InteractionUser interactionUser) {
-        return InteractionUserEntity.builder()
-                .postSeq(interactionUser.getPostSeq())
-                .postType(interactionUser.getPostType())
-                .interactionType(interactionUser.getInteractionType())
-                .userSeq(interactionUser.getUserSeq())
-                .build();
+        return new InteractionUserEntity(
+                interactionUser.seq(),
+                interactionUser.postSeq(),
+                interactionUser.postType(),
+                interactionUser.interactionType(),
+                interactionUser.userSeq()
+        );
     }
 
     public InteractionUser toDomain() {
-        return InteractionUser.builder()
-                .postSeq(postSeq)
-                .postType(postType)
-                .interactionType(interactionType)
-                .userSeq(userSeq)
-                .build();
+        return new InteractionUser(
+                this.seq,
+                this.postSeq,
+                this.postType,
+                this.interactionType,
+                this.userSeq
+        );
     }
 }

@@ -21,7 +21,6 @@ import static com.backend.immilog.post.domain.enums.PostType.POST;
 import static com.backend.immilog.post.domain.enums.ResourceType.ATTACHMENT;
 import static com.backend.immilog.post.domain.enums.ResourceType.TAG;
 import static com.backend.immilog.post.exception.PostErrorCode.FAILED_TO_SAVE_POST;
-import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 
 @Slf4j
 @Service
@@ -45,10 +44,10 @@ public class PostUploadService {
             Long userSeq,
             PostUploadCommand postUploadCommand
     ) {
-        User user = userQueryService.getUserById(userSeq)
-                .orElseThrow(() -> new PostException(USER_NOT_FOUND));
-        Post post = postCommandService.save(Post.of(postUploadCommand, user));
-        Long postSeq = post.getSeq();
+        User user = userQueryService.getUserById(userSeq);
+        Post newPost = createPost(postUploadCommand, user);
+        Post savedPost = postCommandService.save(newPost);
+        Long postSeq = savedPost.seq();
         insertAllPostResources(postUploadCommand, postSeq);
     }
 
@@ -56,7 +55,7 @@ public class PostUploadService {
             PostUploadCommand postUploadCommand,
             Long postSeq
     ) {
-        List<PostResource> postResourceList = getPostResourceList(
+        List<PostResource> postResourceList = this.getPostResourceList(
                 postUploadCommand,
                 postSeq
         );
@@ -72,10 +71,10 @@ public class PostUploadService {
                         """,
                 (ps, postResource) -> {
                     try {
-                        ps.setLong(1, postResource.getPostSeq());
-                        ps.setString(2, postResource.getPostType().name());
-                        ps.setString(3, postResource.getResourceType().name());
-                        ps.setString(4, postResource.getContent());
+                        ps.setLong(1, postResource.postSeq());
+                        ps.setString(2, postResource.postType().name());
+                        ps.setString(3, postResource.resourceType().name());
+                        ps.setString(4, postResource.content());
                     } catch (SQLException e) {
                         log.error("Failed to save post resource: {}", e.getMessage());
                         throw new PostException(FAILED_TO_SAVE_POST);
@@ -89,8 +88,8 @@ public class PostUploadService {
             Long postSeq
     ) {
         List<PostResource> postResources = new ArrayList<>();
-        postResources.addAll(getTagEntities(postUploadCommand, postSeq));
-        postResources.addAll(getAttachmentEntities(postUploadCommand, postSeq));
+        postResources.addAll(this.getTagEntities(postUploadCommand, postSeq));
+        postResources.addAll(this.getAttachmentEntities(postUploadCommand, postSeq));
         return Collections.unmodifiableList(postResources);
     }
 
@@ -120,6 +119,19 @@ public class PostUploadService {
                 .stream()
                 .map(url -> PostResource.of(POST, ATTACHMENT, url, postSeq))
                 .toList();
+    }
+
+    private static Post createPost(
+            PostUploadCommand postUploadCommand,
+            User user
+    ) {
+        return Post.of(
+                user,
+                postUploadCommand.title(),
+                postUploadCommand.content(),
+                postUploadCommand.category(),
+                postUploadCommand.isPublic() ? "Y" : "N"
+        );
     }
 
 }

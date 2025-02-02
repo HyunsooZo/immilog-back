@@ -1,6 +1,6 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.model.post.PostInfo;
 import jakarta.persistence.Column;
@@ -31,7 +31,7 @@ public class PostInfoValue {
 
     @Column(name = "country")
     @Enumerated(EnumType.STRING)
-    private Countries country;
+    private Country country;
 
     protected PostInfoValue() {}
 
@@ -42,7 +42,7 @@ public class PostInfoValue {
             Long likeCount,
             String region,
             PostStatus status,
-            Countries country
+            Country country
     ) {
         this.title = title;
         this.content = content;
@@ -53,32 +53,35 @@ public class PostInfoValue {
         this.country = country;
     }
 
-    public static <T extends Enum<T>> PostInfoValue of(
+    public static PostInfoValue of(
             String title,
             String content,
-            T country,
-            String region
+            Long viewCount,
+            Long likeCount,
+            Country country,
+            String region,
+            PostStatus status
     ) {
         return new PostInfoValue(
                 title,
                 content,
-                0L,
-                0L,
+                viewCount,
+                likeCount,
                 region,
-                PostStatus.NORMAL,
-                Countries.valueOf(country.name())
+                status,
+                Country.valueOf(country.name())
         );
     }
 
     public PostInfo toDomain() {
-        return PostInfo.builder()
-                .title(title)
-                .content(content)
-                .viewCount(viewCount)
-                .likeCount(likeCount)
-                .region(region)
-                .status(status)
-                .country(country)
-                .build();
+        return new PostInfo(
+                title,
+                content,
+                viewCount,
+                likeCount,
+                region,
+                status,
+                country
+        );
     }
 }

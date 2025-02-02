@@ -1,9 +1,9 @@
 package com.backend.immilog.post.application.result;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.*;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.model.resource.PostResource;
-import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ public class JobBoardResult {
     private final List<String> attachments = new ArrayList<>();
     private final List<Long> likeUsers = new ArrayList<>();
     private final List<Long> bookmarkUsers = new ArrayList<>();
-    private final Countries country;
+    private final Country country;
     private final String region;
     private final Industry industry;
     private final LocalDateTime deadline;
@@ -38,7 +38,6 @@ public class JobBoardResult {
     private final PostStatus status;
     private final LocalDateTime createdAt;
 
-    @Builder
     public JobBoardResult(
             Long seq,
             String title,
@@ -49,7 +48,7 @@ public class JobBoardResult {
             List<String> attachments,
             List<Long> likeUsers,
             List<Long> bookmarkUsers,
-            Countries country,
+            Country country,
             String region,
             Industry industry,
             LocalDateTime deadline,
@@ -71,10 +70,10 @@ public class JobBoardResult {
         this.content = content;
         this.viewCount = viewCount;
         this.likeCount = likeCount;
-        this.tags.addAll(tags);
-        this.attachments.addAll(attachments);
-        this.likeUsers.addAll(likeUsers);
-        this.bookmarkUsers.addAll(bookmarkUsers);
+        this.addStringList(tags, this.tags);
+        this.addStringList(attachments, this.attachments);
+        this.addLongList(likeUsers, this.likeUsers);
+        this.addLongList(bookmarkUsers, this.bookmarkUsers);
         this.country = country;
         this.region = region;
         this.industry = industry;
@@ -93,29 +92,92 @@ public class JobBoardResult {
         this.createdAt = createdAt;
     }
 
+    public JobBoardResult(
+            Long seq,
+            String title,
+            String content,
+            Long viewCount,
+            Long likeCount,
+            String region,
+            PostStatus status,
+            Country country,
+            Industry industry,
+            Experience experience,
+            LocalDateTime deadline,
+            String salary,
+            Long companySeq,
+            String companyName,
+            String companyEmail,
+            String companyPhone,
+            String companyAddress,
+            String companyHomepage,
+            String companyLogo,
+            Long companyManagerUserSeq,
+            LocalDateTime createdAt
+    ) {
+        this.seq = seq;
+        this.title = title;
+        this.content = content;
+        this.viewCount = viewCount;
+        this.likeCount = likeCount;
+        this.region = region;
+        this.status = status;
+        this.country = country;
+        this.industry = industry;
+        this.experience = experience;
+        this.deadline = deadline;
+        this.salary = salary;
+        this.companySeq = companySeq;
+        this.companyName = companyName;
+        this.companyEmail = companyEmail;
+        this.companyPhone = companyPhone;
+        this.companyAddress = companyAddress;
+        this.companyHomepage = companyHomepage;
+        this.companyLogo = companyLogo;
+        this.companyManagerUserSeq = companyManagerUserSeq;
+        this.createdAt = createdAt;
+    }
 
     public void addInteractionUsers(List<InteractionUser> interactionUserList) {
         this.likeUsers.addAll(interactionUserList.stream()
-                .filter(interactionUser -> interactionUser.getInteractionType().equals(InteractionType.LIKE))
-                .map(InteractionUser::getUserSeq)
+                .filter(interactionUser -> interactionUser.interactionType().equals(InteractionType.LIKE))
+                .map(InteractionUser::userSeq)
                 .toList());
         this.bookmarkUsers.addAll(interactionUserList.stream()
-                .filter(interactionUser -> interactionUser.getInteractionType().equals(InteractionType.BOOKMARK))
-                .map(InteractionUser::getUserSeq)
+                .filter(interactionUser -> interactionUser.interactionType().equals(InteractionType.BOOKMARK))
+                .map(InteractionUser::userSeq)
                 .toList()
         );
     }
 
     public void addResources(List<PostResource> resources) {
         this.tags.addAll(resources.stream()
-                .filter(resource -> resource.getResourceType().equals(ResourceType.TAG))
-                .map(PostResource::getContent)
+                .filter(resource -> resource.resourceType().equals(ResourceType.TAG))
+                .map(PostResource::content)
                 .toList()
         );
         this.attachments.addAll(resources.stream()
-                .filter(resource -> resource.getResourceType().equals(ResourceType.ATTACHMENT))
-                .map(PostResource::getContent)
+                .filter(resource -> resource.resourceType().equals(ResourceType.ATTACHMENT))
+                .map(PostResource::content)
                 .toList()
         );
+    }
+
+    private void addLongList(
+            List<Long> newLongList,
+            List<Long> longFieldList
+    ) {
+        if (newLongList != null && newLongList.isEmpty()) {
+            longFieldList.addAll(newLongList);
+        }
+    }
+
+    private void addStringList(
+            List<String> newList,
+            List<String> stringFieldList
+    ) {
+        if (newList != null && newList.isEmpty()) {
+            stringFieldList.addAll(newList);
+        }
     }
 }

@@ -42,16 +42,14 @@ public class InteractionCreationService {
                 )
                 .ifPresentOrElse(
                         interactionUserCommandService::delete,
-                        () -> {
-                            interactionUserCommandService.save(
-                                    InteractionUser.of(
-                                            postSeq,
-                                            postType,
-                                            interactionType,
-                                            userSeq
-                                    )
-                            );
-                        }
+                        () -> interactionUserCommandService.save(
+                                InteractionUser.of(
+                                        postSeq,
+                                        postType,
+                                        interactionType,
+                                        userSeq
+                                )
+                        )
                 );
     }
 }

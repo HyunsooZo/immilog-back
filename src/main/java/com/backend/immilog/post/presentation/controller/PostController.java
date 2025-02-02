@@ -1,12 +1,12 @@
 package com.backend.immilog.post.presentation.controller;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.PostDeleteService;
 import com.backend.immilog.post.application.services.PostInquiryService;
 import com.backend.immilog.post.application.services.PostUpdateService;
 import com.backend.immilog.post.application.services.PostUploadService;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
@@ -86,7 +86,7 @@ public class PostController {
     @GetMapping
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회합니다.")
     public ResponseEntity<PostApiResponse> getPosts(
-            @RequestParam(required = false, name = "country") Countries country,
+            @RequestParam(required = false, name = "country") Country country,
             @RequestParam(required = false, name = "sortingMethod") SortingMethods sortingMethod,
             @RequestParam(required = false, name = "isPublic") String isPublic,
             @RequestParam(required = false, name = "category") Categories category,

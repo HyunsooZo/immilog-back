@@ -27,7 +27,23 @@ public class JobBoardUploadService {
             JobBoardUploadCommand command
     ) {
         CompanyResult company = companyInquiryService.getCompany(userSeq);
-        JobBoard jobBoard = JobBoard.of(userSeq, company.toDomain(), command);
-        jobBoardCommandService.save(jobBoard);
+        JobBoard newJobBoard = createJobBoard(userSeq, command, company);
+        jobBoardCommandService.save(newJobBoard);
+    }
+
+    private static JobBoard createJobBoard(
+            Long userSeq,
+            JobBoardUploadCommand command,
+            CompanyResult company
+    ) {
+        return JobBoard.of(
+                userSeq,
+                company.toDomain(),
+                command.title(),
+                command.content(),
+                command.experience(),
+                command.deadline(),
+                command.salary()
+        );
     }
 }

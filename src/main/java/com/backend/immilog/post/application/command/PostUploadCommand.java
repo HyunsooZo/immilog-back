@@ -4,11 +4,9 @@ import com.backend.immilog.post.domain.enums.Categories;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 
 import java.util.List;
 
-@Builder
 @Schema(description = "게시물 생성 요청 서비스 DTO")
 public record PostUploadCommand(
         @NotBlank(message = "제목을 입력해주세요.") String title,

@@ -16,14 +16,14 @@ import java.util.stream.IntStream;
 @Slf4j
 @Repository
 public class BulkInsertRepositoryImpl implements BulkInsertRepository {
-    private static final Map<String, String> TABLE_NAME_MAP =
-            Map.of("post_resource", "post_resource");
     private final JdbcTemplate jdbcTemplate;
-    private final Integer BATCH_SIZE = 500;
 
     public BulkInsertRepositoryImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
+
+    private final Integer BATCH_SIZE = 500;
+    private static final Map<String, String> TABLE_NAME_MAP = Map.of("post_resource", "post_resource");
 
     public static String extractTableName(String sql) {
         for (String tableName : TABLE_NAME_MAP.keySet()) {

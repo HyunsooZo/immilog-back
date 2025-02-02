@@ -1,18 +1,19 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
+import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.exception.PostErrorCode;
 import com.backend.immilog.post.exception.PostException;
-import com.backend.immilog.post.infrastructure.result.CommentEntityResult;
 import com.backend.immilog.user.application.result.UserInfoResult;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,25 +27,30 @@ public class CommentJdbcRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    private static CommentEntityResult getCommentEntityResult(
+    private static CommentResult getCommentEntityResult(
             ResultSet rs,
             long commentSeq,
             UserInfoResult user
     ) {
         try {
         String prefix = commentSeq == rs.getLong("c.seq") ? "c" : "cc";
-        return CommentEntityResult.builder()
-                .seq(commentSeq)
-                .user(user)
-                .content(rs.getString(prefix + ".content"))
-                .replies(new ArrayList<>())
-                .upVotes(rs.getInt(prefix + ".like_count"))
-                .downVotes(0)
-                .replyCount(rs.getInt(prefix + ".reply_count"))
-                .likeUsers(new ArrayList<>())
-                .status(PostStatus.valueOf(rs.getString(prefix + ".status")))
-                .createdAt(rs.getTimestamp(prefix + ".created_at").toLocalDateTime())
-                .build();
+            String content = rs.getString(prefix + ".content");
+            int likeCount = rs.getInt(prefix + ".like_count");
+            int replyCount = rs.getInt(prefix + ".reply_count");
+            PostStatus status = PostStatus.valueOf(rs.getString(prefix + ".status"));
+            LocalDateTime localDateTime = rs.getTimestamp(prefix + ".created_at").toLocalDateTime();
+            return new CommentResult(
+                    commentSeq,
+                    user,
+                    content,
+                    new ArrayList<>(),
+                    likeCount,
+                    0,
+                    replyCount,
+                    new ArrayList<>(),
+                    status,
+                    localDateTime
+            );
         } catch (SQLException e) {
             throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
         }
@@ -62,8 +68,8 @@ public class CommentJdbcRepository {
                 rs.getString(prefix + ".image_url"),
                 rs.getLong(prefix + ".reported_count"),
                 rs.getDate(prefix + ".reported_date"),
-                UserCountry.valueOf(rs.getString(prefix + ".country")),
-                UserCountry.valueOf(rs.getString(prefix + ".interest_country")),
+                Country.valueOf(rs.getString(prefix + ".country")),
+                Country.valueOf(rs.getString(prefix + ".interest_country")),
                 rs.getString(prefix + ".region"),
                 UserRole.valueOf(rs.getString(prefix + ".user_role")),
                 UserStatus.valueOf(rs.getString(prefix + ".user_status"))
@@ -73,7 +79,7 @@ public class CommentJdbcRepository {
         }
     }
 
-    public List<CommentEntityResult> getComments(Long postSeq) {
+    public List<CommentResult> getComments(Long postSeq) {
         String sql = """
                 SELECT c.*, u.*, cc.*, cu.*
                 FROM comment c
@@ -97,8 +103,8 @@ public class CommentJdbcRepository {
                 .toList();
     }
 
-    private List<CommentEntityResult> mapParentCommentWithChildren(ResultSet rs) {
-        Map<Long, CommentEntityResult> commentMap = new HashMap<>();
+    private List<CommentResult> mapParentCommentWithChildren(ResultSet rs) {
+        Map<Long, CommentResult> commentMap = new HashMap<>();
         try {
             do {
                 Long commentSeq = rs.getLong("c.seq");
@@ -106,7 +112,7 @@ public class CommentJdbcRepository {
 
                 long childCommentSeq = rs.getLong("cc.seq");
                 if (childCommentSeq != 0) {
-                    CommentEntityResult childComment = getCommentEntityResult(rs, childCommentSeq, getUserInfoResult(rs, "cu"));
+                    CommentResult childComment = getCommentEntityResult(rs, childCommentSeq, getUserInfoResult(rs, "cu"));
                     commentMap.get(commentSeq).addChildComment(childComment);
                 }
             } while (rs.next());

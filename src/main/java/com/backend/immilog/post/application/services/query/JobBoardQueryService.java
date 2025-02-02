@@ -1,8 +1,8 @@
 package com.backend.immilog.post.application.services.query;
 
 import com.backend.immilog.global.aop.monitor.PerformanceMonitor;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import com.backend.immilog.post.domain.enums.PostType;
@@ -37,7 +37,7 @@ public class JobBoardQueryService {
     @PerformanceMonitor
     @Transactional(readOnly = true)
     public Page<JobBoardResult> getJobBoards(
-            Countries countryEnum,
+            Country countryEnum,
             String sortingMethod,
             Industry industryEnum,
             Experience experienceEnum,
@@ -51,21 +51,21 @@ public class JobBoardQueryService {
                 pageable
         );
         Page<JobBoardResult> jobBoardResults = jobBoards.map(JobBoard::toResult);
-        return assembleJobBoardResult(jobBoards, jobBoardResults);
+        return this.assembleJobBoardResult(jobBoards, jobBoardResults);
     }
 
     @Transactional(readOnly = true)
     public JobBoardResult getJobBoardBySeq(Long jobBoardSeq) {
         Page<JobBoard> jobBoard = new PageImpl<>(List.of(jobBoardRepository.getJobBoardBySeq(jobBoardSeq)));
         Page<JobBoardResult> jobBoards = jobBoard.map(JobBoard::toResult);
-        return assembleJobBoardResult(jobBoard, jobBoards).getContent().getFirst();
+        return this.assembleJobBoardResult(jobBoard, jobBoards).getContent().getFirst();
     }
 
     private Page<JobBoardResult> assembleJobBoardResult(
             Page<JobBoard> jobBoards,
             Page<JobBoardResult> jobBoardResults
     ) {
-        List<Long> jobBoardSeqList = jobBoards.stream().map(JobBoard::getSeq).toList();
+        List<Long> jobBoardSeqList = jobBoards.stream().map(JobBoard::seq).toList();
 
         List<PostResource> postResources = postResourceQueryService.getResourcesByPostSeqList(
                 jobBoardSeqList,
@@ -79,11 +79,11 @@ public class JobBoardQueryService {
 
         return jobBoardResults.map(jobBoardResult -> {
             List<PostResource> resources = postResources.stream()
-                    .filter(postResource -> postResource.getPostSeq().equals(jobBoardResult.getSeq()))
+                    .filter(postResource -> postResource.postSeq().equals(jobBoardResult.getSeq()))
                     .toList();
 
             List<InteractionUser> interactionUserList = interactionUsers.stream()
-                    .filter(interactionUser -> interactionUser.getPostSeq().equals(jobBoardResult.getSeq()))
+                    .filter(interactionUser -> interactionUser.postSeq().equals(jobBoardResult.getSeq()))
                     .toList();
 
             jobBoardResult.addInteractionUsers(interactionUserList);

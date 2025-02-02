@@ -1,6 +1,6 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import com.backend.immilog.post.infrastructure.jpa.entity.post.JobBoardEntity;
@@ -19,7 +19,7 @@ public class JobBoardJdbcRepository {
     }
 
     public List<JobBoardEntity> getJobBoards(
-            Countries country,
+            Country country,
             String sortingMethod,
             Industry industry,
             Experience experience,
@@ -47,7 +47,7 @@ public class JobBoardJdbcRepository {
     }
 
     public Integer getTotal(
-            Countries country,
+            Country country,
             Industry industry,
             Experience experience
     ) {
