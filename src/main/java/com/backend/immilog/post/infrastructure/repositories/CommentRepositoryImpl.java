@@ -6,7 +6,6 @@ import com.backend.immilog.post.domain.repositories.CommentRepository;
 import com.backend.immilog.post.infrastructure.jdbc.CommentJdbcRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.comment.CommentEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.CommentJpaRepository;
-import com.backend.immilog.post.infrastructure.result.CommentEntityResult;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -29,7 +28,6 @@ public class CommentRepositoryImpl implements CommentRepository {
         return commentJdbcRepository
                 .getComments(postSeq)
                 .stream()
-                .map(CommentEntityResult::toCommentResult)
                 .toList();
     }
 

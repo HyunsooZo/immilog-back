@@ -4,14 +4,12 @@ import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.model.user.User;
-import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Builder
 public record CommentResult(
         Long seq,
         UserInfoResult user,
@@ -28,17 +26,18 @@ public record CommentResult(
             Comment comment,
             User user
     ) {
-        return CommentResult.builder()
-                .seq(comment.getSeq())
-                .user(UserInfoResult.from(user))
-                .content(comment.getContent())
-                .replies(new ArrayList<>())
-                .upVotes(comment.getLikeCount())
-                .replyCount(comment.getReplyCount())
-                .likeUsers(comment.getLikeUsers())
-                .status(comment.getStatus())
-                .createdAt(comment.getCreatedAt())
-                .build();
+        return new CommentResult(
+                comment.seq(),
+                UserInfoResult.from(user),
+                comment.content(),
+                new ArrayList<>(),
+                comment.likeCount(),
+                0,
+                comment.replyCount(),
+                comment.likeUsers(),
+                comment.status(),
+                comment.createdAt()
+        );
     }
 
     private List<CommentResult> combineReplies(
@@ -50,16 +49,17 @@ public record CommentResult(
         }
         return replies
                 .stream()
-                .map(reply -> {
-                    return replyUsers.stream()
-                            .filter(Objects::nonNull)
-                            .filter(u -> u.hasSameSeq(reply.getUserSeq()))
-                            .findFirst()
-                            .map(replyUser -> CommentResult.of(reply, replyUser))
-                            .orElse(null);
-                })
+                .map(reply -> replyUsers.stream()
+                        .filter(Objects::nonNull)
+                        .filter(u -> u.hasSameSeq(reply.userSeq()))
+                        .findFirst()
+                        .map(replyUser -> CommentResult.of(reply, replyUser))
+                        .orElse(null))
                 .filter(Objects::nonNull)
                 .toList();
     }
 
+    public void addChildComment(CommentResult childComment) {
+        this.replies.add(childComment);
+    }
 }

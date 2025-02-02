@@ -1,12 +1,11 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.model.post.JobBoard;
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
@@ -37,7 +36,6 @@ public class JobBoardEntity {
 
     protected JobBoardEntity() {}
 
-    @Builder
     protected JobBoardEntity(
             Long seq,
             Long userSeq,
@@ -47,7 +45,7 @@ public class JobBoardEntity {
             Long likeCount,
             String region,
             PostStatus status,
-            Countries country,
+            Country country,
             Long companySeq,
             Industry industry,
             Experience experience,
@@ -93,39 +91,39 @@ public class JobBoardEntity {
     }
 
     public static JobBoardEntity from(JobBoard jobBoard) {
-        return JobBoardEntity.builder()
-                .seq(jobBoard.getSeq())
-                .userSeq(jobBoard.getUserSeq())
-                .title(jobBoard.getTitle())
-                .content(jobBoard.getContent())
-                .viewCount(jobBoard.getViewCount())
-                .likeCount(jobBoard.getLikeCount())
-                .region(jobBoard.getRegion())
-                .status(jobBoard.getStatus())
-                .country(jobBoard.getCountry())
-                .companySeq(jobBoard.getCompanySeq())
-                .industry(jobBoard.getIndustry())
-                .experience(jobBoard.getExperience())
-                .deadline(jobBoard.getDeadline())
-                .salary(jobBoard.getSalary())
-                .company(jobBoard.getCompany())
-                .companyEmail(jobBoard.getCompanyEmail())
-                .companyPhone(jobBoard.getCompanyPhone())
-                .companyAddress(jobBoard.getCompanyAddress())
-                .companyHomepage(jobBoard.getCompanyHomepage())
-                .companyLogo(jobBoard.getCompanyLogo())
-                .updatedAt(jobBoard.getSeq() != null ? LocalDateTime.now() : null)
-                .build();
+        return new JobBoardEntity(
+                jobBoard.seq(),
+                jobBoard.userSeq(),
+                jobBoard.title(),
+                jobBoard.content(),
+                jobBoard.viewCount(),
+                jobBoard.likeCount(),
+                jobBoard.region(),
+                jobBoard.status(),
+                jobBoard.country(),
+                jobBoard.companySeq(),
+                jobBoard.industry(),
+                jobBoard.experience(),
+                jobBoard.deadline(),
+                jobBoard.salary(),
+                jobBoard.company(),
+                jobBoard.companyEmail(),
+                jobBoard.companyPhone(),
+                jobBoard.companyAddress(),
+                jobBoard.companyHomepage(),
+                jobBoard.companyLogo(),
+                jobBoard.updatedAt()
+        );
     }
 
     public JobBoard toDomain() {
-        return JobBoard.builder()
-                .seq(this.seq)
-                .userSeq(this.userSeq)
-                .postInfo(this.postInfo.toDomain())
-                .jobBoardCompany(this.jobBoardCompany.toDomain())
-                .createdAt(this.createdAt)
-                .updatedAt(this.updatedAt)
-                .build();
+        return new JobBoard(
+                this.seq,
+                this.userSeq,
+                this.postInfo.toDomain(),
+                this.jobBoardCompany.toDomain(),
+                this.createdAt,
+                this.updatedAt
+        );
     }
 }

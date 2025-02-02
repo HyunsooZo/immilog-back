@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,8 +51,8 @@ public class JobBoardUpdateService {
             JobBoardUpdateCommand command
     ) {
         JobBoardResult jobBoard = jobBoardQueryService.getJobBoardBySeq(jobBoardSeq);
-        verifyIfUserIsOwner(userSeq, jobBoard);
-        JobBoard updatedJobBoard = createUpdatedJobBoard(userSeq, command, jobBoard);
+        this.verifyOwner(userSeq, jobBoard);
+        JobBoard updatedJobBoard = this.updatedJobBoard(command, jobBoard);
         jobBoardCommandService.save(updatedJobBoard);
     }
 
@@ -61,51 +62,49 @@ public class JobBoardUpdateService {
             Long jobBoardSeq
     ) {
         JobBoardResult jobBoardResult = jobBoardQueryService.getJobBoardBySeq(jobBoardSeq);
-        verifyIfUserIsOwner(userSeq, jobBoardResult);
+        this.verifyOwner(userSeq, jobBoardResult);
         JobBoard jobBoard = JobBoard.from(jobBoardResult);
         JobBoard updatedJobBoard = jobBoard.delete();
         jobBoardCommandService.save(updatedJobBoard);
     }
 
 
-    private JobBoard createUpdatedJobBoard(
-            Long userSeq,
+    private JobBoard updatedJobBoard(
             JobBoardUpdateCommand command,
             JobBoardResult jobBoard
     ) {
-        PostInfo postInfo = PostInfo.builder()
-                .title(command.title() != null ? command.title() : jobBoard.getTitle())
-                .content(command.content() != null ? command.content() : jobBoard.getContent())
-                .viewCount(jobBoard.getViewCount())
-                .likeCount(jobBoard.getLikeCount())
-                .status(jobBoard.getStatus())
-                .country(jobBoard.getCountry())
-                .region(jobBoard.getRegion())
-                .build();
+        PostInfo postInfo = new PostInfo(
+                command.title() != null ? command.title() : jobBoard.getTitle(),
+                command.content() != null ? command.content() : jobBoard.getContent(),
+                jobBoard.getViewCount(),
+                jobBoard.getLikeCount(),
+                jobBoard.getRegion(),
+                jobBoard.getStatus(),
+                jobBoard.getCountry()
+        );
+        this.updateTags(command, jobBoard);
+        this.updateAttachments(command, jobBoard);
 
-        updateTags(command, jobBoard);
-        updateAttachments(command, jobBoard);
-
-        return JobBoard.builder()
-                .seq(jobBoard.getSeq())
-                .userSeq(userSeq)
-                .postInfo(postInfo)
-                .jobBoardCompany(
-                        JobBoardCompany.of(
-                                jobBoard.getCompanySeq(),
-                                jobBoard.getIndustry(),
-                                command.experience() != null ? command.experience() : jobBoard.getExperience(),
-                                command.deadline() != null ? command.deadline() : jobBoard.getDeadline(),
-                                command.salary() != null ? command.salary() : jobBoard.getSalary(),
-                                jobBoard.getCompanyName(),
-                                jobBoard.getCompanyEmail(),
-                                jobBoard.getCompanyPhone(),
-                                jobBoard.getCompanyAddress(),
-                                jobBoard.getCompanyHomepage(),
-                                jobBoard.getCompanyLogo()
-                        )
-                )
-                .build();
+        return new JobBoard(
+                jobBoard.getSeq(),
+                jobBoard.getCompanyManagerUserSeq(),
+                postInfo,
+                JobBoardCompany.of(
+                        jobBoard.getCompanySeq(),
+                        jobBoard.getIndustry(),
+                        command.experience() != null ? command.experience() : jobBoard.getExperience(),
+                        command.deadline() != null ? command.deadline() : jobBoard.getDeadline(),
+                        command.salary() != null ? command.salary() : jobBoard.getSalary(),
+                        jobBoard.getCompanyName(),
+                        jobBoard.getCompanyEmail(),
+                        jobBoard.getCompanyPhone(),
+                        jobBoard.getCompanyAddress(),
+                        jobBoard.getCompanyHomepage(),
+                        jobBoard.getCompanyLogo()
+                ),
+                LocalDateTime.now(),
+                null
+        );
     }
 
     private void updateAttachments(
@@ -124,9 +123,8 @@ public class JobBoardUpdateService {
                 attachmentToDelete
         );
 
-        saveAllPostResources(
+        this.saveAllPostResources(
                 jobBoard.getSeq(),
-                PostType.JOB_BOARD,
                 ResourceType.ATTACHMENT,
                 command.addAttachments()
         );
@@ -148,9 +146,8 @@ public class JobBoardUpdateService {
                 tagToDelete
         );
 
-        saveAllPostResources(
+        this.saveAllPostResources(
                 jobBoard.getSeq(),
-                PostType.JOB_BOARD,
                 ResourceType.TAG,
                 command.addTags()
         );
@@ -158,7 +155,6 @@ public class JobBoardUpdateService {
 
     private void saveAllPostResources(
             Long postSeq,
-            PostType postType,
             ResourceType resourceType,
             List<String> postResources
     ) {
@@ -175,7 +171,7 @@ public class JobBoardUpdateService {
                 (ps, postResource) -> {
                     try {
                         ps.setLong(1, postSeq);
-                        ps.setString(2, postType.name());
+                        ps.setString(2, PostType.JOB_BOARD.name());
                         ps.setString(3, resourceType.name());
                         ps.setString(4, postResource);
                     } catch (SQLException e) {
@@ -186,7 +182,7 @@ public class JobBoardUpdateService {
         );
     }
 
-    private void verifyIfUserIsOwner(
+    private void verifyOwner(
             Long userSeq,
             JobBoardResult jobBoard
     ) {

@@ -1,12 +1,8 @@
 package com.backend.immilog.post.domain.model.post;
 
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.PostStatus;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
 
-@Builder
 public record PostInfo(
         String title,
         String content,
@@ -14,7 +10,7 @@ public record PostInfo(
         Long likeCount,
         String region,
         PostStatus status,
-        Countries country
+        Country country
 ){
     public static <T extends Enum<T>> PostInfo of(
             String title,
@@ -22,14 +18,14 @@ public record PostInfo(
             T country,
             String region
     ) {
-        return PostInfo.builder()
-                .title(title)
-                .content(content)
-                .viewCount(0L)
-                .likeCount(0L)
-                .status(PostStatus.NORMAL)
-                .country(Countries.valueOf(country.name()))
-                .region(region)
-                .build();
+        return new PostInfo(
+                title,
+                content,
+                0L,
+                0L,
+                region,
+                PostStatus.NORMAL,
+                Country.valueOf(country.name())
+        );
     }
 }

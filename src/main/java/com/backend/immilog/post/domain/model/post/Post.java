@@ -1,227 +1,267 @@
 package com.backend.immilog.post.domain.model.post;
 
-import com.backend.immilog.post.application.command.PostUploadCommand;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Badge;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.exception.PostErrorCode;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.user.domain.model.user.User;
-import lombok.Builder;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
-@Getter
-public class Post {
-    private final Long seq;
-    private final PostUserInfo postUserInfo;
-    private PostInfo postInfo;
-    private final Categories category;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private String isPublic;
-    private Badge badge;
-    private Long commentCount;
-
-    @Builder
-    public Post(
-            Long seq,
-            PostUserInfo postUserInfo,
-            PostInfo postInfo,
-            Categories category,
-            String isPublic,
-            Long commentCount,
-            Badge badge,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
-    ) {
-        this.seq = seq;
-        this.postUserInfo = postUserInfo;
-        this.postInfo = postInfo;
-        this.category = category;
-        this.isPublic = isPublic;
-        this.commentCount = commentCount;
-        this.badge = badge;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
+public record Post(
+        Long seq,
+        PostUserInfo postUserInfo,
+        PostInfo postInfo,
+        Categories category,
+        String isPublic,
+        Badge badge,
+        Long commentCount,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {
     public static Post of(
-            PostUploadCommand postUploadCommand,
-            User user
+            User user,
+            String title,
+            String content,
+            Categories category,
+            String isPublic
     ) {
         PostInfo postInfo = PostInfo.of(
-                postUploadCommand.title(),
-                postUploadCommand.content(),
-                user.getCountry(),
-                user.getRegion()
+                title,
+                content,
+                user.country(),
+                user.region()
         );
 
-        PostUserInfo postUserInfo = PostUserInfo.builder()
-                .userSeq(user.getSeq())
-                .profileImage(user.getImageUrl())
-                .nickname(user.getNickname())
-                .build();
+        PostUserInfo postUserInfo = new PostUserInfo(
+                user.seq(),
+                user.imageUrl(),
+                user.nickname()
+        );
 
-        return Post.builder()
-                .postUserInfo(postUserInfo)
-                .postInfo(postInfo)
-                .category(postUploadCommand.category())
-                .isPublic(postUploadCommand.isPublic() ? "Y" : "N")
-                .commentCount(0L)
-                .build();
+        return new Post(
+                null,
+                postUserInfo,
+                postInfo,
+                category,
+                isPublic,
+                null,
+                0L,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 
     public Post updateCommentCount() {
-        this.commentCount++;
-        return this;
+        return new Post(
+                this.seq,
+                this.postUserInfo,
+                this.postInfo,
+                this.category,
+                this.isPublic,
+                this.badge,
+                this.commentCount + 1,
+                this.createdAt,
+                this.updatedAt
+        );
     }
 
     public Post updateIsPublic(Boolean isPublic) {
-        if (isPublic != null) {
-            String value = isPublic ? "Y" : "N";
-            if (!this.isPublic.equals(value)) {
-                this.isPublic = value;
-            }
-        }
-        return this;
-    }
-
-
-    public Post updateContent(String content) {
-        if (content == null || this.postInfo.content().equals(content)) {
+        String value = isPublic ? "Y" : "N";
+        if (this.isPublic.equals(value)) {
             return this;
         }
-        this.postInfo = new PostInfo(
-                this.postInfo.title(),
-                content,
-                this.postInfo.viewCount(),
-                this.postInfo.likeCount(),
-                this.postInfo.region(),
-                this.postInfo.status(),
-                this.postInfo.country()
+        return new Post(
+                this.seq,
+                this.postUserInfo,
+                this.postInfo,
+                this.category,
+                isPublic ? "Y" : "N",
+                this.badge,
+                this.commentCount,
+                this.createdAt,
+                this.updatedAt
         );
-        return this;
+    }
+
+    public Post updateContent(String newContent) {
+        if (newContent == null || this.postInfo.content().equals(newContent)) {
+            return this;
+        }
+        return new Post(
+                this.seq,
+                this.postUserInfo,
+                new PostInfo(
+                        this.postInfo.title(),
+                        newContent,
+                        this.postInfo.viewCount(),
+                        this.postInfo.likeCount(),
+                        this.postInfo.region(),
+                        this.postInfo.status(),
+                        this.postInfo.country()
+                ),
+                this.category,
+                this.isPublic,
+                this.badge,
+                this.commentCount,
+                this.createdAt,
+                this.updatedAt
+        );
     }
 
     public Post updateTitle(String title) {
         if (title == null || this.postInfo.title().equals(title)) {
             return this;
         }
-        this.postInfo = new PostInfo(
-                title,
-                this.postInfo.content(),
-                this.postInfo.viewCount(),
-                this.postInfo.likeCount(),
-                this.postInfo.region(),
-                this.postInfo.status(),
-                this.postInfo.country()
+        return new Post(
+                this.seq,
+                this.postUserInfo,
+                new PostInfo(
+                        title,
+                        this.postInfo.content(),
+                        this.postInfo.viewCount(),
+                        this.postInfo.likeCount(),
+                        this.postInfo.region(),
+                        this.postInfo.status(),
+                        this.postInfo.country()
+                ),
+                this.category,
+                this.isPublic,
+                this.badge,
+                this.commentCount,
+                this.createdAt,
+                this.updatedAt
         );
-        return this;
     }
 
     public Post delete() {
         if (this.postInfo.status() == PostStatus.DELETED) {
             throw new PostException(PostErrorCode.POST_ALREADY_DELETED);
         }
-        this.postInfo = new PostInfo(
-                this.postInfo.title(),
-                this.postInfo.content(),
-                this.postInfo.viewCount(),
-                this.postInfo.likeCount(),
-                this.postInfo.region(),
-                PostStatus.DELETED,
-                this.postInfo.country()
+        return new Post(
+                this.seq,
+                this.postUserInfo,
+                new PostInfo(
+                        this.postInfo.title(),
+                        this.postInfo.content(),
+                        this.postInfo.viewCount(),
+                        this.postInfo.likeCount(),
+                        this.postInfo.region(),
+                        PostStatus.DELETED,
+                        this.postInfo.country()
+                ),
+                this.category,
+                this.isPublic,
+                this.badge,
+                this.commentCount,
+                this.createdAt,
+                LocalDateTime.now()
         );
-        return this;
     }
 
-    public Long getUserSeq() {return this.postUserInfo.userSeq();}
+    public Long userSeq() {return this.postUserInfo.userSeq();}
 
     public Post increaseViewCount() {
-        this.postInfo = new PostInfo(
-                this.postInfo.title(),
-                this.postInfo.content(),
-                this.postInfo.viewCount() + 1,
-                this.postInfo.likeCount(),
-                this.postInfo.region(),
-                this.postInfo.status(),
-                this.postInfo.country()
+        return new Post(
+                this.seq,
+                this.postUserInfo,
+                new PostInfo(
+                        this.postInfo.title(),
+                        this.postInfo.content(),
+                        this.postInfo.viewCount() + 1,
+                        this.postInfo.likeCount(),
+                        this.postInfo.region(),
+                        this.postInfo.status(),
+                        this.postInfo.country()
+                ),
+                this.category,
+                this.isPublic,
+                this.badge,
+                this.commentCount,
+                this.createdAt,
+                this.updatedAt
         );
-        return this;
     }
 
-    public String getTitle() {return this.postInfo.title();}
-
-    public String getContent() {return this.postInfo.content();}
-
-    public String getUserProfileImage() {return this.postUserInfo.profileImage();}
-
-    public String getUserNickname() {return this.postUserInfo.nickname();}
-
-    public String getCountryName() {return this.postInfo.country().name();}
-
-    public String getRegion() {return this.postInfo.region();}
-
-    public Long getViewCount() {return this.postInfo.viewCount();}
-
-    public Long getLikeCount() {return this.postInfo.likeCount();}
-
-    public void updateBadge(Badge badge) {
-        this.badge = Optional.ofNullable(badge)
-                .orElseThrow(() -> new PostException(PostErrorCode.BADGE_NOT_FOUND));
+    public Post updateBadge(Badge badge) {
+        return new Post(
+                this.seq,
+                this.postUserInfo,
+                this.postInfo,
+                this.category,
+                this.isPublic,
+                badge,
+                this.commentCount,
+                this.createdAt,
+                this.updatedAt
+        );
     }
 
-    public PostStatus getStatus() {return this.postInfo.status();}
+    public String title() {return this.postInfo.title();}
 
-    public String getProfileImage() {return this.postUserInfo.profileImage();}
+    public String content() {return this.postInfo.content();}
 
-    public String getNickname() {return this.postUserInfo.nickname();}
+    public String countryName() {return this.postInfo.country().name();}
+
+    public String region() {return this.postInfo.region();}
+
+    public Long viewCount() {return this.postInfo.viewCount();}
+
+    public Long likeCount() {return this.postInfo.likeCount();}
+
+    public PostStatus status() {return this.postInfo.status();}
+
+    public String profileImage() {return this.postUserInfo.profileImage();}
+
+    public String nickname() {return this.postUserInfo.nickname();}
 
     public PostResult toResult() {
-        return PostResult.builder()
-                .seq(this.seq)
-                .userProfileUrl(this.postUserInfo.profileImage())
-                .userNickName(this.postUserInfo.nickname())
-                .country(this.getCountryName())
-                .region(this.getRegion())
-                .category(this.category)
-                .isPublic(this.isPublic)
-                .commentCount(this.commentCount)
-                .likeCount(this.postInfo.likeCount())
-                .viewCount(this.postInfo.viewCount())
-                .title(this.postInfo.title())
-                .content(this.postInfo.content())
-                .createdAt(this.createdAt.toString())
-                .build();
+        return new PostResult(
+                this.seq,
+                this.postUserInfo.userSeq(),
+                this.postUserInfo.profileImage(),
+                this.postUserInfo.nickname(),
+                this.commentCount,
+                this.postInfo.viewCount(),
+                this.postInfo.likeCount(),
+                this.isPublic,
+                this.countryName(),
+                this.region(),
+                this.category,
+                this.postInfo.status(),
+                this.title(),
+                this.content(),
+                this.createdAt.toString(),
+                this.updatedAt.toString()
+        );
     }
 
     public static Post from(PostResult postResult) {
-        return Post.builder()
-                .seq(postResult.getSeq())
-                .postUserInfo(new PostUserInfo(
+        return new Post(
+                postResult.getSeq(),
+                new PostUserInfo(
                         postResult.getUserSeq(),
                         postResult.getUserProfileUrl(),
                         postResult.getUserNickName()
-                ))
-                .postInfo(new PostInfo(
+                ),
+                new PostInfo(
                         postResult.getTitle(),
                         postResult.getContent(),
                         postResult.getViewCount(),
                         postResult.getLikeCount(),
                         postResult.getRegion(),
                         postResult.getStatus(),
-                        Countries.valueOf(postResult.getCountry())
-                ))
-                .category(postResult.getCategory())
-                .isPublic(postResult.getIsPublic())
-                .commentCount(postResult.getCommentCount())
-                .createdAt(LocalDateTime.parse(postResult.getCreatedAt()))
-                .updatedAt(LocalDateTime.parse(postResult.getUpdatedAt()))
-                .build();
+                        Country.valueOf(postResult.getCountry())
+                ),
+                postResult.getCategory(),
+                postResult.getIsPublic(),
+                null,
+                postResult.getCommentCount(),
+                LocalDateTime.parse(postResult.getCreatedAt()),
+                LocalDateTime.parse(postResult.getUpdatedAt())
+        );
     }
 }

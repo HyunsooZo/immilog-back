@@ -5,11 +5,9 @@ import com.backend.immilog.post.domain.enums.Categories;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 
 import java.util.List;
 
-@Builder
 @Schema(description = "게시물 생성 요청 DTO")
 public record PostUploadRequest(
         @NotBlank(message = "제목을 입력해주세요.") String title,
@@ -20,13 +18,13 @@ public record PostUploadRequest(
         @NotNull(message = "카테고리를 입력해주세요.") Categories category
 ) {
     public PostUploadCommand toCommand() {
-        return PostUploadCommand.builder()
-                .title(title)
-                .content(content)
-                .tags(tags)
-                .attachments(attachments)
-                .isPublic(isPublic)
-                .category(category)
-                .build();
+        return new PostUploadCommand(
+                title,
+                content,
+                tags,
+                attachments,
+                isPublic,
+                category
+        );
     }
 }

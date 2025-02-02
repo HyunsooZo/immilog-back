@@ -4,7 +4,6 @@ import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.resource.PostResource;
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 
@@ -35,7 +34,6 @@ public class PostResourceEntity {
 
     protected PostResourceEntity() {}
 
-    @Builder
     protected PostResourceEntity(
             Long seq,
             Long postSeq,
@@ -51,20 +49,22 @@ public class PostResourceEntity {
     }
 
     public static PostResourceEntity from(PostResource postResource) {
-        return PostResourceEntity.builder()
-                .postSeq(postResource.getPostSeq())
-                .postType(postResource.getPostType())
-                .resourceType(postResource.getResourceType())
-                .content(postResource.getContent())
-                .build();
+        return new PostResourceEntity(
+                postResource.seq(),
+                postResource.postSeq(),
+                postResource.postType(),
+                postResource.resourceType(),
+                postResource.content()
+        );
     }
 
     public PostResource toDomain() {
-        return PostResource.builder()
-                .postSeq(postSeq)
-                .postType(postType)
-                .resourceType(resourceType)
-                .content(content)
-                .build();
+        return new PostResource(
+                this.seq,
+                this.postSeq,
+                this.postType,
+                this.resourceType,
+                this.content
+        );
     }
 }

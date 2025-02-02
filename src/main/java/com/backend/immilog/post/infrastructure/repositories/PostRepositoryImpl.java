@@ -1,7 +1,7 @@
 package com.backend.immilog.post.infrastructure.repositories;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.repositories.PostRepository;
@@ -31,7 +31,7 @@ public class PostRepositoryImpl implements PostRepository {
 
     @Override
     public Page<Post> getPosts(
-            Countries country,
+            Country country,
             SortingMethods sortingMethod,
             String isPublic,
             Categories category,

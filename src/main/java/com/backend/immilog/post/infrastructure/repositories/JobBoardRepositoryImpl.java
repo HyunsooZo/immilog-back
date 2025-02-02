@@ -1,6 +1,6 @@
 package com.backend.immilog.post.infrastructure.repositories;
 
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import com.backend.immilog.post.domain.model.post.JobBoard;
@@ -37,7 +37,7 @@ public class JobBoardRepositoryImpl implements JobBoardRepository {
 
     @Override
     public Page<JobBoard> getJobBoards(
-            Countries country,
+            Country country,
             String sortingMethod,
             Industry industry,
             Experience experience,
@@ -51,7 +51,7 @@ public class JobBoardRepositoryImpl implements JobBoardRepository {
 
     @Override
     public JobBoard getJobBoardBySeq(Long jobBoardSeq) {
-        return jobBoardJpaRepository.findById(jobBoardSeq)
+        return  jobBoardJpaRepository.findById(jobBoardSeq)
                 .orElseThrow(() -> new PostException(PostErrorCode.JOB_BOARD_NOT_FOUND))
                 .toDomain();
     }

@@ -48,7 +48,7 @@ public class PostUpdateService {
             PostUpdateCommand command
     ) {
         Post post = postQueryService.getPostById(postSeq);
-        if (!Objects.equals(post.getUserSeq(), userId)) {
+        if (!Objects.equals(post.userSeq(), userId)) {
             throw new PostException(PostErrorCode.NO_AUTHORITY);
         }
         Post updatedPost = post.updateTitle(command.title())
@@ -73,20 +73,19 @@ public class PostUpdateService {
             List<String> addResources,
             ResourceType resourceType
     ) {
-        deleteResourceIfExists(postSeq, PostType.POST, deleteResources, resourceType);
-        addResourceIfExists(postSeq, PostType.POST, addResources, resourceType);
+        this.deleteResourceIfExists(postSeq, deleteResources, resourceType);
+        this.addResourceIfExists(postSeq, addResources, resourceType);
     }
 
     private void deleteResourceIfExists(
             Long postSeq,
-            PostType postType,
             List<String> deleteResources,
             ResourceType resourceType
     ) {
         if (deleteResources != null && !deleteResources.isEmpty()) {
             postResourceCommandService.deleteAllEntities(
                     postSeq,
-                    postType,
+                    PostType.POST,
                     resourceType,
                     deleteResources
             );
@@ -95,7 +94,6 @@ public class PostUpdateService {
 
     private void addResourceIfExists(
             Long postSeq,
-            PostType postType,
             List<String> addResources,
             ResourceType resourceType
     ) {
@@ -113,7 +111,7 @@ public class PostUpdateService {
                     (ps, resource) -> {
                         try {
                             ps.setLong(1, postSeq);
-                            ps.setString(2, postType.name());
+                            ps.setString(2, PostType.POST.name());
                             ps.setString(3, resourceType.name());
                             ps.setString(4, resource);
                         } catch (Exception e) {

@@ -1,7 +1,7 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.infrastructure.jpa.entity.post.PostEntity;
@@ -22,7 +22,7 @@ public class PostJdbcRepository {
     public PostJdbcRepository(JdbcClient jdbcClient) {this.jdbcClient = jdbcClient;}
 
     public Page<Post> getPosts(
-            Countries country,
+            Country country,
             SortingMethods sortingMethod,
             String isPublic,
             Categories category,

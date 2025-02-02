@@ -18,16 +18,16 @@ public record JobBoardUpdateRequest(
         String salary
 ) {
     public JobBoardUpdateCommand toCommand() {
-        return JobBoardUpdateCommand.builder()
-                .title(title)
-                .content(content)
-                .addTags(addTags)
-                .deleteTags(deleteTags)
-                .addAttachments(addAttachments)
-                .deleteAttachments(deleteAttachments)
-                .deadline(deadline)
-                .experience(experience)
-                .salary(salary)
-                .build();
+        return new JobBoardUpdateCommand(
+                title,
+                content,
+                addTags,
+                deleteTags,
+                addAttachments,
+                deleteAttachments,
+                deadline,
+                experience,
+                salary
+        );
     }
 }

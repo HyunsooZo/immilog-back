@@ -4,7 +4,6 @@ import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
 import com.backend.immilog.post.domain.model.comment.Comment;
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.DynamicInsert;
@@ -55,7 +54,6 @@ public class CommentEntity {
 
     protected CommentEntity() {}
 
-    @Builder
     protected CommentEntity(
             Long seq,
             Long userSeq,
@@ -86,35 +84,34 @@ public class CommentEntity {
     }
 
     public static CommentEntity from(Comment comment) {
-        return CommentEntity.builder()
-                .seq(comment.getSeq())
-                .userSeq(comment.getUserSeq())
-                .postSeq(comment.getPostSeq())
-                .parentSeq(comment.getParentSeq())
-                .replyCount(comment.getReplyCount())
-                .likeCount(comment.getLikeCount())
-                .content(comment.getContent())
-                .referenceType(comment.getReferenceType())
-                .status(comment.getStatus())
-                .likeUsers(comment.getLikeUsers())
-                .updatedAt(comment.getSeq() != null ? LocalDateTime.now() : null)
-                .build();
+        return new CommentEntity(
+                comment.seq(),
+                comment.userSeq(),
+                comment.postSeq(),
+                comment.parentSeq(),
+                comment.replyCount(),
+                comment.likeCount(),
+                comment.content(),
+                comment.referenceType(),
+                comment.status(),
+                comment.likeUsers(),
+                comment.seq() != null ? LocalDateTime.now() : null
+        );
     }
 
     public Comment toDomain() {
-        return Comment.builder()
-                .seq(this.seq)
-                .userSeq(this.userSeq)
-                .replyCount(this.replyCount)
-                .likeCount(this.likeCount)
-                .content(this.content)
-                .status(this.status)
-                .commentRelation(this.sourceData.toDomain())
-                .likeUsers(this.likeUsers)
-                .createdAt(this.createdAt)
-                .updatedAt(this.updatedAt)
-                .build();
+        return new Comment(
+                this.seq,
+                this.userSeq,
+                this.content,
+                this.sourceData.toDomain(),
+                this.replyCount,
+                this.likeCount,
+                this.status,
+                this.likeUsers,
+                this.createdAt,
+                this.updatedAt
+        );
     }
-
 }
 

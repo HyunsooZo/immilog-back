@@ -1,12 +1,12 @@
 package com.backend.immilog.post.application.command;
 
 import com.backend.immilog.post.domain.enums.Experience;
-import lombok.Builder;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Builder
+@Schema(description = "게시물 수정 요청 Service DTO")
 public record JobBoardUpdateCommand(
         String title,
         String content,

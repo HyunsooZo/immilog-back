@@ -41,6 +41,6 @@ public class CommentRelationValue {
     }
 
     public CommentRelation toDomain() {
-        return CommentRelation.of(postSeq, parentSeq, referenceType);
+        return new CommentRelation(postSeq, parentSeq, referenceType);
     }
 }

@@ -2,99 +2,105 @@ package com.backend.immilog.post.domain.model.comment;
 
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ReferenceType;
-import lombok.Builder;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Getter
-public class Comment {
-    private final Long seq;
-    private final Long userSeq;
-    private final String content;
-    private final CommentRelation commentRelation;
-    private final LocalDateTime createdAt;
-    private final LocalDateTime updatedAt;
-    private int replyCount;
-    private Integer likeCount;
-    private PostStatus status;
-    private List<Long> likeUsers;
-
-    @Builder
-    public Comment(
-            Long seq,
-            Long userSeq,
-            int replyCount,
-            Integer likeCount,
-            String content,
-            CommentRelation commentRelation,
-            PostStatus status,
-            List<Long> likeUsers,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
-    ) {
-        this.seq = seq;
-        this.userSeq = userSeq;
-        this.replyCount = replyCount;
-        this.likeCount = likeCount;
-        this.content = content;
-        this.commentRelation = commentRelation;
-        this.status = status;
-        this.likeUsers = likeUsers;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
+public record Comment(
+        Long seq,
+        Long userSeq,
+        String content,
+        CommentRelation commentRelation,
+        int replyCount,
+        Integer likeCount,
+        PostStatus status,
+        List<Long> likeUsers,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
+) {
     public static Comment of(
             Long userSeq,
             Long postSeq,
             String content,
             ReferenceType referenceType
     ) {
-        return Comment.builder()
-                .userSeq(userSeq)
-                .content(content)
-                .likeCount(0)
-                .replyCount(0)
-                .status(PostStatus.NORMAL)
-                .commentRelation(CommentRelation.of(postSeq, null, referenceType))
-                .likeUsers(new ArrayList<>())
-                .build();
+        return new Comment(
+                null,
+                userSeq,
+                content,
+                CommentRelation.of(postSeq, null, referenceType),
+                0,
+                0,
+                PostStatus.NORMAL,
+                new ArrayList<>(),
+                LocalDateTime.now(),
+                null
+        );
     }
 
-    public void delete() {
-        this.status = PostStatus.DELETED;
+    public Comment delete() {
+        return new Comment(
+                this.seq,
+                this.userSeq,
+                this.content,
+                this.commentRelation,
+                this.replyCount,
+                this.likeCount,
+                PostStatus.DELETED,
+                this.likeUsers,
+                this.createdAt,
+                LocalDateTime.now()
+        );
     }
 
-    public void addLikeUser(Long userSeq) {
-        if (Objects.isNull(this.likeUsers)) {
-            this.likeUsers = new ArrayList<>();
+    public Comment addLikeUser(Long userSeq) {
+        if (!Objects.isNull(this.likeUsers)) {
+            List<Long> newLikeUsers = this.likeUsers;
+            newLikeUsers.add(userSeq);
+            Integer newLikeCount = this.likeCount + 1;
+            return new Comment(
+                    this.seq,
+                    this.userSeq,
+                    this.content,
+                    this.commentRelation,
+                    this.replyCount,
+                    newLikeCount,
+                    this.status,
+                    newLikeUsers,
+                    this.createdAt,
+                    this.updatedAt
+            );
         }
-        this.likeUsers.add(userSeq);
-        increaseLikeCount();
+        return this;
     }
 
-    public Long getPostSeq() {
+    public Comment increaseReplyCount() {
+        return new Comment(
+                this.seq,
+                this.userSeq,
+                this.content,
+                this.commentRelation,
+                this.replyCount + 1,
+                this.likeCount,
+                this.status,
+                this.likeUsers,
+                this.createdAt,
+                this.updatedAt
+        );
+    }
+
+    public Long postSeq() {
         return this.commentRelation.postSeq();
     }
 
-    public Long getParentSeq() {
+    public Long parentSeq() {
         return this.commentRelation.parentSeq();
     }
 
-    public ReferenceType getReferenceType() {
+    public ReferenceType referenceType() {
         return this.commentRelation.referenceType();
-    }
-
-    public void increaseReplyCount() {
-        this.replyCount++;
-    }
-
-    private void increaseLikeCount() {
-        this.likeCount++;
     }
 
 }

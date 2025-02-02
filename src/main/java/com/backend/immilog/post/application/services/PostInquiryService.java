@@ -1,11 +1,11 @@
 package com.backend.immilog.post.application.services;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.query.CommentQueryService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -32,13 +32,13 @@ public class PostInquiryService {
     }
 
     public Page<PostResult> getPosts(
-            Countries country,
+            Country country,
             SortingMethods sortingMethod,
             String isPublic,
             Categories category,
             Integer page
     ) {
-        Pageable pageable = PageRequest.of(Objects.requireNonNullElseGet(page, () -> 0), 10);
+        Pageable pageable = PageRequest.of(Objects.requireNonNullElse(page, 0), 10);
         return postQueryService.getPosts(
                 country,
                 sortingMethod,
@@ -70,7 +70,7 @@ public class PostInquiryService {
             Long userSeq,
             Integer page
     ) {
-        Pageable pageable = PageRequest.of(Objects.requireNonNullElseGet(page, () -> 0), 10);
+        Pageable pageable = PageRequest.of(Objects.requireNonNullElse(page, 0), 10);
         return postQueryService.getPostsByUserSeq(userSeq, pageable);
     }
 

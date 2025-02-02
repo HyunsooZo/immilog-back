@@ -1,10 +1,10 @@
 package com.backend.immilog.post.application.services.query;
 
 import com.backend.immilog.global.aop.monitor.PerformanceMonitor;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
@@ -55,7 +55,7 @@ public class PostQueryService {
     @PerformanceMonitor
     @Transactional(readOnly = true)
     public Page<PostResult> getPosts(
-            Countries country,
+            Country country,
             SortingMethods sortingMethod,
             String isPublic,
             Categories category,
@@ -68,9 +68,9 @@ public class PostQueryService {
                 category,
                 pageable
         );
-        List<Long> postSeqList = getSeqList(posts);
+        List<Long> postSeqList = this.getSeqList(posts);
         Page<PostResult> postResults = posts.map(Post::toResult);
-        return assemblePostResult(postSeqList, postResults);
+        return this.assemblePostResult(postSeqList, postResults);
     }
 
     @Transactional(readOnly = true)
@@ -79,17 +79,17 @@ public class PostQueryService {
             PageRequest pageRequest
     ) {
         Page<Post> posts = postRepository.getPostsByKeyword(keyword, pageRequest);
-        List<Long> postSeqList = getSeqList(posts);
+        List<Long> postSeqList = this.getSeqList(posts);
         Page<PostResult> postResults = posts.map(Post::toResult);
         postResults.getContent().forEach(post -> post.addKeywords(keyword));
-        return assemblePostResult(postSeqList, postResults);
+        return this.assemblePostResult(postSeqList, postResults);
     }
 
     @Transactional(readOnly = true)
     public PostResult getPostDetail(Long postSeq) {
         Page<Post> posts = new PageImpl<>(List.of(postRepository.getById(postSeq)));
         Page<PostResult> postResult = posts.map(Post::toResult);
-        return assemblePostResult(List.of(postSeq), postResult).getContent().getFirst();
+        return this.assemblePostResult(List.of(postSeq), postResult).getContent().getFirst();
     }
 
     @Transactional(readOnly = true)
@@ -99,7 +99,7 @@ public class PostQueryService {
     ) {
         Page<Post> posts = postRepository.getPostsByUserSeq(userSeq, pageable);
         Page<PostResult> postResults = posts.map(Post::toResult);
-        return assemblePostResult(getSeqList(posts), postResults);
+        return this.assemblePostResult(this.getSeqList(posts), postResults);
     }
 
     public List<PostResult> getPostsFromRedis(String key) {
@@ -119,7 +119,7 @@ public class PostQueryService {
     }
 
     private static List<Long> getSeqList(Page<Post> posts) {
-        return posts.stream().map(Post::getSeq).toList();
+        return posts.stream().map(Post::seq).toList();
     }
 
     private Page<PostResult> assemblePostResult(
@@ -137,11 +137,11 @@ public class PostQueryService {
 
         return postResults.map(postResult -> {
             List<PostResource> resources = postResources.stream()
-                    .filter(postResource -> postResource.getPostSeq().equals(postResult.getSeq()))
+                    .filter(postResource -> postResource.postSeq().equals(postResult.getSeq()))
                     .toList();
 
             List<InteractionUser> interactionUserList = interactionUsers.stream()
-                    .filter(interactionUser -> interactionUser.getPostSeq().equals(postResult.getSeq()))
+                    .filter(interactionUser -> interactionUser.postSeq().equals(postResult.getSeq()))
                     .toList();
 
             postResult.addInteractionUsers(interactionUserList);

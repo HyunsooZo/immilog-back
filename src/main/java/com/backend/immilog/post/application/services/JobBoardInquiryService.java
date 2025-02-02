@@ -1,8 +1,8 @@
 package com.backend.immilog.post.application.services;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.application.services.query.JobBoardQueryService;
-import com.backend.immilog.post.domain.enums.Countries;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import org.springframework.data.domain.Page;
@@ -29,7 +29,7 @@ public class JobBoardInquiryService {
     ) {
         Pageable pageable = PageRequest.of(page, 10);
         Industry industryEnum = Industry.valueOf(industry);
-        Countries countryEnum = Countries.valueOf(country);
+        Country countryEnum = Country.valueOf(country);
         Experience experienceEnum = Experience.valueOf(experience);
 
         return jobBoardQueryService.getJobBoards(
