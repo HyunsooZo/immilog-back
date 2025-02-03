@@ -4,9 +4,7 @@ import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.command.UserInfoUpdateCommand;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
 
-@Builder
 @Schema(description = "사용자 정보 수정 요청 DTO")
 public record UserInfoUpdateRequest(
         String nickName,
@@ -18,14 +16,14 @@ public record UserInfoUpdateRequest(
         UserStatus status
 ) {
     public UserInfoUpdateCommand toCommand() {
-        return UserInfoUpdateCommand.builder()
-                .nickName(nickName)
-                .profileImage(profileImage)
-                .country(country)
-                .interestCountry(interestCountry)
-                .latitude(latitude)
-                .longitude(longitude)
-                .status(status)
-                .build();
+        return new UserInfoUpdateCommand(
+                this.nickName,
+                this.profileImage,
+                this.country,
+                this.interestCountry,
+                this.latitude,
+                this.longitude,
+                this.status
+        );
     }
 }

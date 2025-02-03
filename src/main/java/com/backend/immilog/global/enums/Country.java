@@ -1,9 +1,8 @@
-package com.backend.immilog.notice.domain.model.enums;
+package com.backend.immilog.global.enums;
 
-import lombok.Getter;
+import java.util.Arrays;
 
-@Getter
-public enum NoticeCountry {
+public enum Country {
     ALL("ALL", "전체"),
     MALAYSIA("MY", "말레이시아"),
     SINGAPORE("SG", "싱가포르"),
@@ -28,11 +27,26 @@ public enum NoticeCountry {
     private final String countryCode;
     private final String countryKoreanName;
 
-    NoticeCountry(
+    Country(
             String countryCode,
             String countryKoreanName
     ) {
         this.countryCode = countryCode;
         this.countryKoreanName = countryKoreanName;
     }
+
+    public static Country getCountryByKoreanName(String countryKoreanName) {
+        return Arrays.stream(Country.values())
+                .filter(country -> country.isKoreanNameMatch(countryKoreanName))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private boolean isKoreanNameMatch(String countryKoreanName) {
+        return Arrays.stream(Country.values()).anyMatch(country -> country.koreanName().equals(countryKoreanName));
+    }
+
+    public String koreanName() {return this.countryKoreanName;}
+
+    public String countryCode() {return this.countryCode;}
 }

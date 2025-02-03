@@ -4,7 +4,6 @@ import com.backend.immilog.image.domain.enums.ImageStatus;
 import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.domain.model.Image;
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
 @DynamicUpdate
@@ -29,7 +28,6 @@ public class ImageEntity {
 
     protected ImageEntity() {}
 
-    @Builder
     protected ImageEntity(
             Long seq,
             String path,
@@ -43,20 +41,20 @@ public class ImageEntity {
     }
 
     public static ImageEntity from(Image image) {
-        return ImageEntity.builder()
-                .seq(image.getSeq())
-                .path(image.getPath())
-                .imageType(image.getImageType())
-                .status(image.getStatus())
-                .build();
+        return new ImageEntity(
+                image.seq(),
+                image.path(),
+                image.imageType(),
+                image.status()
+        );
     }
 
     public Image toDomain() {
-        return Image.builder()
-                .seq(this.seq)
-                .path(this.path)
-                .imageType(this.imageType)
-                .status(this.status)
-                .build();
+        return new Image(
+                this.seq,
+                this.path,
+                this.imageType,
+                this.status
+        );
     }
 }

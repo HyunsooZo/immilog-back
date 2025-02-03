@@ -3,7 +3,6 @@ package com.backend.immilog.user.infrastructure.jpa.entity.report;
 import com.backend.immilog.user.domain.enums.ReportReason;
 import com.backend.immilog.user.domain.model.report.Report;
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.hibernate.annotations.DynamicUpdate;
 
 import java.time.LocalDateTime;
@@ -37,7 +36,6 @@ public class ReportEntity {
 
     protected ReportEntity() {}
 
-    @Builder
     protected ReportEntity(
             Long seq,
             Long reportedUserSeq,
@@ -54,22 +52,25 @@ public class ReportEntity {
     }
 
     public static ReportEntity from(Report report) {
-        return ReportEntity.builder()
-                .reportedUserSeq(report.getReportedUserSeq())
-                .reporterUserSeq(report.getReporterUserSeq())
-                .description(report.getDescription())
-                .reason(report.getReason())
-                .updatedAt(report.getSeq() != null ? LocalDateTime.now() : null)
-                .build();
+        return new ReportEntity(
+                report.seq(),
+                report.reportedUserSeq(),
+                report.reporterUserSeq(),
+                report.description(),
+                report.reason(),
+                report.seq() == null ? null : report.updatedAt()
+        );
     }
 
     public Report toDomain() {
-        return Report.builder()
-                .seq(seq)
-                .reportedUserSeq(reportedUserSeq)
-                .reporterUserSeq(reporterUserSeq)
-                .description(description)
-                .reason(reason)
-                .build();
+        return new Report(
+                this.seq,
+                this.reportedUserSeq,
+                this.reporterUserSeq,
+                this.description,
+                this.reason,
+                this.createdAt,
+                this.updatedAt
+        );
     }
 }

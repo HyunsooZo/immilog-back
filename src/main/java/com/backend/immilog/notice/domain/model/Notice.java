@@ -1,151 +1,121 @@
 package com.backend.immilog.notice.domain.model;
 
-import com.backend.immilog.notice.application.command.NoticeUploadCommand;
-import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
-import lombok.Builder;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
-@Getter
-public class Notice {
-    private final Long seq;
-    private final Long userSeq;
-    private final List<NoticeCountry> targetCountries;
-    private final List<Long> readUsers;
-    private final LocalDateTime createdAt;
-    private NoticeDetail detail;
-    private LocalDateTime updatedAt;
-
-    @Builder
-    public Notice(
-            Long seq,
-            Long userSeq,
-            NoticeDetail detail,
-            List<NoticeCountry> targetCountries,
-            List<Long> readUsers,
-            LocalDateTime createdAt,
-            LocalDateTime updatedAt
-    ) {
-        this.seq = seq;
-        this.userSeq = userSeq;
-        this.detail = detail;
-        this.targetCountries = targetCountries;
-        this.readUsers = readUsers;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
-
+public record Notice(
+        Long seq,
+        Long userSeq,
+        List<Country> targetCountry,
+        List<Long> readUsers,
+        LocalDateTime createdAt,
+        NoticeDetail detail,
+        LocalDateTime updatedAt
+) {
     public static Notice of(
             Long userSeq,
-            NoticeUploadCommand command
+            String title,
+            String content,
+            NoticeType type,
+            List<Country> targetCountry
     ) {
-        return Notice.builder()
-                .detail(NoticeDetail.of(
-                        command.title(),
-                        command.content(),
-                        command.type(),
-                        NoticeStatus.NORMAL
-                ))
-                .userSeq(userSeq)
-                .targetCountries(command.targetCountries())
-                .build();
+        return new Notice(
+                null,
+                userSeq,
+                targetCountry,
+                new ArrayList<>(),
+                LocalDateTime.now(),
+                NoticeDetail.of(title, content, type, NoticeStatus.NORMAL),
+                LocalDateTime.now()
+        );
     }
 
     public Notice updateTitle(String title) {
-        Stream.of(this.detail)
-                .filter(detail -> !this.detail.title().equals(title))
-                .findFirst()
-                .ifPresent(detail -> {
-                            this.detail = NoticeDetail.of(
-                                    title,
-                                    this.detail.content(),
-                                    this.detail.type(),
-                                    this.detail.status()
-                            );
-                            updateUpdatedAt();
-                        }
-                );
-        return this;
+        if (title == null || this.detail.title().equals(title)) {
+            return this;
+        }
+        return new Notice(
+                this.seq,
+                this.userSeq,
+                this.targetCountry,
+                this.readUsers,
+                this.createdAt,
+                NoticeDetail.of(title, this.detail.content(), this.detail.type(), this.detail.status()),
+                LocalDateTime.now()
+        );
     }
 
     public Notice updateContent(String content) {
-        Stream.of(this.detail)
-                .filter(detail -> !this.detail.content().equals(content))
-                .findFirst()
-                .ifPresent(detail -> {
-                            this.detail = NoticeDetail.of(
-                                    this.detail.title(),
-                                    content,
-                                    this.detail.type(),
-                                    this.detail.status()
-                            );
-                            updateUpdatedAt();
-                        }
-                );
-        return this;
+        if (content == null || this.detail.content().equals(content)) {
+            return this;
+        }
+        return new Notice(
+                this.seq,
+                this.userSeq,
+                this.targetCountry,
+                this.readUsers,
+                this.createdAt,
+                NoticeDetail.of(this.detail.title(), content, this.detail.type(), this.detail.status()),
+                LocalDateTime.now()
+        );
     }
 
     public Notice updateType(NoticeType type) {
-        Stream.of(this.detail)
-                .filter(detail -> !this.detail.type().equals(type))
-                .findFirst()
-                .ifPresent(detail -> {
-                            this.detail = NoticeDetail.of(
-                                    this.detail.title(),
-                                    this.detail.content(),
-                                    type,
-                                    this.detail.status()
-                            );
-                            updateUpdatedAt();
-                        }
-                );
-        return this;
+        if (type == null || this.detail.type().equals(type)) {
+            return this;
+        }
+        return new Notice(
+                this.seq,
+                this.userSeq,
+                this.targetCountry,
+                this.readUsers,
+                this.createdAt,
+                NoticeDetail.of(this.detail.title(), this.detail.content(), type, this.detail.status()),
+                LocalDateTime.now()
+        );
     }
 
     public Notice updateStatus(NoticeStatus status) {
-        Stream.of(this.detail)
-                .filter(detail -> !this.detail.status().equals(status))
-                .findFirst()
-                .ifPresent(detail -> {
-                            this.detail = NoticeDetail.of(
-                                    this.detail.title(),
-                                    this.detail.content(),
-                                    this.detail.type(),
-                                    status
-                            );
-                            updateUpdatedAt();
-                        }
-                );
-        return this;
+        if (status == null || this.detail.status().equals(status)) {
+            return this;
+        }
+        return new Notice(
+                this.seq,
+                this.userSeq,
+                this.targetCountry,
+                this.readUsers,
+                this.createdAt,
+                NoticeDetail.of(this.detail.title(), this.detail.content(), this.detail.type(), status),
+                LocalDateTime.now()
+        );
     }
 
     public Notice readByUser(Long userSeq) {
+        if (userSeq == null || this.readUsers.contains(userSeq)) {
+            return this;
+        }
         this.readUsers.add(userSeq);
         return this;
     }
 
-    void updateUpdatedAt() {
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public String getTitle() {
+    public String title() {
         return this.detail.title();
     }
 
-    public String getContent() {
+    public String content() {
         return this.detail.content();
     }
 
-    public NoticeType getType() {
+    public NoticeType type() {
         return this.detail.type();
     }
 
-    public NoticeStatus getStatus() {
+    public NoticeStatus status() {
         return this.detail.status();
     }
 }

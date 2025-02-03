@@ -6,9 +6,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 
-@Builder
 @Schema(description = "사용자 회원가입 요청 DTO")
 public record UserSignUpRequest(
         @NotBlank(message = "닉네임을 입력해주세요.")
@@ -32,14 +30,14 @@ public record UserSignUpRequest(
         String profileImage
 ) {
     public UserSignUpCommand toCommand() {
-        return UserSignUpCommand.builder()
-                .nickName(this.nickName)
-                .password(this.password)
-                .email(this.email)
-                .country(this.country)
-                .interestCountry(this.interestCountry)
-                .region(this.region)
-                .profileImage(this.profileImage)
-                .build();
+        return new UserSignUpCommand(
+                this.nickName,
+                this.password,
+                this.email,
+                this.country,
+                this.interestCountry,
+                this.region,
+                this.profileImage
+        );
     }
 }

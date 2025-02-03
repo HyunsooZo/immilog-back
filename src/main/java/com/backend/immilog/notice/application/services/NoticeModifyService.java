@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.backend.immilog.notice.domain.model.enums.NoticeStatus.DELETED;
-import static com.backend.immilog.notice.exception.NoticeErrorCode.NOTICE_NOT_FOUND;
 import static com.backend.immilog.notice.exception.NoticeErrorCode.NOT_AN_ADMIN_USER;
 
 @Service
@@ -54,10 +52,7 @@ public class NoticeModifyService {
     }
 
     private Notice getNoticeBySeq(Long noticeSeq) {
-        return noticeQueryService
-                .getNoticeBySeq(noticeSeq)
-                .filter(notice -> notice.getStatus() != DELETED)
-                .orElseThrow(() -> new NoticeException(NOTICE_NOT_FOUND));
+        return noticeQueryService.getNoticeBySeq(noticeSeq);
     }
 
     @Transactional

@@ -4,9 +4,7 @@ import com.backend.immilog.user.application.command.UserPasswordChangeCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 
-@Builder
 @Schema(description = "사용자 비밀번호 변경 요청 DTO")
 public record UserPasswordChangeRequest(
         @NotBlank(message = "비밀번호를 입력해주세요.")

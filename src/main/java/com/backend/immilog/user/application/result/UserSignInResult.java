@@ -1,9 +1,7 @@
 package com.backend.immilog.user.application.result;
 
 import com.backend.immilog.user.domain.model.user.User;
-import lombok.Builder;
 
-@Builder
 public record UserSignInResult(
         Long userSeq,
         String email,
@@ -24,18 +22,18 @@ public record UserSignInResult(
     ) {
         String interestCountry = user.interestCountry() == null ? null : user.countryName();
 
-        return UserSignInResult.builder()
-                .userSeq(user.seq())
-                .email(user.email())
-                .nickname(user.nickname())
-                .accessToken(accessToken == null ? "" : accessToken)
-                .refreshToken(refreshToken == null ? "" : refreshToken)
-                .country(user.countryName())
-                .interestCountry(interestCountry)
-                .region(user.region())
-                .userProfileUrl(user.imageUrl())
-                .isLocationMatch(isLocationMatch)
-                .build();
+        return new UserSignInResult(
+                user.seq(),
+                user.email(),
+                user.nickname(),
+                accessToken == null ? "" : accessToken,
+                refreshToken == null ? "" : refreshToken,
+                user.countryName(),
+                interestCountry,
+                user.region(),
+                user.imageUrl(),
+                isLocationMatch
+        );
     }
 }
 

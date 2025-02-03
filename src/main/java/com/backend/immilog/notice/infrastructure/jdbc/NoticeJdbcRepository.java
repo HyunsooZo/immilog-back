@@ -47,11 +47,11 @@ public class NoticeJdbcRepository {
         String sql = """
                 SELECT n.*
                 FROM notice n
-                LEFT JOIN notice_entity_target_countries ntc ON n.seq = ntc.notice_entity_seq
-                LEFT JOIN user u ON u.country = ntc.target_countries 
+                LEFT JOIN notice_entity_target_Country ntc ON n.seq = ntc.notice_entity_seq
+                LEFT JOIN user u ON u.country = ntc.target_Country 
                 LEFT JOIN notice_entity_read_users nru ON n.seq = nru.notice_entity_seq
-                WHERE (u.country = ntc.target_countries
-                   OR ntc.target_countries = 'ALL')
+                WHERE (u.country = ntc.target_Country
+                   OR ntc.target_Country = 'ALL')
                    AND n.status = 'NORMAL'
                    AND (nru.read_users IS NULL OR nru.read_users != ?)
                 """;

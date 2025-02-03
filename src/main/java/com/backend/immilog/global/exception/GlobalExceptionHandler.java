@@ -19,10 +19,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<List<String>> handleValidException(
             MethodArgumentNotValidException exception
     ) {
-
         List<String> errors = new ArrayList<>();
-        exception
-                .getBindingResult()
+        exception.getBindingResult()
                 .getAllErrors()
                 .forEach(error -> errors.add(error.getDefaultMessage()));
 
@@ -33,35 +31,18 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleCustomException(
             CustomException exception
     ) {
-        ErrorResponse errorResponse =
-                ErrorResponse
-                        .builder()
-                        .errorCode(exception.getErrorCode())
-                        .message(exception.getMessage())
-                        .build();
-
+        ErrorResponse errorResponse = new ErrorResponse(exception.getErrorCode(), exception.getMessage());
         log.error(exception.getMessage(), exception);
 
-        return ResponseEntity
-                .status(errorResponse.getErrorCode().getStatus())
-                .body(errorResponse);
+        return ResponseEntity.status(errorResponse.errorCode().getStatus()).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> undefinedException(
             Exception exception
     ) {
-        ErrorResponse errorResponse =
-                ErrorResponse
-                        .builder()
-                        .message(exception.getMessage())
-                        .errorCode(UNDEFINED_EXCEPTION)
-                        .build();
-
+        ErrorResponse errorResponse = new ErrorResponse(UNDEFINED_EXCEPTION, exception.getMessage());
         log.error(exception.getMessage(), exception);
-
-        return ResponseEntity
-                .status(errorResponse.getErrorCode().getStatus())
-                .body(errorResponse);
+        return ResponseEntity.status(errorResponse.errorCode().getStatus()).body(errorResponse);
     }
 }

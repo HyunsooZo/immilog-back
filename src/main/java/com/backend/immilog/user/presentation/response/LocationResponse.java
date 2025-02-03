@@ -1,9 +1,7 @@
 package com.backend.immilog.user.presentation.response;
 
 import com.backend.immilog.global.enums.Country;
-import lombok.Builder;
 
-@Builder
 public record LocationResponse(
         String country,
         String region
@@ -12,9 +10,6 @@ public record LocationResponse(
             Country country,
             String region
     ) {
-        return LocationResponse.builder()
-                .country(country.name())
-                .region(region)
-                .build();
+        return new LocationResponse(country.name(), region);
     }
 }

@@ -5,7 +5,7 @@ import com.backend.immilog.global.enums.Country;
 public record Manager(
         Country country,
         String region,
-        Long UserSeq
+        Long userSeq
 ) {
     public static Manager of(
             Country country,

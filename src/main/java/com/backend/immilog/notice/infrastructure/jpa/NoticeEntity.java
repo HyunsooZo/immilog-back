@@ -1,12 +1,11 @@
 package com.backend.immilog.notice.infrastructure.jpa;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.NoticeDetail;
-import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import jakarta.persistence.*;
-import lombok.Builder;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.data.annotation.CreatedDate;
@@ -45,7 +44,7 @@ public class NoticeEntity {
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
-    private List<NoticeCountry> targetCountries;
+    private List<Country> targetCountry;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
@@ -61,7 +60,6 @@ public class NoticeEntity {
 
     protected NoticeEntity() {}
 
-    @Builder
     protected NoticeEntity(
             Long seq,
             Long userSeq,
@@ -69,7 +67,7 @@ public class NoticeEntity {
             String content,
             NoticeType type,
             NoticeStatus status,
-            List<NoticeCountry> targetCountries,
+            List<Country> targetCountry,
             List<Long> readUsers
     ) {
         this.seq = seq;
@@ -78,34 +76,34 @@ public class NoticeEntity {
         this.content = content;
         this.type = type;
         this.status = status;
-        this.targetCountries = targetCountries;
+        this.targetCountry = targetCountry;
         this.readUsers = readUsers;
         this.updatedAt = seq == null ? null : LocalDateTime.now();
     }
 
     public static NoticeEntity from(Notice notice) {
-        return NoticeEntity.builder()
-                .seq(notice.getSeq())
-                .userSeq(notice.getUserSeq())
-                .title(notice.getTitle())
-                .content(notice.getContent())
-                .type(notice.getType())
-                .status(notice.getStatus())
-                .targetCountries(notice.getTargetCountries())
-                .readUsers(notice.getReadUsers())
-                .build();
+        return new NoticeEntity(
+                notice.seq(),
+                notice.userSeq(),
+                notice.title(),
+                notice.content(),
+                notice.type(),
+                notice.status(),
+                notice.targetCountry(),
+                notice.readUsers()
+        );
     }
 
     public Notice toDomain() {
-        return Notice.builder()
-                .seq(this.seq)
-                .userSeq(this.userSeq)
-                .detail(NoticeDetail.of(this.title, this.content, this.type, this.status))
-                .targetCountries(this.targetCountries)
-                .readUsers(this.readUsers)
-                .createdAt(this.createdAt)
-                .updatedAt(this.updatedAt)
-                .build();
+        return new Notice(
+                this.seq,
+                this.userSeq,
+                this.targetCountry,
+                this.readUsers,
+                this.createdAt,
+                NoticeDetail.of(this.title, this.content, this.type, this.status),
+                this.updatedAt
+        );
     }
 }
 
