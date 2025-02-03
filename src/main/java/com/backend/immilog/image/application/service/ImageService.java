@@ -35,7 +35,7 @@ public class ImageService {
         return files.stream()
                 .map(file -> {
                     String url = fileStorageHandler.uploadFile(file, imagePath);
-                    imageCommandService.save(new Image(url, imageType));
+                    imageCommandService.save(Image.of(url, imageType));
                     return url;
                 })
                 .toList();
@@ -47,8 +47,8 @@ public class ImageService {
                 .ifPresent(path -> {
                     fileStorageHandler.deleteFile(path);
                     Image image = imageQueryService.getImageByPath(path);
-                    image.delete();
-                    imageCommandService.save(image);
+                    Image deletedImage = image.delete();
+                    imageCommandService.save(deletedImage);
                 });
     }
 }

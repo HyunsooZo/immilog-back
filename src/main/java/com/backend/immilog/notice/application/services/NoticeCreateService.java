@@ -32,7 +32,14 @@ public class NoticeCreateService {
     ) {
         validateAdminUser(token);
         Long userSeq = extractUserSeq(token);
-        noticeCommandService.save(Notice.of(userSeq, command));
+        Notice notice = Notice.of(
+                userSeq,
+                command.title(),
+                command.content(),
+                command.type(),
+                command.targetCountry()
+        );
+        noticeCommandService.save(notice);
     }
 
     private void validateAdminUser(String token) {

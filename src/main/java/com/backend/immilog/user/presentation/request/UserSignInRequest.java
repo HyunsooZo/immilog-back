@@ -5,9 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 
-@Builder
 @Schema(description = "사용자 로그인 요청 DTO")
 public record UserSignInRequest(
         @NotBlank(message = "이메일을 입력해주세요.")
@@ -23,11 +21,11 @@ public record UserSignInRequest(
         Double longitude
 ) {
     public UserSignInCommand toCommand() {
-        return UserSignInCommand.builder()
-                .email(email)
-                .password(password)
-                .latitude(latitude)
-                .longitude(longitude)
-                .build();
+        return new UserSignInCommand(
+                this.email,
+                this.password,
+                this.latitude,
+                this.longitude
+        );
     }
 }

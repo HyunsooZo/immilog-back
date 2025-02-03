@@ -150,7 +150,7 @@ public record Company(
                 Manager.of(
                         newCountry,
                         this.manager.region(),
-                        this.manager.UserSeq()
+                        this.manager.userSeq()
                 ),
                 this.companyData
         );
@@ -184,7 +184,7 @@ public record Company(
                 Manager.of(
                         this.manager.country(),
                         newRegion,
-                        this.manager.UserSeq()
+                        this.manager.userSeq()
                 ),
                 this.companyData
         );
@@ -227,6 +227,6 @@ public record Company(
 
     public String logo() {return this.companyData.logo();}
 
-    public Long managerUserSeq() {return this.manager.UserSeq();}
+    public Long managerUserSeq() {return this.manager.userSeq();}
     
 }

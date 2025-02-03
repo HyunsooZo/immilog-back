@@ -1,8 +1,5 @@
 package com.backend.immilog.global.security;
 
-import com.backend.immilog.global.exception.CommonErrorCode;
-import com.backend.immilog.global.exception.CustomException;
-import com.backend.immilog.global.exception.ErrorCode;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
@@ -24,26 +21,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        com.backend.immilog.user.domain.model.user.User userDomain = getUser(email);
-
-        List<GrantedAuthority> authorities = new ArrayList<>(userDomain.getUserRole().getAuthorities());
-
+        com.backend.immilog.user.domain.model.user.User userDomain = userQueryService.getUserByEmail(email);
+        List<GrantedAuthority> authorities = new ArrayList<>(userDomain.userRole().getAuthorities());
         return User.builder()
-                .username(userDomain.getEmail())
-                .password(userDomain.getPassword())
+                .username(userDomain.email())
+                .password(userDomain.password())
                 .authorities(authorities)
                 .build();
-    }
-
-    private com.backend.immilog.user.domain.model.user.User getUser(String email) {
-        return userQueryService
-                .getUserByEmail(email)
-                .orElseThrow(() -> new GlobalException(CommonErrorCode.USER_NOT_FOUND));
-    }
-
-    private static class GlobalException extends CustomException {
-        public GlobalException(ErrorCode errorCode) {
-            super(errorCode);
-        }
     }
 }

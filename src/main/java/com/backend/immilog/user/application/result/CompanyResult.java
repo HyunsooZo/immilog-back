@@ -5,9 +5,7 @@ import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.model.company.CompanyData;
 import com.backend.immilog.user.domain.model.company.Manager;
-import lombok.Builder;
 
-@Builder
 public record CompanyResult(
         Long seq,
         Industry industry,
@@ -21,43 +19,55 @@ public record CompanyResult(
         String companyLogo,
         Long companyManagerUserSeq
 ) {
-    public static CompanyResult from(
-            Company company
-    ) {
-        return CompanyResult.builder()
-                .industry(company.industry())
-                .companyName(company.name())
-                .companyEmail(company.email())
-                .companyPhone(company.phone())
-                .companyAddress(company.address())
-                .companyHomepage(company.homepage())
-                .companyCountry(company.country())
-                .companyRegion(company.region())
-                .companyLogo(company.logo())
-                .companyManagerUserSeq(company.managerUserSeq())
-                .build();
+    public static CompanyResult from(Company company) {
+        return new CompanyResult(
+                company.seq(),
+                company.industry(),
+                company.name(),
+                company.email(),
+                company.phone(),
+                company.address(),
+                company.homepage(),
+                company.country(),
+                company.region(),
+                company.logo(),
+                company.managerUserSeq()
+        );
     }
 
     public Company toDomain() {
-        return Company.builder()
-                .manager(
-                        Manager.of(
-                                companyCountry,
-                                companyRegion,
-                                companyManagerUserSeq
-                        )
+        return new Company(
+                seq,
+                Manager.of(
+                        companyCountry,
+                        companyRegion,
+                        companyManagerUserSeq
+                ),
+                CompanyData.of(
+                        industry,
+                        companyName,
+                        companyEmail,
+                        companyPhone,
+                        companyAddress,
+                        companyHomepage,
+                        companyLogo
                 )
-                .companyData(
-                        CompanyData.of(
-                                industry,
-                                companyName,
-                                companyEmail,
-                                companyPhone,
-                                companyAddress,
-                                companyHomepage,
-                                companyLogo
-                        )
-                )
-                .build();
+        );
+    }
+
+    public static CompanyResult empty() {
+        return new CompanyResult(
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
     }
 }

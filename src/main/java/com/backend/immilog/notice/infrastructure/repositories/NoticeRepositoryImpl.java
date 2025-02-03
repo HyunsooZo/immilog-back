@@ -1,8 +1,9 @@
 package com.backend.immilog.notice.infrastructure.repositories;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
+import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.repositories.NoticeRepository;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeEntity;
@@ -49,22 +50,16 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public Optional<Notice> findBySeq(Long noticeSeq) {
-        return noticeJpaRepository.findById(noticeSeq).map(NoticeEntity::toDomain);
+        return noticeJpaRepository
+                .findBySeqAndStatusIsNot(noticeSeq, NoticeStatus.DELETED)
+                .map(NoticeEntity::toDomain);
     }
 
     @Override
     public Boolean areUnreadNoticesExist(
-            NoticeCountry country,
+            Country country,
             Long seq
     ) {
-        return noticeJpaRepository.existsByTargetCountriesContainingAndReadUsersNotContaining(
-                country,
-                seq
-        );
-    }
-
-    @Override
-    public Optional<Notice> getNotice(Long noticeSeq) {
-        return noticeJpaRepository.findById(noticeSeq).map(NoticeEntity::toDomain);
+        return noticeJpaRepository.existsByTargetCountryContainingAndReadUsersNotContaining(country, seq);
     }
 }

@@ -5,7 +5,6 @@ import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.presentation.request.ImageRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.Builder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,7 +47,6 @@ public class ImageController {
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
-    @Builder
     public record ImageResponse(
             Integer status,
             String message,
@@ -56,12 +54,12 @@ public class ImageController {
             List<Object> list
     ) {
         public static ImageResponse of(Object data) {
-            return ImageResponse.builder()
-                    .status(HttpStatus.OK.value())
-                    .message(null)
-                    .data(data)
-                    .list(null)
-                    .build();
+            return new ImageResponse(
+                    HttpStatus.OK.value(),
+                    null,
+                    data,
+                    null
+            );
         }
     }
 }
