@@ -7,11 +7,10 @@ import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
+import com.backend.immilog.user.presentation.request.UserSignInRequest;
 import com.backend.immilog.user.presentation.request.UserSignUpRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -38,17 +37,25 @@ class UserSignUpServiceTest {
     @DisplayName("회원가입 - 성공")
     void signUp_success() {
         // given
-        UserSignUpRequest param = UserSignUpRequest.builder()
-                .nickName("test")
-                .password("test1234")
-                .email("email@email.com")
-                .country("SOUTH_KOREA")
-                .interestCountry("SOUTH_KOREA")
-                .region("Seoul")
-                .profileImage("image")
-                .build();
-
-        User user = User.builder().seq(1L).profile(Profile.of("test",null,null)).build();
+        UserSignUpRequest param = new UserSignUpRequest(
+                "test",
+                "test1234",
+                "email@email.com",
+                "SOUTH_KOREA",
+                "SOUTH_KOREA",
+                "Seoul",
+                "image"
+        );
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                Profile.of("test",null,null),
+                null,
+                null,
+                null
+        );
         when(userCommandService.save(any(User.class))).thenReturn(user);
         when(passwordEncoder.encode(anyString())).thenReturn("test1234");
         Pair<Long, String> seqAndNickName = userSignUpService.signUp(param.toCommand());
@@ -59,17 +66,16 @@ class UserSignUpServiceTest {
     @Test
     @DisplayName("회원가입 - 실패(이미 존재하는 사용자)")
     void signUp_fail_() {
-        UserSignUpRequest param = UserSignUpRequest.builder()
-                .nickName("test")
-                .password("test1234")
-                .email("email@email.com")
-                .country("SOUTH_KOREA")
-                .interestCountry("SOUTH_KOREA")
-                .region("Seoul")
-                .profileImage("image")
-                .build();
-
-        when(userQueryService.getUserByEmail(anyString())).thenReturn(Optional.of(User.builder().build()));
+        UserSignUpRequest param = new  UserSignUpRequest(
+                "test",
+                "test1234",
+                "email@email.com",
+                "SOUTH_KOREA",
+                "SOUTH_KOREA",
+                "Seoul",
+                "image"
+        );
+        when(userQueryService.isUserAlreadyExist(anyString())).thenReturn(true);
         assertThatThrownBy(() -> userSignUpService.signUp(param.toCommand()))
                 .isInstanceOf(UserException.class)
                 .hasMessage(EXISTING_USER.getMessage());
@@ -77,24 +83,24 @@ class UserSignUpServiceTest {
 
     @Test
     @DisplayName("닉네임 중복 확인 - 중복되지 않은 경우")
-    void checkNickname_success() {
+    void isNickname_Taken_success() {
         // given
         String nickname = "test";
-        when(userQueryService.getUserByNickname(nickname)).thenReturn(Optional.empty());
+        when(userQueryService.isNicknameAvailable(nickname)).thenReturn(true);
         // when
-        Boolean result = userSignUpService.checkNickname(nickname);
+        Boolean result = userSignUpService.isNicknameAvailable(nickname);
         // then
         assertThat(result).isTrue();
     }
 
     @Test
     @DisplayName("닉네임 중복 확인 - 중복된 경우")
-    void checkNickname_fail() {
+    void isNickname_Taken_fail() {
         // given
         String nickname = "test";
-        when(userQueryService.getUserByNickname(nickname)).thenReturn(Optional.of(User.builder().build()));
+        when(userQueryService.isNicknameAvailable(nickname)).thenReturn(false);
         // when
-        Boolean result = userSignUpService.checkNickname(nickname);
+        Boolean result = userSignUpService.isNicknameAvailable(nickname);
         // then
         assertThat(result).isFalse();
     }
@@ -104,8 +110,17 @@ class UserSignUpServiceTest {
     void verifyEmail_success() {
         // given
         Long userSeq = 1L;
-        User user = User.builder().userStatus(UserStatus.PENDING).build();
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                UserStatus.PENDING,
+                null
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         // when
         Pair<String, Boolean> result = userSignUpService.verifyEmail(userSeq);
         // then
@@ -117,7 +132,7 @@ class UserSignUpServiceTest {
     void verifyEmail_fail_userNotFound() {
         // given
         Long userSeq = 1L;
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.empty());
+        when(userQueryService.getUserById(userSeq)).thenThrow(new UserException(USER_NOT_FOUND));
         // when & then
         assertThatThrownBy(() -> userSignUpService.verifyEmail(userSeq))
                 .isInstanceOf(UserException.class)
@@ -129,8 +144,17 @@ class UserSignUpServiceTest {
     void verifyEmail_fail_already_verified() {
         // given
         Long userSeq = 1L;
-        User user = User.builder().userStatus(UserStatus.ACTIVE).build();
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                UserStatus.ACTIVE,
+                null
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         // when
         Pair<String, Boolean> result = userSignUpService.verifyEmail(userSeq);
         // then
@@ -143,8 +167,17 @@ class UserSignUpServiceTest {
     void verifyEmail_fail_blocked() {
         // given
         Long userSeq = 1L;
-        User user = User.builder().userStatus(UserStatus.BLOCKED).build();
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                UserStatus.BLOCKED,
+                null
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         // when
         Pair<String, Boolean> result = userSignUpService.verifyEmail(userSeq);
         // then
@@ -157,8 +190,18 @@ class UserSignUpServiceTest {
     void verifyEmail_fail_other_cases() {
         // given
         Long userSeq = 1L;
-        User user = User.builder().userStatus(UserStatus.REPORTED).build();
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                UserStatus.REPORTED,
+                null
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         // when
         Pair<String, Boolean> result = userSignUpService.verifyEmail(userSeq);
         // then

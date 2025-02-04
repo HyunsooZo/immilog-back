@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @DisplayName("CommentCommandService 테스트")
 class CommentCommandServiceTest {
@@ -27,10 +28,10 @@ class CommentCommandServiceTest {
         Comment comment = new Comment(
                 1L,
                 1L,
-                0,
-                0,
                 "content",
                 CommentRelation.of(1L, 1L, ReferenceType.POST),
+                0,
+                0,
                 PostStatus.NORMAL,
                 List.of(),
                 LocalDateTime.now(),

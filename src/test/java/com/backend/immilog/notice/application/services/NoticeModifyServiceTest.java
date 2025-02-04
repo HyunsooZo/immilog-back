@@ -8,8 +8,9 @@ import com.backend.immilog.notice.application.services.query.NoticeQueryService;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
+import com.backend.immilog.notice.exception.NoticeErrorCode;
 import com.backend.immilog.notice.exception.NoticeException;
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.*;
 import org.junit.jupiter.api.DisplayName;
@@ -18,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
@@ -44,7 +44,7 @@ class NoticeModifyServiceTest {
         User user = mock(User.class);
         when(tokenProvider.getUserRoleFromToken(token)).thenReturn(UserRole.ROLE_USER);
         when(tokenProvider.getIdFromToken(token)).thenReturn(userSeq);
-        when(user.getUserRole()).thenReturn(UserRole.ROLE_USER);
+        when(user.userRole()).thenReturn(UserRole.ROLE_USER);
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(token, noticeSeq, command));
     }
 
@@ -58,7 +58,7 @@ class NoticeModifyServiceTest {
         User user = mock(User.class);
         when(tokenProvider.getUserRoleFromToken(token)).thenReturn(UserRole.ROLE_USER);
         when(tokenProvider.getIdFromToken(token)).thenReturn(userSeq);
-        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.empty());
+        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenThrow(new NoticeException(NoticeErrorCode.NOTICE_NOT_FOUND));
 
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(token, noticeSeq, command));
     }
@@ -72,9 +72,9 @@ class NoticeModifyServiceTest {
         NoticeModifyCommand command = mock(NoticeModifyCommand.class);
         User user = mock(User.class);
         Notice notice = mock(Notice.class);
-        when(user.getUserRole()).thenReturn(UserRole.ROLE_ADMIN);
-        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.of(notice));
-        when(notice.getStatus()).thenReturn(NoticeStatus.DELETED);
+        when(user.userRole()).thenReturn(UserRole.ROLE_ADMIN);
+        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(notice);
+        when(notice.status()).thenReturn(NoticeStatus.DELETED);
         assertThrows(NoticeException.class, () -> noticeModifyService.modifyNotice(token, noticeSeq, command));
     }
 
@@ -90,19 +90,19 @@ class NoticeModifyServiceTest {
                 NoticeType.NOTICE,
                 NoticeStatus.NORMAL
         );
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("email", "password"))
-                .profile(Profile.of("name", "image.png", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.ACTIVE)
-                .userRole(UserRole.ROLE_ADMIN)
-                .location(Location.of(UserCountry.SOUTH_KOREA, "seoul"))
-                .reportData(ReportData.of(0L, Date.valueOf(LocalDate.now())))
-                .updatedAt(LocalDateTime.now())
-                .build();
+        User user = new User(
+                1L,
+                Auth.of("email", "password"),
+                UserRole.ROLE_ADMIN,
+                ReportData.of(0L, Date.valueOf(LocalDate.now())),
+                Profile.of("name", "image.png", Country.SOUTH_KOREA),
+                Location.of(Country.SOUTH_KOREA, "seoul"),
+                UserStatus.ACTIVE,
+                LocalDateTime.now()
+        );
         Notice notice = mock(Notice.class);
-        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(Optional.of(notice));
-        when(notice.getStatus()).thenReturn(mock(NoticeStatus.class));
+        when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(notice);
+        when(notice.status()).thenReturn(mock(NoticeStatus.class));
         Notice updatedNotice1 = mock(Notice.class);
         Notice updatedNotice2 = mock(Notice.class);
         Notice updatedNotice3 = mock(Notice.class);

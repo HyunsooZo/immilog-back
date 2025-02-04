@@ -4,6 +4,8 @@ import com.backend.immilog.post.application.services.PostDeleteService;
 import com.backend.immilog.post.application.services.command.PostCommandService;
 import com.backend.immilog.post.application.services.command.PostResourceCommandService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
+import com.backend.immilog.post.domain.enums.Badge;
+import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.domain.model.post.PostUserInfo;
@@ -11,9 +13,10 @@ import com.backend.immilog.post.exception.PostException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 
 import static com.backend.immilog.post.domain.enums.PostStatus.DELETED;
+import static com.backend.immilog.post.domain.enums.PostStatus.NORMAL;
 import static com.backend.immilog.post.exception.PostErrorCode.NO_AUTHORITY;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -36,12 +39,30 @@ class PostDeleteServiceTest {
         // given
         Long userId = 1L;
         Long postSeq = 1L;
-        Post post = Post.builder()
-                .seq(postSeq)
-                .postInfo(PostInfo.builder().build())
-                .postUserInfo(PostUserInfo.builder().userSeq(userId).build())
-                .build();
-        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
+        Post post = new Post(
+                postSeq,
+                new PostUserInfo(userId, null, null),
+                new PostInfo(null,null,null,null, null, NORMAL, null),
+                Categories.ALL,
+                "Y",
+                null,
+                0L,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+        Post post2 = new Post(
+                postSeq,
+                new PostUserInfo(userId, null, null),
+                new PostInfo(null,null,null,null, null, DELETED, null),
+                Categories.ALL,
+                "Y",
+                null,
+                0L,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+        when(postQueryService.getPostById(postSeq)).thenReturn(post);
+        when(postCommandService.save(any(Post.class))).thenReturn(post2);
 
         // when
         postDeleteService.deletePost(userId, postSeq);
@@ -49,7 +70,7 @@ class PostDeleteServiceTest {
         // then
         verify(postQueryService).getPostById(postSeq);
         verify(postResourceCommandService).deleteAllByPostSeq(postSeq);
-        assertThat(post.getStatus()).isEqualTo(DELETED);
+        assertThat(post2.status()).isEqualTo(DELETED);
     }
 
     @Test
@@ -58,12 +79,18 @@ class PostDeleteServiceTest {
         // given
         Long userId = 1L;
         Long postSeq = 1L;
-        Post post = Post.builder()
-                .seq(postSeq)
-                .postInfo(PostInfo.builder().build())
-                .postUserInfo(PostUserInfo.builder().userSeq(2L).build())
-                .build();
-        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
+        Post post = new Post(
+                postSeq,
+                new PostUserInfo(2L, null, null),
+                new PostInfo(null,null,null,null, null, null, null),
+                Categories.ALL,
+                "Y",
+                null,
+                0L,
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
+        when(postQueryService.getPostById(postSeq)).thenReturn(post);
 
         // when & then
         assertThatThrownBy(() -> postDeleteService.deletePost(userId, postSeq))

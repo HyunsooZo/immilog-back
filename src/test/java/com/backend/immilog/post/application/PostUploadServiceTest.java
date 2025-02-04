@@ -1,5 +1,6 @@
 package com.backend.immilog.post.application;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.services.PostUploadService;
 import com.backend.immilog.post.application.services.command.BulkCommandService;
 import com.backend.immilog.post.application.services.command.PostCommandService;
@@ -9,7 +10,6 @@ import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
@@ -23,7 +23,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static com.backend.immilog.post.domain.enums.PostType.POST;
@@ -58,23 +57,48 @@ class PostUploadServiceTest {
     void uploadPost() throws Exception {
         // given
         Long userSeq = 1L;
-        PostUploadRequest postUploadRequest = PostUploadRequest.builder()
-                .title("title")
-                .attachments(List.of("attachment"))
-                .tags(List.of("tag"))
-                .isPublic(true)
-                .category(Categories.COMMUNICATION)
-                .content("content")
-                .build();
-        Location location = Location.of(UserCountry.SOUTH_KOREA, "region");
-        User user = User.builder()
-                .seq(userSeq)
-                .location(location)
-                .profile(Profile.of("test", "image.png", UserCountry.SOUTH_KOREA))
-                .build();
-        Post post = Post.builder().seq(1L).build();
+        PostUploadRequest postUploadRequest =
+                //public record PostUploadRequest(
+                //        @NotBlank(message = "제목을 입력해주세요.") String title,
+                //        @NotBlank(message = "내용을 입력해주세요.") String content,
+                //        List<String> tags,
+                //        List<String> attachments,
+                //        @NotNull(message = "전체공개 여부를 입력해주세요.") Boolean isPublic,
+                //        @NotNull(message = "카테고리를 입력해주세요.") Categories category
+                //) {
+                new PostUploadRequest(
+                        "title",
+                        "content",
+                        List.of("tag"),
+                        List.of("attachment"),
+                        true,
+                        Categories.COMMUNICATION
+                );
+        Location location = Location.of(Country.SOUTH_KOREA, "region");
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                Profile.of("test", null, null),
+                location,
+                null,
+                null
+        );
 
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        Post post = new Post(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         when(postCommandService.save(any(Post.class))).thenReturn(post);
 
         doNothing().when(preparedStatement).setLong(eq(1), anyLong());
@@ -94,18 +118,18 @@ class PostUploadServiceTest {
                 anyString(),
                 captor.capture()
         );
-        PostResource capturedPostResource = PostResource.builder()
-                .seq(1L)
-                .postSeq(1L)
-                .postType(POST)
-                .resourceType(ATTACHMENT)
-                .content("attachment")
-                .build();
+        PostResource capturedPostResource = new PostResource(
+                1L,
+                1L,
+                POST,
+                ATTACHMENT,
+                "attachment"
+        );
         captor.getValue().accept(preparedStatement, capturedPostResource);
-        verify(preparedStatement).setLong(1, capturedPostResource.getPostSeq());
-        verify(preparedStatement).setString(2, capturedPostResource.getPostType().name());
-        verify(preparedStatement).setString(3, capturedPostResource.getResourceType().name());
-        verify(preparedStatement).setString(4, capturedPostResource.getContent());
+        verify(preparedStatement).setLong(1, capturedPostResource.postSeq());
+        verify(preparedStatement).setString(2, capturedPostResource.postType().name());
+        verify(preparedStatement).setString(3, capturedPostResource.resourceType().name());
+        verify(preparedStatement).setString(4, capturedPostResource.content());
     }
 
     @Test
@@ -113,21 +137,37 @@ class PostUploadServiceTest {
     void uploadPost_wo_tags_and_attachments() {
         // given
         Long userSeq = 1L;
-        PostUploadRequest postUploadRequest = PostUploadRequest.builder()
-                .title("title")
-                .isPublic(true)
-                .category(Categories.COMMUNICATION)
-                .content("content")
-                .build();
-        Location location = Location.of(UserCountry.SOUTH_KOREA, "region");
-        User user = User.builder()
-                .seq(userSeq)
-                .location(location)
-                .profile(Profile.of("test", "image.png", UserCountry.SOUTH_KOREA))
-                .build();
-        Post post = Post.builder().seq(1L).build();
-
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        PostUploadRequest postUploadRequest = new PostUploadRequest(
+                "title",
+                "content",
+                null,
+                null,
+                true,
+                Categories.COMMUNICATION
+        );
+        Location location = Location.of(Country.SOUTH_KOREA, "region");
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                Profile.of("test", null, null),
+                location,
+                null,
+                null
+        );
+        Post post = new Post(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         when(postCommandService.save(any(Post.class))).thenReturn(post);
 
         // when
@@ -142,28 +182,52 @@ class PostUploadServiceTest {
     void uploadPost_throwsException() throws Exception {
         // given
         Long userSeq = 1L;
-        PostUploadRequest postUploadRequest = PostUploadRequest.builder()
-                .title("title")
-                .attachments(List.of("attachment"))
-                .tags(List.of("tag"))
-                .isPublic(true)
-                .category(Categories.COMMUNICATION)
-                .content("content")
-                .build();
-        Location location = Location.of(UserCountry.SOUTH_KOREA, "region");
-        User user = User.builder()
-                .seq(userSeq)
-                .location(location)
-                .profile(Profile.of("test", "image.png", UserCountry.SOUTH_KOREA))
-                .build();
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(postCommandService.save(any(Post.class))).thenReturn(Post.builder().seq(1L).build());
+        PostUploadRequest postUploadRequest = new PostUploadRequest(
+                "title",
+                "content",
+                List.of("tag"),
+                List.of("attachment"),
+                true,
+                Categories.COMMUNICATION
+        );
+        Location location = Location.of(Country.SOUTH_KOREA, "region");
+        User user = new User(
+                1L,
+                null,
+                null,
+                null,
+                Profile.of("test", null, null),
+                location,
+                null,
+                null
+        );
+        Post post = new Post(
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        PostResource postResource = new PostResource(
+                1L,
+                1L,
+                POST,
+                ATTACHMENT,
+                "attachment"
+        );
+
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
+        when(postCommandService.save(any(Post.class))).thenReturn(post);
         doThrow(new SQLException("Mock SQL Exception"))
                 .when(preparedStatement).setLong(anyInt(), anyLong());
 
         doAnswer(invocation -> {
             BiConsumer<PreparedStatement, PostResource> consumer = invocation.getArgument(2);
-            consumer.accept(preparedStatement, PostResource.builder().postSeq(1L).build());
+            consumer.accept(preparedStatement, postResource);
             return null;
         }).when(bulkCommandService).saveAll(anyList(), anyString(), any(BiConsumer.class));
 

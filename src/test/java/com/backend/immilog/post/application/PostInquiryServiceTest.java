@@ -1,11 +1,12 @@
 package com.backend.immilog.post.application;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.PostInquiryService;
 import com.backend.immilog.post.application.services.query.CommentQueryService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,13 +36,13 @@ class PostInquiryServiceTest {
     @DisplayName("게시물 조회 - 성공")
     void getPostsDetail() {
         // given
-        Countries country = Countries.SOUTH_KOREA;
+        Country country = Country.SOUTH_KOREA;
         SortingMethods sortingMethod = SortingMethods.CREATED_DATE;
         String isPublic = "Y";
         Categories category = Categories.ALL;
         int page = 0;
         Pageable pageable = PageRequest.of(page, 10);
-        PostResult postResult = PostResult.builder().build();
+        PostResult postResult = mock(PostResult.class);
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
         when(postQueryService.getPosts(
                 country,
@@ -67,8 +68,8 @@ class PostInquiryServiceTest {
     void getPostDetail() {
         // given
         Long postSeq = 1L;
-        PostResult postResult = PostResult.builder().build();
-        when(postQueryService.getPostDetail(postSeq)).thenReturn(java.util.Optional.of(postResult));
+        PostResult postResult = mock(PostResult.class);
+        when(postQueryService.getPostDetail(postSeq)).thenReturn(postResult);
         when(commentQueryService.getComments(postSeq)).thenReturn(List.of());
         // when
         PostResult result = postInquiryService.getPostDetail(postSeq);
@@ -83,11 +84,30 @@ class PostInquiryServiceTest {
         String keyword = "keyword";
         int page = 0;
         PageRequest pageable = PageRequest.of(page, 10);
-        PostResult postResult = PostResult.builder()
-                .content("keyword123")
-                .title("content123")
-                .tags(new ArrayList<>(Arrays.asList("tag1", "tag2")))
-                .build();
+        PostResult postResult = new PostResult(
+                1L,
+                "title",
+                "content",
+                1L,
+                "url",
+                "nickname",
+                new ArrayList<>(),
+                1L,
+                1L,
+                1L,
+                new ArrayList<>(Arrays.asList("tag1", "tag2")),
+                new ArrayList<>(Arrays.asList("attachment1", "attachment2")),
+                new ArrayList<>(Arrays.asList(1L, 2L)),
+                new ArrayList<>(Arrays.asList(1L, 2L)),
+                "Y",
+                "country",
+                "region",
+                Categories.ALL,
+                PostStatus.NORMAL,
+                "2021-01-01",
+                "2021-01-01",
+                "keyword"
+        );
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
         when(postQueryService.getPostsByKeyword(keyword, pageable)).thenReturn(posts);
         // when
@@ -103,7 +123,7 @@ class PostInquiryServiceTest {
         Long userSeq = 1L;
         int page = 0;
         Pageable pageable = PageRequest.of(page, 10);
-        PostResult postResult = PostResult.builder().build();
+        PostResult postResult = mock(PostResult.class);
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
         when(postQueryService.getPostsByUserSeq(userSeq, pageable)).thenReturn(posts);
         // when

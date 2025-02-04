@@ -27,12 +27,18 @@ class UserDetailsServiceTest {
     void loadUserByUsername() {
         // given
         String email = "test@email.com";
-        User user = User.builder()
-                .auth(Auth.of(email, "password"))
-                .userRole(ROLE_USER)
-                .build();
+        User user = new User(
+                1L,
+                Auth.of(email, "password"),
+                ROLE_USER,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
 
-        when(userQueryService.getUserByEmail(email)).thenReturn(Optional.of(user));
+        when(userQueryService.getUserByEmail(email)).thenReturn(user);
         // when
         UserDetails userDetails = userDetailsService.loadUserByUsername(email);
         // then

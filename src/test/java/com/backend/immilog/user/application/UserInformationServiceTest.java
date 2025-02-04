@@ -1,11 +1,11 @@
 package com.backend.immilog.user.application;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.image.application.service.ImageService;
 import com.backend.immilog.user.application.command.UserPasswordChangeCommand;
 import com.backend.immilog.user.application.services.UserInformationService;
 import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.domain.enums.UserCountry;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.Auth;
 import com.backend.immilog.user.domain.model.user.Location;
@@ -13,13 +13,11 @@ import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
 import com.backend.immilog.user.presentation.request.UserInfoUpdateRequest;
-import com.backend.immilog.user.presentation.request.UserPasswordChangeRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import static com.backend.immilog.global.enums.UserRole.ROLE_ADMIN;
@@ -46,28 +44,38 @@ class UserInformationServiceTest {
     void updateInformation() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
+        //
+//        public record User(
+//                Long seq,
+//                Auth auth,
+//                UserRole userRole,
+//                ReportData reportData,
+//                Profile profile,
+//                Location location,
+//                UserStatus userStatus,
+//                LocalDateTime updatedAt
+//        ) {
+        User user = new User(
+                userSeq,
+                Auth.of("test@email.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
 
-        UserInfoUpdateRequest param =
-                UserInfoUpdateRequest.builder()
-                        .nickName("newNickName")
-                        .profileImage("newImage")
-                        .country(UserCountry.JAPAN)
-                        .interestCountry(UserCountry.INDONESIA)
-                        .latitude(37.123456)
-                        .longitude(126.123456)
-                        .status(UserStatus.ACTIVE)
-                        .build();
-
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        UserInfoUpdateRequest param = new UserInfoUpdateRequest(
+                "newNickName",
+                "newImage",
+                Country.JAPAN,
+                Country.INDONESIA,
+                37.123456,
+                126.123456,
+                UserStatus.ACTIVE
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         CompletableFuture<Pair<String, String>> country =
                 CompletableFuture.completedFuture(Pair.of("Japan", "Tokyo"));
         // when
@@ -85,19 +93,20 @@ class UserInformationServiceTest {
     void changePassword_success() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
+        User user = new User(
+                userSeq,
+                Auth.of("test@email.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
         UserPasswordChangeCommand param = new UserPasswordChangeCommand("existingPassword", "newPassword");
 
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("existingPassword", user.getPassword())).thenReturn(true);
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
+        when(passwordEncoder.matches("existingPassword", user.password())).thenReturn(true);
         when(passwordEncoder.encode("newPassword")).thenReturn("encodedPassword");
 
         // when
@@ -112,25 +121,23 @@ class UserInformationServiceTest {
     void changePassword_fail() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
-        UserPasswordChangeRequest param = UserPasswordChangeRequest.builder()
-                .existingPassword("existingPassword")
-                .newPassword("newPassword")
-                .build();
+        User user = new User(
+                userSeq,
+                Auth.of("test@email.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        UserPasswordChangeCommand param = new UserPasswordChangeCommand("existingPassword", "newPassword");
 
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("existingPassword", user.getPassword())).thenReturn(false);
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
+        when(passwordEncoder.matches("existingPassword", user.password())).thenReturn(false);
 
         // when & then
-        assertThatThrownBy(() -> userInformationService.changePassword(userSeq, param.toCommand()))
+        assertThatThrownBy(() -> userInformationService.changePassword(userSeq, param))
                 .isInstanceOf(UserException.class)
                 .hasMessage(PASSWORD_NOT_MATCH.getMessage());
     }
@@ -141,28 +148,29 @@ class UserInformationServiceTest {
         // given
         Long userSeq = 1L;
         Long adminSeq = 2L;
-        UserStatus userStatus = UserStatus.BLOCKED;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .userStatus(UserStatus.ACTIVE)
-                .build();
-        User admin = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_ADMIN)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(userQueryService.getUserById(adminSeq)).thenReturn(Optional.of(admin));
+        String userStatus = "BLOCKED";
+        User user = new User(
+                userSeq,
+                Auth.of("test@email.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        User admin = new User(
+                adminSeq,
+                Auth.of("test@email.com", "password")
+                , ROLE_ADMIN,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
+        when(userQueryService.getUserById(adminSeq)).thenReturn(admin);
 
         // when
         userInformationService.blockOrUnblockUser(userSeq, adminSeq, userStatus);
@@ -177,17 +185,18 @@ class UserInformationServiceTest {
         // given
         Long userSeq = 1L;
         Long adminSeq = 2L;
-        UserStatus userStatus = UserStatus.BLOCKED;
-        User admin = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
-        when(userQueryService.getUserById(adminSeq)).thenReturn(Optional.of(admin));
+        String userStatus = "BLOCKED";
+        User admin = new User(
+                adminSeq,
+                Auth.of("test@email.com", "password")
+                , ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        when(userQueryService.getUserById(adminSeq)).thenReturn(admin);
 
         // when & then
         assertThatThrownBy(() -> userInformationService.blockOrUnblockUser(
@@ -204,27 +213,27 @@ class UserInformationServiceTest {
     void updateInformation_exception() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
+        User user = new User(
+                userSeq,
+                Auth.of("test@email.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        UserInfoUpdateRequest param = new UserInfoUpdateRequest(
+                "newNickName",
+                "newImage",
+                Country.JAPAN,
+                Country.INDONESIA,
+                37.123456,
+                126.123456,
+                UserStatus.ACTIVE
+        );
 
-        UserInfoUpdateRequest param =
-                UserInfoUpdateRequest.builder()
-                        .profileImage("newImage")
-                        .country(UserCountry.JAPAN)
-                        .interestCountry(UserCountry.INDONESIA)
-                        .latitude(37.123456)
-                        .longitude(126.123456)
-                        .status(UserStatus.ACTIVE)
-                        .build();
-
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         CompletableFuture<Pair<String, String>> country =
                 CompletableFuture.failedFuture(new InterruptedException("Country fetching failed"));
 
@@ -241,19 +250,20 @@ class UserInformationServiceTest {
     void changePassword_passwordNotMatch() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
+        User user = new User(
+                userSeq,
+                Auth.of("test@email.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
         UserPasswordChangeCommand param = new UserPasswordChangeCommand("wrongPassword", "newPassword");
 
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
-        when(passwordEncoder.matches("wrongPassword", user.getPassword())).thenReturn(false);
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
+        when(passwordEncoder.matches("wrongPassword", user.password())).thenReturn(false);
 
         // when & then
         assertThatThrownBy(() -> userInformationService.changePassword(userSeq, param))
@@ -266,22 +276,26 @@ class UserInformationServiceTest {
     void updateProfileImage() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("test", "oldImage", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
-        UserInfoUpdateRequest param =
-                UserInfoUpdateRequest.builder()
-                        .nickName("newNickName")
-                        .profileImage("newImage")
-                        .build();
-
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        User user = new User(
+                userSeq,
+                Auth.of("test@email.com", "password")
+                , ROLE_USER,
+                null,
+                Profile.of("test", "oldImage", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        UserInfoUpdateRequest param = new UserInfoUpdateRequest(
+                "test",
+                "newImage",
+                Country.SOUTH_KOREA,
+                Country.MALAYSIA,
+                37.123456,
+                126.123456,
+                UserStatus.ACTIVE
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
 
         // when
         userInformationService.updateInformation(
@@ -301,10 +315,9 @@ class UserInformationServiceTest {
         // given
         Long userSeq = 1L;
         Long adminSeq = 2L;
-        UserStatus userStatus = UserStatus.BLOCKED;
+        String userStatus = "BLOCKED";
 
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.empty());
-
+        when(userQueryService.getUserById(userSeq)).thenThrow(new UserException(USER_NOT_FOUND));
         // when & then
         assertThatThrownBy(() -> userInformationService.blockOrUnblockUser(userSeq, adminSeq, userStatus))
                 .isInstanceOf(UserException.class)
@@ -316,22 +329,26 @@ class UserInformationServiceTest {
     void updateInformation_nicknameNotChanged() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "password"))
-                .profile(Profile.of("testNickName", "image", UserCountry.SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(UserCountry.MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
-
-        UserInfoUpdateRequest param =
-                UserInfoUpdateRequest.builder()
-                        .nickName("testNickName") // 동일한 닉네임 입력
-                        .build();
-
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        User user = new User(
+                userSeq,
+                Auth.of("test@emial.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("testNickName", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        UserInfoUpdateRequest param = new UserInfoUpdateRequest(
+                "testNickName",
+                "newImage",
+                Country.SOUTH_KOREA,
+                Country.MALAYSIA,
+                37.123456,
+                126.123456,
+                UserStatus.ACTIVE
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
 
         // when
         userInformationService.updateInformation(

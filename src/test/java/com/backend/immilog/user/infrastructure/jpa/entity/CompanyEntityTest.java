@@ -2,7 +2,7 @@ package com.backend.immilog.user.infrastructure.jpa.entity;
 
 import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.enums.Industry;
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.model.company.CompanyData;
 import com.backend.immilog.user.domain.model.company.Manager;
 import com.backend.immilog.user.infrastructure.jpa.entity.company.CompanyEntity;
@@ -16,68 +16,52 @@ class CompanyEntityTest {
     @Test
     @DisplayName("CompanyEntity Company 컨버팅")
     void companyEntityFromCompany_validCompany() {
-        Company company = Company.builder()
-                .seq(1L)
-                .companyData(CompanyData.of(
-                        Industry.IT,
-                        "Test Company",
-                        "test@company.com",
-                        "1234567890",
-                        "123 Test St",
-                        "www.test.com",
-                        "logo.png"
-                ))
-                .manager(Manager.of(
-                        UserCountry.SOUTH_KOREA,
-                        "Test Region",
-                        1L
-                ))
-                .build();
+        Company company = new Company(
+                1L,
+                Manager.of(Country.SOUTH_KOREA, "Test Region", 1L),
+                CompanyData.of(Industry.IT, "Test Company", "test@country.com", "1234567890", "123 Test St", "www.test.com", "logo.png")
+        );
 
         CompanyEntity companyEntity = CompanyEntity.from(company);
         Company domain = companyEntity.toDomain();
 
-        assertThat(domain.getIndustry()).isEqualTo(company.getIndustry());
-        assertThat(domain.getName()).isEqualTo(company.getName());
-        assertThat(domain.getEmail()).isEqualTo(company.getEmail());
-        assertThat(domain.getPhone()).isEqualTo(company.getPhone());
-        assertThat(domain.getAddress()).isEqualTo(company.getAddress());
-        assertThat(domain.getHomepage()).isEqualTo(company.getHomepage());
-        assertThat(domain.getCountry()).isEqualTo(company.getCountry());
-        assertThat(domain.getRegion()).isEqualTo(company.getRegion());
-        assertThat(domain.getLogo()).isEqualTo(company.getLogo());
-        assertThat(domain.getManagerUserSeq()).isEqualTo(company.getManagerUserSeq());
+        assertThat(domain.industry()).isEqualTo(company.industry());
+        assertThat(domain.name()).isEqualTo(company.name());
+        assertThat(domain.email()).isEqualTo(company.email());
+        assertThat(domain.phone()).isEqualTo(company.phone());
+        assertThat(domain.address()).isEqualTo(company.address());
+        assertThat(domain.homepage()).isEqualTo(company.homepage());
+        assertThat(domain.country()).isEqualTo(company.country());
+        assertThat(domain.region()).isEqualTo(company.region());
+        assertThat(domain.logo()).isEqualTo(company.logo());
+        assertThat(domain.managerUserSeq()).isEqualTo(company.managerUserSeq());
     }
 
     @DisplayName("CompanyEntity Company 컨버팅 - null Company object")
     void companyEntityToDomain_validCompanyEntity() {
-        CompanyEntity companyEntity = CompanyEntity.builder()
-                .seq(1L)
-                .industry(Industry.IT)
-                .companyName("Test Company")
-                .companyEmail("test@company.com")
-                .companyPhone("1234567890")
-                .companyAddress("123 Test St")
-                .companyHomepage("www.test.com")
-                .companyCountry(UserCountry.SOUTH_KOREA)
-                .companyRegion("Test Region")
-                .companyLogo("logo.png")
-                .companyManagerUserSeq(1L)
-                .build();
+        String mail = "test@country.com";
+        Company model = new Company(
+                1L,
+                Manager.of(Country.SOUTH_KOREA, "Test Region", 1L),
+                CompanyData.of(Industry.IT, "Test Company", mail, "1234567890", "123 Test St", "www.test.com", "logo.png")
+        );
+
+        CompanyEntity companyEntity = CompanyEntity.from(model);
+
 
         Company company = companyEntity.toDomain();
 
-        assertThat(company.getCompanySeq()).isEqualTo(1L);
-        assertThat(company.getIndustry()).isEqualTo(Industry.IT);
-        assertThat(company.getName()).isEqualTo("Test Company");
-        assertThat(company.getEmail()).isEqualTo("test@company.com");
-        assertThat(company.getPhone()).isEqualTo("1234567890");
-        assertThat(company.getAddress()).isEqualTo("123 Test St");
-        assertThat(company.getHomepage()).isEqualTo("www.test.com");
-        assertThat(company.getCountry()).isEqualTo(UserCountry.SOUTH_KOREA);
-        assertThat(company.getRegion()).isEqualTo("Test Region");
-        assertThat(company.getLogo()).isEqualTo("logo.png");
-        assertThat(company.getManagerUserSeq()).isEqualTo(1L);
+        assertThat(company.seq()).isEqualTo(1L);
+        assertThat(company.industry()).isEqualTo(Industry.IT);
+        assertThat(company.name()).isEqualTo("Test Company");
+        assertThat(company.email()).isEqualTo("test@country.com");
+        assertThat(company.phone()).isEqualTo("1234567890");
+        assertThat(company.address()).isEqualTo("123 Test St");
+        assertThat(company.homepage()).isEqualTo("www.test.com");
+        assertThat(company.country()).isEqualTo(Country.SOUTH_KOREA);
+        assertThat(company.region()).isEqualTo("Test Region");
+        assertThat(company.logo()).isEqualTo("logo.png");
+        assertThat(company.managerUserSeq()).isEqualTo(1L);
     }
 
     @DisplayName("CompanyEntity from - null Company object")
@@ -90,20 +74,21 @@ class CompanyEntityTest {
 
     @DisplayName("CompanyEntity toDomain - null fields")
     void companyEntityToDomain_nullFields() {
-        CompanyEntity companyEntity = CompanyEntity.builder().build();
+        Company nullCompany = new Company(null, null, null);
+        CompanyEntity companyEntity = CompanyEntity.from(nullCompany);
 
         Company company = companyEntity.toDomain();
 
-        assertThat(company.getCompanySeq()).isNull();
-        assertThat(company.getIndustry()).isNull();
-        assertThat(company.getName()).isNull();
-        assertThat(company.getEmail()).isNull();
-        assertThat(company.getPhone()).isNull();
-        assertThat(company.getAddress()).isNull();
-        assertThat(company.getHomepage()).isNull();
-        assertThat(company.getCountry()).isNull();
-        assertThat(company.getRegion()).isNull();
-        assertThat(company.getLogo()).isNull();
-        assertThat(company.getManagerUserSeq()).isNull();
+        assertThat(company.seq()).isNull();
+        assertThat(company.industry()).isNull();
+        assertThat(company.name()).isNull();
+        assertThat(company.email()).isNull();
+        assertThat(company.phone()).isNull();
+        assertThat(company.address()).isNull();
+        assertThat(company.homepage()).isNull();
+        assertThat(company.country()).isNull();
+        assertThat(company.region()).isNull();
+        assertThat(company.logo()).isNull();
+        assertThat(company.managerUserSeq()).isNull();
     }
 }

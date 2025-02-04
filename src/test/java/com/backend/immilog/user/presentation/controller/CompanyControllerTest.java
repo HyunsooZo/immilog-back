@@ -1,24 +1,20 @@
 package com.backend.immilog.user.presentation.controller;
 
+import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.user.application.command.CompanyRegisterCommand;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
 import com.backend.immilog.user.application.services.CompanyRegisterService;
-import com.backend.immilog.user.application.command.CompanyRegisterCommand;
 import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.presentation.request.CompanyRegisterRequest;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.http.ResponseEntity;
 
-import jakarta.servlet.http.HttpServletRequest;
-
-import static com.backend.immilog.user.domain.enums.UserCountry.SOUTH_KOREA;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 @DisplayName("CompanyController 테스트")
 class CompanyControllerTest {
@@ -34,17 +30,18 @@ class CompanyControllerTest {
     void registerCompany() {
         // given
         Long userSeq = 1L;
-        CompanyRegisterRequest param = CompanyRegisterRequest.builder()
-                .industry(Industry.IT)
-                .companyName("회사명")
-                .companyEmail("email@email.com")
-                .companyPhone("010-1234-5678")
-                .companyAddress("주소")
-                .companyHomepage("홈페이지")
-                .companyCountry(SOUTH_KOREA)
-                .companyRegion("지역")
-                .companyLogo("로고")
-                .build();
+        String mail = "email@email.com";
+        CompanyRegisterRequest param = new CompanyRegisterRequest(
+                Industry.IT,
+                "회사명",
+                mail,
+                "010-1234-5678",
+                "주소",
+                "홈페이지",
+                Country.SOUTH_KOREA,
+                "지역",
+                "로고"
+        );
         CompanyRegisterCommand command = param.toCommand();
         // when
         ResponseEntity<UserApiResponse> response = companyController.registerCompany(userSeq, param);

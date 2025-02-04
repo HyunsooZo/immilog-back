@@ -45,10 +45,7 @@ class ImageControllerTest {
     void deleteImage() {
         // given
         String imagePath = "imagePath";
-        ImageRequest param = ImageRequest.builder()
-                .imageDirectory("directory")
-                .imagePath(imagePath)
-                .build();
+        ImageRequest param = new ImageRequest("directory", imagePath);
         // when
         ResponseEntity<ImageController.ImageResponse> response = imageController.deleteImage(param);
         // then

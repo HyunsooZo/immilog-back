@@ -8,8 +8,6 @@ import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.post.Post;
-import com.backend.immilog.post.domain.model.post.PostInfo;
-import com.backend.immilog.post.domain.model.post.PostUserInfo;
 import com.backend.immilog.post.domain.model.resource.PostResource;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +20,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BiConsumer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -57,18 +54,27 @@ class PostUpdateServiceTest {
         // given
         Long userSeq = 1L;
         Long postSeq = 1L;
-        PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
-                .addAttachments(List.of("attachment"))
-                .deleteAttachments(List.of("delete-attachment"))
-                .addTags(List.of("tag"))
-                .deleteTags(List.of("delete-tag"))
-                .title("title")
-                .content("content")
-                .isPublic(true)
-                .build();
+        //public record PostUpdateRequest(
+        //        String title,
+        //        String content,
+        //        List<String> deleteTags,
+        //        List<String> addTags,
+        //        List<String> deleteAttachments,
+        //        List<String> addAttachments,
+        //        Boolean isPublic
+        //) {
+        PostUpdateRequest postUpdateRequest = new PostUpdateRequest(
+                "title",
+                "content",
+                List.of("delete-tag"),
+                List.of("tag"),
+                List.of("delete-attachment"),
+                List.of("attachment"),
+                true
+        );
         Post post = mock(Post.class);
-        when(post.getUserSeq()).thenReturn(userSeq);
-        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
+        when(post.userSeq()).thenReturn(userSeq);
+        when(postQueryService.getPostById(postSeq)).thenReturn(post);
         doNothing().when(preparedStatement).setLong(eq(1), anyLong());
         doNothing().when(preparedStatement).setString(eq(2), anyString());
         doNothing().when(preparedStatement).setString(eq(3), anyString());
@@ -104,9 +110,9 @@ class PostUpdateServiceTest {
         Long postSeq = 1L;
         Post post = mock(Post.class);
         Post post1 = mock(Post.class);
-        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
+        when(postQueryService.getPostById(postSeq)).thenReturn(post);
         when(post.increaseViewCount()).thenReturn(post1);
-        // whenx
+        // when
         postUpdateService.increaseViewCount(postSeq);
 
         // then

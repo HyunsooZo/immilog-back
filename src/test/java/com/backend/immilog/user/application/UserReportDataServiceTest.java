@@ -1,5 +1,6 @@
 package com.backend.immilog.user.application;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.services.UserReportService;
 import com.backend.immilog.user.application.services.command.ReportCommandService;
 import com.backend.immilog.user.application.services.command.UserCommandService;
@@ -18,8 +19,6 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static com.backend.immilog.global.enums.UserRole.ROLE_USER;
-import static com.backend.immilog.user.domain.enums.UserCountry.MALAYSIA;
-import static com.backend.immilog.user.domain.enums.UserCountry.SOUTH_KOREA;
 import static com.backend.immilog.user.exception.UserErrorCode.ALREADY_REPORTED;
 import static com.backend.immilog.user.exception.UserErrorCode.CANNOT_REPORT_MYSELF;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,31 +43,31 @@ class UserReportDataServiceTest {
         // given
         Long targetUserSeq = 1L;
         Long reporterUserSeq = 2L;
-        User user = User.builder()
-                .seq(targetUserSeq)
-                .auth(Auth.of("test@email.com", "test"))
-                .profile(Profile.of("test", "image", SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(MALAYSIA, "KL"))
-                .reportData(
-                        ReportData.of(
-                                1L,
-                                Date.valueOf(LocalDateTime.now().toLocalDate()))
-                )
-                .build();
-        UserReportRequest reportUserRequest = UserReportRequest.builder()
-                .description("test")
-                .reason(ReportReason.FRAUD)
-                .build();
-        when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(false);
-        when(userQueryService.getUserById(targetUserSeq)).thenReturn(Optional.of(user));
-        // when
-        userReportService.reportUser(
+        //public record User(
+        //        Long seq,
+        //        Auth auth,
+        //        UserRole userRole,
+        //        ReportData reportData,
+        //        Profile profile,
+        //        Location location,
+        //        UserStatus userStatus,
+        //        LocalDateTime updatedAt
+        //) {
+        User user = new User(
                 targetUserSeq,
-                reporterUserSeq,
-                reportUserRequest.toCommand()
+                Auth.of("test@emial.com", "test"),
+                ROLE_USER,
+                ReportData.of(1L, Date.valueOf(LocalDateTime.now().toLocalDate())),
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                LocalDateTime.now()
         );
+        UserReportRequest reportUserRequest = new UserReportRequest(ReportReason.FRAUD, "test");
+        when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(false);
+        when(userQueryService.getUserById(targetUserSeq)).thenReturn(user);
+        // when
+        userReportService.reportUser(targetUserSeq, reporterUserSeq, reportUserRequest.toCommand());
 
         // then
         verify(reportCommandService, times(1)).save(any(com.backend.immilog.user.domain.model.report.Report.class));
@@ -80,7 +79,7 @@ class UserReportDataServiceTest {
         // given
         Long targetUserSeq = 1L;
         Long reporterUserSeq = 1L;
-        UserReportRequest reportUserRequest = UserReportRequest.builder().build();
+        UserReportRequest reportUserRequest = mock(UserReportRequest.class);
         when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(false);
         // when & then
         assertThatThrownBy(() -> userReportService.reportUser(
@@ -98,7 +97,7 @@ class UserReportDataServiceTest {
         // given
         Long targetUserSeq = 1L;
         Long reporterUserSeq = 2L;
-        UserReportRequest reportUserRequest = UserReportRequest.builder().build();
+        UserReportRequest reportUserRequest =  mock(UserReportRequest.class);
         when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(true);
         // when & then
         assertThatThrownBy(() -> userReportService.reportUser(

@@ -4,7 +4,7 @@ import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.application.services.JobBoardInquiryService;
 import com.backend.immilog.post.application.services.JobBoardUpdateService;
 import com.backend.immilog.post.application.services.JobBoardUploadService;
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.presentation.request.JobBoardUpdateRequest;
@@ -18,6 +18,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -72,39 +73,37 @@ class JobBoardControllerTest {
         String experience = "JUNIOR";
         int page = 0;
         LocalDateTime now = LocalDateTime.now();
-        JobBoardResult jobBoardResult = JobBoardResult.builder()
-                .seq(1L)
-                .title("title")
-                .content("content")
-                .viewCount(0L)
-                .likeCount(0L)
-                .tags(Collections.emptyList())
-                .attachments(Collections.emptyList())
-                .likeUsers(Collections.emptyList())
-                .bookmarkUsers(Collections.emptyList())
-                .country(Countries.SOUTH_KOREA)
-                .region("region")
-                .industry(Industry.IT.toPostIndustry())
-                .deadline(now)
-                .experience(Experience.JUNIOR)
-                .salary("salary")
-                .companyName("name")
-                .companyEmail("email")
-                .companyPhone("phone")
-                .companyAddress("address")
-                .companyHomepage("homepage")
-                .companyLogo("logo")
-                .companyManagerUserSeq(1L)
-                .status(PostStatus.NORMAL)
-                .createdAt(now)
-                .build();
+        JobBoardResult jobBoardResult = new JobBoardResult(
+                1L,
+                "title",
+                "content",
+                0L,
+                0L,
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                Country.SOUTH_KOREA,
+                "region",
+                Industry.IT.toPostIndustry(),
+                now,
+                Experience.JUNIOR,
+                "salary",
+                1L,
+                "name",
+                "email",
+                "phone",
+                "address",
+                "homepage",
+                "logo",
+                1L,
+                PostStatus.NORMAL,
+                now
+        );
 
-        when(jobBoardInquiryService.getJobBoards(country, sortingMethod, industry, experience, page))
-                .thenReturn(new PageImpl<>(List.of(jobBoardResult)));
+        when(jobBoardInquiryService.getJobBoards(country, sortingMethod, industry, experience, page)).thenReturn(new PageImpl<>(List.of(jobBoardResult)));
         // when
-        ResponseEntity<PostApiResponse> result = jobBoardController.searchJobBoard(
-                        country, sortingMethod, industry, experience, page
-                );
+        ResponseEntity<PostApiResponse> result = jobBoardController.searchJobBoard(country, sortingMethod, industry, experience, page);
         // then
         assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
     }

@@ -36,8 +36,8 @@ class CommentUploadServiceTest {
         Long postSeq = 1L;
         String referenceType = "post";
         CommentUploadRequest commentUploadRequest = new CommentUploadRequest("content");
-        Post post = Post.builder().commentCount(0L).build();
-        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
+        Post post = mock(Post.class);
+        when(postQueryService.getPostById(postSeq)).thenReturn(post);
         // when
         commentUploadService.uploadComment(
                 userId,
@@ -59,7 +59,7 @@ class CommentUploadServiceTest {
         String referenceType = "posts";
         CommentUploadRequest commentUploadRequest =
                 new CommentUploadRequest("content");
-        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.empty());
+        when(postQueryService.getPostById(postSeq)).thenThrow(new PostException(POST_NOT_FOUND));
         // when & then
         assertThatThrownBy(() -> commentUploadService.uploadComment(
                 userId,
@@ -80,8 +80,8 @@ class CommentUploadServiceTest {
         String referenceType = "text";
         CommentUploadRequest commentUploadRequest =
                 new CommentUploadRequest("content");
-        Post post = Post.builder().commentCount(0L).build();
-        when(postQueryService.getPostById(postSeq)).thenReturn(Optional.of(post));
+        Post post = mock(Post.class);
+        when(postQueryService.getPostById(postSeq)).thenReturn(post);
         // when & then
         assertThatThrownBy(() -> commentUploadService.uploadComment(
                 userId,

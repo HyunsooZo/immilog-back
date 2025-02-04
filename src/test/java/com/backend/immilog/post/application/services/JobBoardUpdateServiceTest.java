@@ -44,47 +44,46 @@ class JobBoardUpdateServiceTest {
     @DisplayName("구인구직 업데이트 - 성공")
     void updateJobBoard_updatesTagsAndAttachments() {
         LocalDateTime now = LocalDateTime.now();
-        ArgumentCaptor<BiConsumer<PreparedStatement, PostResource>> captor =
-                ArgumentCaptor.forClass(BiConsumer.class);
-        JobBoardUpdateCommand command = JobBoardUpdateCommand.builder()
-                .title("New Title")
-                .content("New Content")
-                .addTags(List.of("tag1", "tag2"))
-                .addAttachments(List.of("att1", "att2"))
-                .deleteTags(List.of("tag3"))
-                .deleteAttachments(List.of("att3"))
-                .deadline(now)
-                .experience(Experience.JUNIOR)
-                .salary("1000")
-                .build();
-        JobBoardResult jobBoard = JobBoardResult.builder()
-                .seq(1L)
-                .title("Title")
-                .content("Content")
-                .viewCount(0L)
-                .likeCount(0L)
-                .tags(List.of("tag1", "tag3"))
-                .attachments(List.of("att1", "att3"))
-                .likeUsers(List.of())
-                .bookmarkUsers(List.of())
-                .country(null)
-                .region(null)
-                .industry(null)
-                .deadline(null)
-                .experience(null)
-                .salary(null)
-                .companySeq(1L)
-                .companyName(null)
-                .companyEmail(null)
-                .companyPhone(null)
-                .companyAddress(null)
-                .companyHomepage(null)
-                .companyLogo(null)
-                .companyManagerUserSeq(1L)
-                .status(null)
-                .createdAt(null)
-                .build();
-        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(Optional.of(jobBoard));
+        ArgumentCaptor<BiConsumer<PreparedStatement, PostResource>> captor = ArgumentCaptor.forClass(BiConsumer.class);
+        JobBoardUpdateCommand command = new JobBoardUpdateCommand(
+                "New Title",
+                "New Content",
+                List.of("tag1", "tag2"),
+                List.of("att1", "att2"),
+                List.of("tag3"),
+                List.of("att3"),
+                now,
+                Experience.JUNIOR,
+                "1000"
+        );
+        JobBoardResult jobBoard = new JobBoardResult(
+                1L,
+                "Title",
+                "Content",
+                0L,
+                0L,
+                List.of("tag1", "tag3"),
+                List.of("att1", "att3"),
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null
+        );
+        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(jobBoard);
         jobBoardUpdateService.updateJobBoard(1L, 1L, command);
         verify(postResourceCommandService).deleteAllEntities(anyLong(), eq(PostType.JOB_BOARD), eq(ResourceType.TAG), anyList());
         verify(postResourceCommandService).deleteAllEntities(anyLong(), eq(PostType.JOB_BOARD), eq(ResourceType.ATTACHMENT), anyList());
@@ -100,45 +99,56 @@ class JobBoardUpdateServiceTest {
     @DisplayName("구인구직 업데이트 - 실패 : 매니저 아닌 경우")
     void updateJobBoard_throwsExceptionIfUserIsNotOwner() {
         LocalDateTime now = LocalDateTime.now();
-        JobBoardUpdateCommand command = JobBoardUpdateCommand.builder()
-                .title("New Title")
-                .content("New Content")
-                .addTags(List.of("tag1", "tag2"))
-                .addAttachments(List.of("att1", "att2"))
-                .deleteTags(List.of("tag3"))
-                .deleteAttachments(List.of("att3"))
-                .deadline(now)
-                .experience(Experience.JUNIOR)
-                .salary("1000")
-                .build();
-        JobBoardResult jobBoard = JobBoardResult.builder()
-                .seq(1L)
-                .title("Title")
-                .content("Content")
-                .viewCount(0L)
-                .likeCount(0L)
-                .tags(List.of("tag1", "tag3"))
-                .attachments(List.of("att1", "att3"))
-                .likeUsers(List.of())
-                .bookmarkUsers(List.of())
-                .country(null)
-                .region(null)
-                .industry(null)
-                .deadline(null)
-                .experience(null)
-                .salary(null)
-                .companySeq(1L)
-                .companyName(null)
-                .companyEmail(null)
-                .companyPhone(null)
-                .companyAddress(null)
-                .companyHomepage(null)
-                .companyLogo(null)
-                .companyManagerUserSeq(3L)
-                .status(null)
-                .createdAt(null)
-                .build();
-        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(Optional.of(jobBoard));
+        //public record JobBoardUpdateCommand(
+        //        String title,
+        //        String content,
+        //        List<String> deleteTags,
+        //        List<String> addTags,
+        //        List<String> deleteAttachments,
+        //        List<String> addAttachments,
+        //        LocalDateTime deadline,
+        //        Experience experience,
+        //        String salary
+        //) {
+        JobBoardUpdateCommand command = new JobBoardUpdateCommand(
+                "New Title",
+                "New Content",
+                List.of("tag1", "tag2"),
+                List.of("att1", "att2"),
+                List.of("tag3"),
+                List.of("att3"),
+                now,
+                Experience.JUNIOR,
+                "1000"
+        );
+        JobBoardResult jobBoard = new JobBoardResult(
+                1L,
+                "Title",
+                "Content",
+                0L,
+                0L,
+                List.of("tag1", "tag3"),
+                List.of("att1", "att3"),
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                3L,
+                null,
+                null
+        );
+        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(jobBoard);
 
         assertThatThrownBy(() -> jobBoardUpdateService.updateJobBoard(1L, 1L, command))
                 .isInstanceOf(PostException.class)
@@ -148,34 +158,34 @@ class JobBoardUpdateServiceTest {
     @Test
     @DisplayName("구인구직 게시글 삭제 - 성공")
     void deleteJobBoard_deletesJobBoard() {
-        JobBoardResult jobBoard = JobBoardResult.builder()
-                .seq(1L)
-                .title("Title")
-                .content("Content")
-                .viewCount(0L)
-                .likeCount(0L)
-                .tags(List.of("tag1", "tag3"))
-                .attachments(List.of("att1", "att3"))
-                .likeUsers(List.of())
-                .bookmarkUsers(List.of())
-                .country(null)
-                .region(null)
-                .industry(null)
-                .deadline(null)
-                .experience(null)
-                .salary(null)
-                .companySeq(1L)
-                .companyName(null)
-                .companyEmail(null)
-                .companyPhone(null)
-                .companyAddress(null)
-                .companyHomepage(null)
-                .companyLogo(null)
-                .companyManagerUserSeq(1L)
-                .status(null)
-                .createdAt(null)
-                .build();
-        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(Optional.of(jobBoard));
+        JobBoardResult jobBoard = new JobBoardResult(
+                1L,
+                "Title",
+                "Content",
+                0L,
+                0L,
+                List.of("tag1", "tag3"),
+                List.of("att1", "att3"),
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null
+        );
+        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(jobBoard);
         jobBoardUpdateService.deactivateJobBoard(1L, 1L);
         verify(jobBoardCommandService).save(any());
     }

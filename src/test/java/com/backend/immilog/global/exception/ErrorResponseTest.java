@@ -14,28 +14,18 @@ class ErrorResponseTest {
     void errorResponseIsCreatedCorrectly() {
         UserErrorCode errorCode = UserErrorCode.USER_NOT_FOUND;
         String message = "An error occurred";
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .errorCode(errorCode)
-                .message(message)
-                .build();
-
-        assertThat(errorResponse.getErrorCode()).isEqualTo(errorCode);
-        assertThat(errorResponse.getMessage()).isEqualTo(message);
+        ErrorResponse errorResponse = new ErrorResponse(errorCode, message);
+        assertThat(errorResponse.errorCode()).isEqualTo(errorCode);
+        assertThat(errorResponse.message()).isEqualTo(message);
     }
 
     @Test
     @DisplayName("ErrorResponse 객체의 errorCode가 null인 경우")
     void errorResponseHasNullErrorCode() {
         String message = "An error occurred";
-
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .errorCode(null)
-                .message(message)
-                .build();
-
-        assertThat(errorResponse.getErrorCode()).isNull();
-        assertThat(errorResponse.getMessage()).isEqualTo(message);
+        ErrorResponse errorResponse = new ErrorResponse(null, message);
+        assertThat(errorResponse.errorCode()).isNull();
+        assertThat(errorResponse.message()).isEqualTo(message);
     }
 
     @Test
@@ -43,12 +33,8 @@ class ErrorResponseTest {
     void errorResponseHasNullMessage() {
         UserErrorCode errorCode = UserErrorCode.USER_NOT_FOUND;
 
-        ErrorResponse errorResponse = ErrorResponse.builder()
-                .errorCode(errorCode)
-                .message(null)
-                .build();
-
-        assertThat(errorResponse.getErrorCode()).isEqualTo(errorCode);
-        assertThat(errorResponse.getMessage()).isNull();
+        ErrorResponse errorResponse = new ErrorResponse(errorCode, null);
+        assertThat(errorResponse.errorCode()).isEqualTo(errorCode);
+        assertThat(errorResponse.message()).isNull();
     }
 }

@@ -1,6 +1,6 @@
 package com.backend.immilog.user.application;
 
-import com.backend.immilog.global.enums.GlobalCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.services.LocationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +53,7 @@ class LocationServiceTest {
         Pair<String, String> result = resultFuture.join();
 
         // then
-        assertThat(result.getFirst()).isEqualTo(GlobalCountry.SOUTH_KOREA.koreanName());
+        assertThat(result.getFirst()).isEqualTo(Country.SOUTH_KOREA.koreanName());
         assertThat(result.getSecond()).isEqualTo("서울특별시");
     }
 
