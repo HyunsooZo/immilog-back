@@ -1,6 +1,6 @@
 package com.backend.immilog.user.application;
 
-import com.backend.immilog.global.enums.GlobalCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.user.application.result.UserSignInResult;
@@ -8,10 +8,7 @@ import com.backend.immilog.user.application.services.UserSignInService;
 import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
-import com.backend.immilog.user.domain.model.user.Auth;
-import com.backend.immilog.user.domain.model.user.Location;
-import com.backend.immilog.user.domain.model.user.Profile;
-import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.domain.model.user.*;
 import com.backend.immilog.user.exception.UserException;
 import com.backend.immilog.user.presentation.request.UserSignInRequest;
 import org.junit.jupiter.api.DisplayName;
@@ -19,12 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.Optional;
+import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 
 import static com.backend.immilog.global.enums.UserRole.ROLE_USER;
-import static com.backend.immilog.user.domain.enums.UserCountry.MALAYSIA;
-import static com.backend.immilog.user.domain.enums.UserCountry.SOUTH_KOREA;
 import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,51 +46,42 @@ class UserSignInServiceTest {
     @DisplayName("로그인 성공")
     void sign_in_success() {
         // given
-        UserSignInRequest userSignInRequest = UserSignInRequest.builder()
-                .email("test@email.com")
-                .password("test1234")
-                .latitude(37.1234)
-                .longitude(127.1234)
-                .build();
+        UserSignInRequest userSignInRequest = new UserSignInRequest(
+                "test@email.com",
+                "test1234",
+                37.1234,
+                127.1234
+        );
+        Location location = Location.of(Country.SOUTH_KOREA, "서울");
+        User user = new User(
+                1L,
+                Auth.of(userSignInRequest.email(), passwordEncoder.encode(userSignInRequest.password())),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                location,
+                UserStatus.ACTIVE,
+                LocalDateTime.now()
+        );
 
-        Location location = Location.of(SOUTH_KOREA, "서울");
-
-        User user = User.builder()
-                .seq(1L)
-                .auth(Auth.of(userSignInRequest.email(), passwordEncoder.encode(userSignInRequest.password())))
-                .userStatus(UserStatus.ACTIVE)
-                .userRole(UserRole.ROLE_USER)
-                .location(location)
-                .profile(Profile.of("test", "image", SOUTH_KOREA))
-                .build();
-
-        when(userQueryService.getUserByEmail(userSignInRequest.email()))
-                .thenReturn(Optional.of(user));
-        when(passwordEncoder.matches(userSignInRequest.password(), user.getPassword()))
-                .thenReturn(true);
-        when(tokenProvider.issueAccessToken(
-                anyLong(),
-                anyString(),
-                any(UserRole.class),
-                any(GlobalCountry.class)
-        )).thenReturn("accessToken");
-        when(tokenProvider.issueRefreshToken())
-                .thenReturn("refreshToken");
-        when(country.orTimeout(5, SECONDS))
-                .thenReturn(CompletableFuture.completedFuture(Pair.of("대한민국", "서울")));
+        when(userQueryService.getUserByEmail(userSignInRequest.email())).thenReturn(user);
+        when(passwordEncoder.matches(userSignInRequest.password(), user.password())).thenReturn(true);
+        when(tokenProvider.issueAccessToken(anyLong(), anyString(), any(UserRole.class), any(Country.class))).thenReturn("accessToken");
+        when(tokenProvider.issueRefreshToken()).thenReturn("refreshToken");
+        when(country.orTimeout(5, SECONDS)).thenReturn(CompletableFuture.completedFuture(Pair.of("대한민국", "서울")));
 
         // when
         UserSignInResult userSignInResult =
                 userSignInService.signIn(userSignInRequest.toCommand(), country);
 
         // then
-        assertThat(userSignInResult.userSeq()).isEqualTo(user.getSeq());
+        assertThat(userSignInResult.userSeq()).isEqualTo(user.seq());
         assertThat(userSignInResult.accessToken()).isEqualTo("accessToken");
         verify(tokenProvider, times(1)).issueAccessToken(
                 anyLong(),
                 anyString(),
                 any(UserRole.class),
-                any(GlobalCountry.class)
+                any(Country.class)
         );
         verify(tokenProvider, times(1)).issueRefreshToken();
     }
@@ -104,23 +90,26 @@ class UserSignInServiceTest {
     @DisplayName("로그인 실패: 사용자 없음")
     void sign_in_fail_user_not_found() {
         // given
-        UserSignInRequest userSignInRequest = UserSignInRequest.builder()
-                .email("test@email.com")
-                .password("test1234")
-                .latitude(37.1234)
-                .longitude(127.1234)
-                .build();
+        UserSignInRequest userSignInRequest = new UserSignInRequest(
+                "test@email.com",
+                "test1234",
+                37.1234,
+                127.1234
+        );
 
-        Location location = Location.of(SOUTH_KOREA, "서울");
+        Location location = Location.of(Country.SOUTH_KOREA, "서울");
 
-        User user = User.builder()
-                .seq(1L)
-                .auth(Auth.of(userSignInRequest.email(), passwordEncoder.encode(userSignInRequest.password())))
-                .userStatus(UserStatus.ACTIVE)
-                .userRole(UserRole.ROLE_USER)
-                .location(location)
-                .build();
-
+        User user = new User(
+                1L,
+                Auth.of(userSignInRequest.email(), passwordEncoder.encode(userSignInRequest.password())),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                location,
+                UserStatus.ACTIVE,
+                LocalDateTime.now()
+        );
+        when(userQueryService.getUserByEmail(userSignInRequest.email())).thenThrow(new UserException(USER_NOT_FOUND));
         // when & then
         assertThatThrownBy(() -> {
             userSignInService.signIn(userSignInRequest.toCommand(), country);
@@ -134,23 +123,25 @@ class UserSignInServiceTest {
     void getUserSignInDTO_success() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "test"))
-                .profile(Profile.of("test", "image", SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(SOUTH_KOREA, "Seoul"))
-                .reportData(null)
-                .build();
+        String mail = "test@email.com";
+        User user = new User(
+                1L,
+                Auth.of(mail, "test"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.SOUTH_KOREA, "Seoul"),
+                UserStatus.PENDING,
+                LocalDateTime.now()
+        );
 
         Pair<String, String> country = Pair.of("South Korea", "Seoul");
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         when(tokenProvider.issueAccessToken(
                 anyLong(),
                 anyString(),
                 any(UserRole.class),
-                any(GlobalCountry.class)
+                any(Country.class)
         )).thenReturn("accessToken");
         when(tokenProvider.issueRefreshToken()).thenReturn("refreshToken");
 
@@ -158,7 +149,7 @@ class UserSignInServiceTest {
         UserSignInResult result = userSignInService.getUserSignInDTO(userSeq, country);
         // then
         verify(refreshTokenCommandService, times(1)).saveKeyAndValue(
-                "Refresh: refreshToken", user.getEmail(), 5 * 29 * 24 * 60
+                "Refresh: refreshToken", user.email(), 5 * 29 * 24 * 60
         );
         assertThat(result.userSeq()).isEqualTo(userSeq);
     }
@@ -168,23 +159,25 @@ class UserSignInServiceTest {
     void getUserSignInDTO_success_location_not_match() {
         // given
         Long userSeq = 1L;
-        User user = User.builder()
-                .seq(userSeq)
-                .auth(Auth.of("test@email.com", "test"))
-                .profile(Profile.of("test", "image", SOUTH_KOREA))
-                .userStatus(UserStatus.PENDING)
-                .userRole(ROLE_USER)
-                .location(Location.of(MALAYSIA, "KL"))
-                .reportData(null)
-                .build();
+        String mail = "test@email.com";
+        User user = new User(
+                1L,
+                Auth.of(mail, "test"),
+                ROLE_USER,
+                null,
+                Profile.of("test", "image", Country.SOUTH_KOREA),
+                Location.of(Country.SOUTH_KOREA, "Seoul"),
+                UserStatus.PENDING,
+                LocalDateTime.now()
+        );
 
         Pair<String, String> country = Pair.of("South Korea", "Seoul");
-        when(userQueryService.getUserById(userSeq)).thenReturn(Optional.of(user));
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
         when(tokenProvider.issueAccessToken(
                 anyLong(),
                 anyString(),
                 any(UserRole.class),
-                any(GlobalCountry.class)
+                any(Country.class)
         )).thenReturn("accessToken");
         when(tokenProvider.issueRefreshToken()).thenReturn("refreshToken");
 
@@ -192,7 +185,7 @@ class UserSignInServiceTest {
         UserSignInResult result = userSignInService.getUserSignInDTO(userSeq, country);
         // then
         verify(refreshTokenCommandService, times(1)).saveKeyAndValue(
-                "Refresh: refreshToken", user.getEmail(), 5 * 29 * 24 * 60
+                "Refresh: refreshToken", user.email(), 5 * 29 * 24 * 60
         );
         assertThat(result.userSeq()).isEqualTo(userSeq);
     }

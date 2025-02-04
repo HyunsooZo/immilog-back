@@ -1,19 +1,21 @@
 package com.backend.immilog.post.presentation.controller;
 
+import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.global.enums.UserRole;
+import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.PostDeleteService;
 import com.backend.immilog.post.application.services.PostInquiryService;
 import com.backend.immilog.post.application.services.PostUpdateService;
 import com.backend.immilog.post.application.services.PostUploadService;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
 import com.backend.immilog.post.presentation.response.PostApiResponse;
-import com.backend.immilog.user.domain.enums.UserCountry;
-import com.backend.immilog.user.domain.model.user.Location;
-import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.Page;
@@ -44,17 +46,25 @@ class PostControllerTest {
     @DisplayName("게시물 작성")
     void createPost() {
         // given
-        PostUploadRequest postUploadRequest = PostUploadRequest.builder()
-                .category(Categories.COMMUNICATION)
-                .title("title")
-                .content("content")
-                .isPublic(true)
-                .build();
-        Location location = Location.of(UserCountry.SOUTH_KOREA, "region");
-        User user = User.builder()
-                .seq(1L)
-                .location(location)
-                .build();
+        PostUploadRequest postUploadRequest = new PostUploadRequest(
+                "title",
+                "content",
+                List.of("tag1", "tag2"),
+                List.of("attachment1", "attachment2"),
+                true,
+                Categories.COMMUNICATION
+        );
+        Location location = Location.of(Country.SOUTH_KOREA, "region");
+        User user = new User(
+                1L,
+                Auth.of("email", "password"),
+                UserRole.ROLE_USER,
+                new ReportData(0L, null),
+                Profile.of("user", "image", null),
+                location,
+                UserStatus.ACTIVE,
+                null
+        );
         Long userSeq = 1L;
 
         // when
@@ -64,7 +74,7 @@ class PostControllerTest {
         );
 
         // then
-        verify(postUploadService).uploadPost(user.getSeq(), postUploadRequest.toCommand());
+        verify(postUploadService).uploadPost(user.seq(), postUploadRequest.toCommand());
         assertThat(response.getStatusCode()).isEqualTo(ResponseEntity.status(CREATED).build().getStatusCode());
     }
 
@@ -75,16 +85,24 @@ class PostControllerTest {
         Long postSeq = 1L;
         Long userSeq = 1L;
 
-        PostUpdateRequest postUpdateRequest = PostUpdateRequest.builder()
-                .addAttachments(List.of("attachment"))
-                .deleteAttachments(List.of("delete-attachment"))
-                .addTags(List.of("tag"))
-                .deleteTags(List.of("delete-tag"))
-                .title("title")
-                .content("content")
-                .isPublic(true)
-                .build();
-
+        //ublic record PostUpdateRequest(
+        //        String title,
+        //        String content,
+        //        List<String> deleteTags,
+        //        List<String> addTags,
+        //        List<String> deleteAttachments,
+        //        List<String> addAttachments,
+        //        Boolean isPublic
+        //) {
+        PostUpdateRequest postUpdateRequest = new PostUpdateRequest(
+                "title",
+                "content",
+                List.of("delete-tag"),
+                List.of("tag"),
+                List.of("delete-attachment"),
+                List.of("attachment"),
+                true
+        );
         // when
         ResponseEntity<PostApiResponse> response = postController.updatePost(
                 postSeq,
@@ -137,21 +155,58 @@ class PostControllerTest {
         String isPublic = "Y";
         Categories category = Categories.ALL;
         Integer page = 0;
-        PostResult postResult = PostResult.builder()
-                .seq(1L)
-                .attachments(List.of("attachment"))
-                .tags(List.of("tag"))
-                .title("title")
-                .content("content")
-                .isPublic("Y")
-                .viewCount(0L)
-                .likeCount(0L)
-                .commentCount(0L)
-                .createdAt("2021-08-01T:00:00:00")
-                .build();
+        //
+//    public PostResult(
+//                Long seq,
+//                String title,
+//                String content,
+//                Long userSeq,
+//                String userProfileUrl,
+//                String userNickName,
+//                List< CommentResult > comments,
+//                Long commentCount,
+//                Long viewCount,
+//                Long likeCount,
+//                List<String> tags,
+//                List<String> attachments,
+//                List<Long> likeUsers,
+//                List<Long> bookmarkUsers,
+//                String isPublic,
+//                String country,
+//                String region,
+//                Categories category,
+//                PostStatus status,
+//                String createdAt,
+//                String updatedAt,
+//                String keyword
+//        ) {
+        PostResult postResult = new PostResult(
+                1L,
+                "title",
+                "content",
+                1L,
+                "userProfileUrl",
+                "userNickName",
+                List.of(),
+                0L,
+                0L,
+                0L,
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                "Y",
+                "SOUTH_KOREA",
+                "region",
+                Categories.COMMUNICATION,
+                null,
+                "2021-08-01T:00:00:00",
+                "2021-08-01T:00:00:00",
+                null
+        );
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
         when(postInquiryService.getPosts(
-                Countries.SOUTH_KOREA,
+                Country.SOUTH_KOREA,
                 sortingMethod,
                 isPublic,
                 category,
@@ -160,7 +215,7 @@ class PostControllerTest {
 
         // when
         ResponseEntity<PostApiResponse> response = postController.getPosts(
-                Countries.SOUTH_KOREA,
+                Country.SOUTH_KOREA,
                 sortingMethod,
                 isPublic,
                 category,
@@ -179,18 +234,30 @@ class PostControllerTest {
     void getPost() {
         // given
         Long postSeq = 1L;
-        PostResult postResult = PostResult.builder()
-                .seq(1L)
-                .attachments(List.of("attachment"))
-                .tags(List.of("tag"))
-                .title("title")
-                .content("content")
-                .isPublic("Y")
-                .viewCount(0L)
-                .likeCount(0L)
-                .commentCount(0L)
-                .createdAt("2021-08-01T:00:00:00")
-                .build();
+        PostResult postResult = new PostResult(
+                1L,
+                "title",
+                "content",
+                1L,
+                "userProfileUrl",
+                "userNickName",
+                List.of(),
+                0L,
+                0L,
+                0L,
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                "Y",
+                "SOUTH_KOREA",
+                "region",
+                Categories.COMMUNICATION,
+                null,
+                "2021-08-01T:00:00:00",
+                "2021-08-01T:00:00:00",
+                null
+        );
         when(postInquiryService.getPostDetail(postSeq)).thenReturn(postResult);
 
         // when
@@ -208,18 +275,30 @@ class PostControllerTest {
         // given
         String keyword = "keyword";
         Integer page = 0;
-        PostResult postResult = PostResult.builder()
-                .seq(1L)
-                .attachments(List.of("attachment"))
-                .tags(List.of("tag"))
-                .title("title")
-                .content("content")
-                .isPublic("Y")
-                .viewCount(0L)
-                .likeCount(0L)
-                .commentCount(0L)
-                .createdAt("2021-08-01T:00:00:00")
-                .build();
+        PostResult postResult = new PostResult(
+                1L,
+                "title",
+                "content",
+                1L,
+                "userProfileUrl",
+                "userNickName",
+                List.of(),
+                0L,
+                0L,
+                0L,
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                "Y",
+                "SOUTH_KOREA",
+                "region",
+                Categories.COMMUNICATION,
+                null,
+                "2021-08-01T:00:00:00",
+                "2021-08-01T:00:00:00",
+                null
+        );
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
         when(postInquiryService.searchKeyword(
                 keyword,
@@ -244,18 +323,30 @@ class PostControllerTest {
         // given
         Long userSeq = 1L;
         Integer page = 0;
-        PostResult postResult = PostResult.builder()
-                .seq(1L)
-                .attachments(List.of("attachment"))
-                .tags(List.of("tag"))
-                .title("title")
-                .content("content")
-                .isPublic("Y")
-                .viewCount(0L)
-                .likeCount(0L)
-                .commentCount(0L)
-                .createdAt("2021-08-01T:00:00:00")
-                .build();
+        PostResult postResult = new PostResult(
+                1L,
+                "title",
+                "content",
+                1L,
+                "userProfileUrl",
+                "userNickName",
+                List.of(),
+                0L,
+                0L,
+                0L,
+                List.of(),
+                List.of(),
+                List.of(),
+                List.of(),
+                "Y",
+                "SOUTH_KOREA",
+                "region",
+                Categories.COMMUNICATION,
+                null,
+                "2021-08-01T:00:00:00",
+                "2021-08-01T:00:00:00",
+                null
+        );
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
         when(postInquiryService.getUserPosts(
                 userSeq,

@@ -1,5 +1,6 @@
 package com.backend.immilog.notice.presentation.controller;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.notice.application.services.NoticeCreateService;
 import com.backend.immilog.notice.application.services.NoticeInquiryService;
@@ -13,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -41,11 +44,8 @@ class NoticeControllerTest {
         UserRole userRole = UserRole.ROLE_ADMIN;
         when(request.getAttribute("userRole")).thenReturn(userRole);
         when(request.getAttribute("userSeq")).thenReturn(userSeq);
-        NoticeRegisterRequest param = NoticeRegisterRequest.builder()
-                .title(title)
-                .content(content)
-                .type(NoticeType.NOTICE)
-                .build();
+
+        NoticeRegisterRequest param = new NoticeRegisterRequest(title, content, NoticeType.NOTICE, List.of(Country.SOUTH_KOREA));
         // when
         ResponseEntity<NoticeApiResponse> response = noticeController.registerNotice(token, param);
         // then

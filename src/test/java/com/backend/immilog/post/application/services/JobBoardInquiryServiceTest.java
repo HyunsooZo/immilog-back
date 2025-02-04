@@ -2,7 +2,7 @@ package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.application.services.query.JobBoardQueryService;
-import com.backend.immilog.post.domain.enums.Countries;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.Industry;
 import com.backend.immilog.post.domain.enums.PostStatus;
@@ -37,35 +37,36 @@ class JobBoardInquiryServiceTest {
         int page = 0;
         Pageable pageable = PageRequest.of(page, 10);
         LocalDateTime now = LocalDateTime.now();
-        JobBoardResult jobBoardResult = JobBoardResult.builder()
-                .seq(1L)
-                .title("title")
-                .content("content")
-                .viewCount(0L)
-                .likeCount(0L)
-                .tags(Collections.emptyList())
-                .attachments(Collections.emptyList())
-                .likeUsers(Collections.emptyList())
-                .bookmarkUsers(Collections.emptyList())
-                .country(Countries.SOUTH_KOREA)
-                .region("region")
-                .industry(com.backend.immilog.user.domain.enums.Industry.IT.toPostIndustry())
-                .deadline(now)
-                .experience(Experience.JUNIOR)
-                .salary("salary")
-                .companyName("name")
-                .companyEmail("email")
-                .companyPhone("phone")
-                .companyAddress("address")
-                .companyHomepage("homepage")
-                .companyLogo("logo")
-                .companyManagerUserSeq(1L)
-                .status(PostStatus.NORMAL)
-                .createdAt(now)
-                .build();
+        JobBoardResult jobBoardResult = new JobBoardResult(
+                1L,
+                "title",
+                "content",
+                0L,
+                0L,
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Collections.emptyList(),
+                Country.SOUTH_KOREA,
+                "region",
+                Industry.IT,
+                now,
+                Experience.JUNIOR,
+                "salary",
+                1L,
+                "name",
+                "email",
+                "phone",
+                "address",
+                "homepage",
+                "logo",
+                1L,
+                PostStatus.NORMAL,
+                now
+        );
 
         when(jobBoardQueryService.getJobBoards(
-                Countries.valueOf(country),
+                Country.valueOf(country),
                 sortingMethod,
                 Industry.valueOf(industry),
                 Experience.valueOf(experience),
@@ -77,7 +78,7 @@ class JobBoardInquiryServiceTest {
 
         // then
         JobBoardResult result = jobBoards.getContent().getFirst();
-        assertThat(result.seq()).isEqualTo(1L);
-        assertThat(result.title()).isEqualTo("title");
+        assertThat(result.getSeq()).isEqualTo(1L);
+        assertThat(result.getTitle()).isEqualTo("title");
     }
 }

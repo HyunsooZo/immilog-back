@@ -14,40 +14,54 @@ class ReportValueTest {
     @Test
     @DisplayName("ReportEntity -> Report")
     void reportEntityFromReport_validReport() {
-        Report report = Report.builder()
-                .reportedUserSeq(1L)
-                .reporterUserSeq(2L)
-                .description("Test description")
-                .reason(ReportReason.SPAM)
-                .build();
-
+        //public record Report(
+        //        Long seq,
+        //        Long reportedUserSeq,
+        //        Long reporterUserSeq,
+        //        String description,
+        //        ReportReason reason,
+        //        LocalDateTime createdAt,
+        //        LocalDateTime updatedAt
+        //) {
+        Report report = new Report(
+                1L,
+                1L,
+                2L,
+                "Test description",
+                ReportReason.SPAM,
+                null,
+                null
+        );
         ReportEntity reportEntity = ReportEntity.from(report);
         Report domain = reportEntity.toDomain();
 
-        assertThat(domain.getReportedUserSeq()).isEqualTo(report.getReportedUserSeq());
-        assertThat(domain.getReporterUserSeq()).isEqualTo(report.getReporterUserSeq());
-        assertThat(domain.getDescription()).isEqualTo(report.getDescription());
-        assertThat(domain.getReason()).isEqualTo(report.getReason());
+        assertThat(domain.reportedUserSeq()).isEqualTo(report.reportedUserSeq());
+        assertThat(domain.reporterUserSeq()).isEqualTo(report.reporterUserSeq());
+        assertThat(domain.description()).isEqualTo(report.description());
+        assertThat(domain.reason()).isEqualTo(report.reason());
     }
 
     @Test
     @DisplayName("ReportEntity -> toDomain")
     void reportEntityToDomain_validReportEntity() {
-        ReportEntity reportEntity = ReportEntity.builder()
-                .seq(1L)
-                .reportedUserSeq(1L)
-                .reporterUserSeq(2L)
-                .description("Test description")
-                .reason(ReportReason.SPAM)
-                .build();
+        Report model = new Report(
+                1L,
+                1L,
+                2L,
+                "Test description",
+                ReportReason.SPAM,
+                null,
+                null
+        );
+        ReportEntity reportEntity = ReportEntity.from(model);
 
         Report report = reportEntity.toDomain();
 
-        assertThat(report.getSeq()).isEqualTo(1L);
-        assertThat(report.getReportedUserSeq()).isEqualTo(1L);
-        assertThat(report.getReporterUserSeq()).isEqualTo(2L);
-        assertThat(report.getDescription()).isEqualTo("Test description");
-        assertThat(report.getReason()).isEqualTo(ReportReason.SPAM);
+        assertThat(report.seq()).isEqualTo(1L);
+        assertThat(report.reportedUserSeq()).isEqualTo(1L);
+        assertThat(report.reporterUserSeq()).isEqualTo(2L);
+        assertThat(report.description()).isEqualTo("Test description");
+        assertThat(report.reason()).isEqualTo(ReportReason.SPAM);
     }
 
     @Test
@@ -61,14 +75,15 @@ class ReportValueTest {
     @Test
     @DisplayName("ReportEntity -> toDomain")
     void reportEntityToDomain_nullFields() {
-        ReportEntity reportEntity = ReportEntity.builder().build();
+        Report nullModel = new Report(null, null, null, null, null, null, null);
+        ReportEntity reportEntity = ReportEntity.from(nullModel);
 
         Report report = reportEntity.toDomain();
 
-        assertThat(report.getSeq()).isNull();
-        assertThat(report.getReportedUserSeq()).isNull();
-        assertThat(report.getReporterUserSeq()).isNull();
-        assertThat(report.getDescription()).isNull();
-        assertThat(report.getReason()).isNull();
+        assertThat(report.seq()).isNull();
+        assertThat(report.reportedUserSeq()).isNull();
+        assertThat(report.reporterUserSeq()).isNull();
+        assertThat(report.description()).isNull();
+        assertThat(report.reason()).isNull();
     }
 }

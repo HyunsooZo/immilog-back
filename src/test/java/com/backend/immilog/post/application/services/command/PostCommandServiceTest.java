@@ -1,6 +1,7 @@
 package com.backend.immilog.post.application.services.command;
 
 import com.backend.immilog.post.application.result.PostResult;
+import com.backend.immilog.post.domain.enums.Badge;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.repositories.PopularPostRepository;
@@ -33,7 +34,7 @@ class PostCommandServiceTest {
                 null,
                 Categories.QNA,
                 "Y",
-                0L,
+                Badge.HOT,
                 null,
                 LocalDateTime.now(),
                 LocalDateTime.now()
@@ -83,6 +84,7 @@ class PostCommandServiceTest {
                 "region",
                 Categories.QNA,
                 null,
+                "2021-08-01T00:00:00",
                 "2021-08-01T00:00:00",
                 null
         ));
@@ -138,6 +140,7 @@ class PostCommandServiceTest {
                         "region",
                         Categories.QNA,
                         null,
+                        "2021-08-01T00:00:00",
                         "2021-08-01T00:00:00",
                         null
                 )

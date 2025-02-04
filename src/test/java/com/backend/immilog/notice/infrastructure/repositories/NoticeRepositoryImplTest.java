@@ -3,7 +3,7 @@ package com.backend.immilog.notice.infrastructure.repositories;
 import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.NoticeDetail;
-import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +35,15 @@ class NoticeRepositoryImplTest {
     @Test
     @DisplayName("공지사항 저장 - 성공")
     void save_savesNoticeSuccessfully() {
-        Notice notice = Notice.builder().detail(new NoticeDetail("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL)
-        ).targetCountries(List.of(NoticeCountry.SOUTH_KOREA)
-        ).seq(1L).build();
+        Notice notice = new Notice(
+                1L,
+                1L,
+                List.of(Country.SOUTH_KOREA),
+                List.of(1L),
+                LocalDateTime.now(),
+                NoticeDetail.of("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL),
+                LocalDateTime.now()
+        );
         NoticeEntity noticeEntity = NoticeEntity.from(notice);
         when(noticeJpaRepository.save(any(NoticeEntity.class))).thenReturn(noticeEntity);
         noticeRepository.save(notice);
@@ -62,13 +69,22 @@ class NoticeRepositoryImplTest {
     @DisplayName("공지사항 존재유무 체크 - 성공")
     void findByGetSeq_returnsNoticeWhenExists() {
         Long noticeSeq = 1L;
-        NoticeEntity noticeEntity = NoticeEntity.builder().seq(noticeSeq).build();
-        when(noticeJpaRepository.findById(noticeSeq)).thenReturn(Optional.of(noticeEntity));
+        Notice notice = new Notice(
+                1L,
+                1L,
+                List.of(Country.SOUTH_KOREA),
+                List.of(1L),
+                LocalDateTime.now(),
+                NoticeDetail.of("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL),
+                LocalDateTime.now()
+        );
+        NoticeEntity noticeEntity = NoticeEntity.from(notice);
+        when(noticeJpaRepository.findBySeqAndStatusIsNot(noticeSeq,NoticeStatus.DELETED)).thenReturn(Optional.of(noticeEntity));
 
         Optional<Notice> result = noticeRepository.findBySeq(noticeSeq);
 
         assertThat(result).isPresent();
-        assertThat(result.get().getSeq()).isEqualTo(noticeSeq);
+        assertThat(result.get().seq()).isEqualTo(noticeSeq);
     }
 
     @Test
@@ -85,9 +101,9 @@ class NoticeRepositoryImplTest {
     @Test
     @DisplayName("읽지 않은 공지사항 존재유무 체크 - 성공")
     void areUnreadNoticesExist_returnsTrueWhenUnreadNoticesExist() {
-        NoticeCountry country = NoticeCountry.MALAYSIA;
+        Country country = Country.MALAYSIA;
         Long seq = 1L;
-        when(noticeJpaRepository.existsByTargetCountriesContainingAndReadUsersNotContaining(country, seq)).thenReturn(true);
+        when(noticeJpaRepository.existsByTargetCountryContainingAndReadUsersNotContaining(country, seq)).thenReturn(true);
 
         Boolean result = noticeRepository.areUnreadNoticesExist(country, seq);
 
@@ -97,9 +113,9 @@ class NoticeRepositoryImplTest {
     @Test
     @DisplayName("읽지 않은 공지사항 존재유무 체크 - 읽지 않은 공지사항이 없는 경우")
     void areUnreadNoticesExist_returnsFalseWhenNoUnreadNoticesExist() {
-        NoticeCountry country = NoticeCountry.MALAYSIA;
+        Country country = Country.MALAYSIA;
         Long seq = 999L;
-        when(noticeJpaRepository.existsByTargetCountriesContainingAndReadUsersNotContaining(country, seq)).thenReturn(false);
+        when(noticeJpaRepository.existsByTargetCountryContainingAndReadUsersNotContaining(country, seq)).thenReturn(false);
 
         Boolean result = noticeRepository.areUnreadNoticesExist(country, seq);
 

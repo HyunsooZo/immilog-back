@@ -32,11 +32,7 @@ class NoticeCreateServiceTest {
         String title = "제목";
         String content = "내용";
         UserRole userRole = UserRole.ROLE_ADMIN;
-        NoticeRegisterRequest param = NoticeRegisterRequest.builder()
-                .title(title)
-                .content(content)
-                .type(NoticeType.NOTICE)
-                .build();
+        NoticeRegisterRequest param =  new NoticeRegisterRequest(title, content, NoticeType.NOTICE, null);
         when(tokenProvider.getUserRoleFromToken("token")).thenReturn(userRole);
         when(tokenProvider.getIdFromToken("token")).thenReturn(userSeq);
         // when
@@ -53,11 +49,7 @@ class NoticeCreateServiceTest {
         String title = "제목";
         String content = "내용";
         UserRole userRole = UserRole.ROLE_USER;
-        NoticeRegisterRequest param = NoticeRegisterRequest.builder()
-                .title(title)
-                .content(content)
-                .type(NoticeType.NOTICE)
-                .build();
+        NoticeRegisterRequest param =  new NoticeRegisterRequest(title, content, NoticeType.NOTICE, null);
         when(tokenProvider.getUserRoleFromToken("token")).thenReturn(userRole);
         // when & then
         Assertions.assertThatThrownBy(

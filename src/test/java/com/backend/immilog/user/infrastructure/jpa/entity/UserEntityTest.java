@@ -1,7 +1,7 @@
 package com.backend.immilog.user.infrastructure.jpa.entity;
 
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.user.domain.enums.UserCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.*;
 import com.backend.immilog.user.exception.UserException;
@@ -20,90 +20,67 @@ class UserEntityTest {
     @Test
     @DisplayName("UserEntity from User - valid User object")
     void userEntityFromUser_validUser() {
-        User user = User.builder()
-                .seq(1L)
-                .profile(Profile.of("TestUser", "image.png", UserCountry.SOUTH_KOREA))
-                .auth(Auth.of("test@user.com", "password"))
-                .userStatus(UserStatus.ACTIVE)
-                .userRole(UserRole.ROLE_USER)
-                .location(Location.of(UserCountry.SOUTH_KOREA, "Country"))
-                .reportData(new ReportData(1L, Date.valueOf("2024-12-12")))
-                .build();
+        String mail = "test@user.com";
+        User user = new User(
+                1L,
+                Auth.of(mail, "password"),
+                UserRole.ROLE_USER,
+                new ReportData(1L, Date.valueOf("2024-12-12")),
+                Profile.of("TestUser", "image.png", Country.SOUTH_KOREA),
+                Location.of(Country.SOUTH_KOREA, "Country"),
+                UserStatus.ACTIVE,
+                null
+        );
 
         UserEntity userEntity = UserEntity.from(user);
         User domain = userEntity.toDomain();
 
-        assertThat(domain.getNickname()).isEqualTo(user.getNickname());
-        assertThat(domain.getEmail()).isEqualTo(user.getEmail());
-        assertThat(domain.getPassword()).isEqualTo(user.getPassword());
-        assertThat(domain.getImageUrl()).isEqualTo(user.getImageUrl());
-        assertThat(domain.getUserStatus()).isEqualTo(user.getUserStatus());
-        assertThat(domain.getUserRole()).isEqualTo(user.getUserRole());
-        assertThat(domain.getInterestCountry()).isEqualTo(user.getInterestCountry());
-        assertThat(domain.getLocation()).isEqualTo(user.getLocation());
-        assertThat(domain.getReportData()).isEqualTo(user.getReportData());
+        assertThat(domain.nickname()).isEqualTo(user.nickname());
+        assertThat(domain.email()).isEqualTo(user.email());
+        assertThat(domain.password()).isEqualTo(user.password());
+        assertThat(domain.imageUrl()).isEqualTo(user.imageUrl());
+        assertThat(domain.userStatus()).isEqualTo(user.userStatus());
+        assertThat(domain.userRole()).isEqualTo(user.userRole());
+        assertThat(domain.interestCountry()).isEqualTo(user.interestCountry());
+        assertThat(domain.location()).isEqualTo(user.location());
+        assertThat(domain.reportData()).isEqualTo(user.reportData());
     }
 
     @Test
     @DisplayName("UserEntity toDomain - valid UserEntity object")
     void userEntityToDomain_validUserEntity() {
-        Location country = Location.of(UserCountry.SOUTH_KOREA, "Country");
+        Location country = Location.of(Country.SOUTH_KOREA, "Country");
         ReportData repost = new ReportData(1L, Date.valueOf("2024-12-12"));
-        //return UserEntity.builder()
-        //                .seq(user.getSeq())
-        //                .email(user.getEmail())
-        //                .password(user.getPassword())
-        //                .userStatus(user.getUserStatus())
-        //                .userRole(user.getUserRole())
-        //                .country(user.getCountry())
-        //                .region(user.getRegion())
-        //                .reportedCount(user.getReportedCount())
-        //                .reportedDate(user.getReportedDate())
-        //                .nickname(user.getNickname())
-        //                .imageUrl(user.getImageUrl())
-        //                .interestCountry(user.getInterestCountry())
-        //                .updatedAt(user.getSeq() != null ? LocalDateTime.now() : null)
-        //                .build();
-        UserEntity userEntity = UserEntity.builder()
-                .seq(1L)
-                .email("test@user.com")
-                .password("password")
-                .userStatus(UserStatus.ACTIVE)
-                .userRole(UserRole.ROLE_USER)
-                .country(UserCountry.SOUTH_KOREA)
-                .region("Country")
-                .reportedCount(1L)
-                .reportedDate(Date.valueOf("2024-12-12"))
-                .nickname("TestUser")
-                .imageUrl("image.png")
-                .interestCountry(UserCountry.SOUTH_KOREA)
-                .updatedAt(null)
-                .build();
+
+        String mail = "test@user.com";
+        User model = new User(
+                1L,
+                Auth.of(mail, "password"),
+                UserRole.ROLE_USER,
+                repost,
+                Profile.of("TestUser", "image.png", Country.SOUTH_KOREA),
+                country,
+                UserStatus.ACTIVE,
+                null
+        );
+        UserEntity userEntity = UserEntity.from(model);
         User user = userEntity.toDomain();
 
-        assertThat(user.getNickname()).isEqualTo("TestUser");
-        assertThat(user.getEmail()).isEqualTo("test@user.com");
-        assertThat(user.getPassword()).isEqualTo("password");
-        assertThat(user.getImageUrl()).isEqualTo("image.png");
-        assertThat(user.getUserStatus()).isEqualTo(UserStatus.ACTIVE);
-        assertThat(user.getUserRole()).isEqualTo(UserRole.ROLE_USER);
-        assertThat(user.getInterestCountry()).isEqualTo(UserCountry.SOUTH_KOREA);
-        assertThat(user.getCountry()).isEqualTo(country.country());
-        assertThat(user.getReportData()).isEqualTo(repost);
+        assertThat(user.nickname()).isEqualTo("TestUser");
+        assertThat(user.email()).isEqualTo("test@user.com");
+        assertThat(user.password()).isEqualTo("password");
+        assertThat(user.imageUrl()).isEqualTo("image.png");
+        assertThat(user.userStatus()).isEqualTo(UserStatus.ACTIVE);
+        assertThat(user.userRole()).isEqualTo(UserRole.ROLE_USER);
+        assertThat(user.interestCountry()).isEqualTo(Country.SOUTH_KOREA);
+        assertThat(user.country()).isEqualTo(country.country());
+        assertThat(user.reportData()).isEqualTo(repost);
     }
 
     @Test
     @DisplayName("UserEntity from User - null User")
     void userEntityFromUser_nullUser() {
         User user = null;
-
         assertThatThrownBy(() -> UserEntity.from(null)).isInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @DisplayName("UserEntity toDomain - null")
-    void userEntityToDomain_nullFields() {
-        Assertions.assertThatThrownBy(UserEntity.builder().build()::toDomain)
-                .isInstanceOf(UserException.class);
     }
 }

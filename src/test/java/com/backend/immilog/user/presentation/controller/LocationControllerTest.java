@@ -1,6 +1,6 @@
 package com.backend.immilog.user.presentation.controller;
 
-import com.backend.immilog.global.enums.GlobalCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.services.LocationService;
 import com.backend.immilog.user.presentation.response.LocationResponse;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
@@ -13,7 +13,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
-import static com.backend.immilog.global.enums.GlobalCountry.SOUTH_KOREA;
+import static com.backend.immilog.global.enums.Country.SOUTH_KOREA;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,7 +47,7 @@ class LocationControllerTest {
         LocationResponse locationResponse = (LocationResponse) ((UserApiResponse) Objects.requireNonNull(response.getBody())).data();
         assertThat(locationResponse).isNotNull();
         System.out.println(locationResponse.country());
-        assertThat(GlobalCountry.getCountryByKoreanName(country).name()).isEqualTo(locationResponse.country());
+        assertThat(Country.getCountryByKoreanName(country).name()).isEqualTo(locationResponse.country());
         assertThat(SOUTH_KOREA.toString()).isEqualTo(locationResponse.country());
     }
 }

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.springframework.security.core.parameters.P;
 
 import java.util.List;
 
@@ -23,28 +24,11 @@ class PopularPostServiceTest {
     void aggregatePopularPostsShouldSaveMostViewedAndHotPosts() throws JsonProcessingException {
         // Given
         List<PostResult> mostViewedPosts = List.of(
-                PostResult.builder()
-                        .seq(1L)
-                        .title("Most Viewed Post")
-                        .viewCount(1000L)
-                        .build(),
-                PostResult.builder()
-                        .seq(2L)
-                        .title("Another Viewed Post")
-                        .viewCount(900L)
-                        .build()
-        );
+                new PostResult(1L, "Most Viewed Post", null, null, null, null, null, null, 1000L, null, null, null, null, null, null, null, null, null, null, null, null, null),
+                new PostResult(2L, "Another Viewed Post", null, null, null, null, null, null, 900L, null, null, null, null, null, null, null, null, null, null, null, null, null));
         List<PostResult> hotPosts = List.of(
-                PostResult.builder()
-                        .seq(3L)
-                        .title("Hot Post")
-                        .content("content")
-                        .build(),
-                PostResult.builder()
-                        .seq(4L)
-                        .title("Another Hot Post")
-                        .viewCount(700L)
-                        .build()
+                new PostResult(3L, 2L, "content", null, null, null, null, null, null, null, null, null, null, null, null, null),
+                new PostResult(4L, "Another Hot Post", null, null, null, null, null, null, 700L, null, null, null, null, null, null, null, null, null, null, null, null, null)
         );
 
         when(postInquiryService.getMostViewedPosts()).thenReturn(mostViewedPosts);
@@ -86,28 +70,11 @@ class PopularPostServiceTest {
     void aggregatePopularPostsShouldLogErrorWhenExceptionOccurs2() throws JsonProcessingException {
         // Given
         List<PostResult> mostViewedPosts = List.of(
-                PostResult.builder()
-                        .seq(1L)
-                        .title("Most Viewed Post")
-                        .viewCount(1000L)
-                        .build(),
-                PostResult.builder()
-                        .seq(2L)
-                        .title("Another Viewed Post")
-                        .viewCount(900L)
-                        .build()
-        );
+                new PostResult(1L, "Most Viewed Post", null, null, null, null, null, null, 1000L, null, null, null, null, null, null, null, null, null, null, null, null, null),
+                new PostResult(2L, "Another Viewed Post", null, null, null, null, null, null, 900L, null, null, null, null, null, null, null, null, null, null, null, null, null));
         List<PostResult> hotPosts = List.of(
-                PostResult.builder()
-                        .seq(3L)
-                        .title("Hot Post")
-                        .content("content")
-                        .build(),
-                PostResult.builder()
-                        .seq(4L)
-                        .title("Another Hot Post")
-                        .viewCount(700L)
-                        .build()
+                new PostResult(3L, 2L, "content", null, null, null, null, null, null, null, null, null, null, null, null, null),
+                new PostResult(4L, "Another Hot Post", null, null, null, null, null, null, 700L, null, null, null, null, null, null, null, null, null, null, null, null, null)
         );
         when(postInquiryService.getMostViewedPosts()).thenReturn(mostViewedPosts);
         when(postInquiryService.getHotPosts()).thenReturn(hotPosts);

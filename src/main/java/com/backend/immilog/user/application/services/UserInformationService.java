@@ -111,7 +111,7 @@ public class UserInformationService {
             String previousProfileImage,
             String newProfileImage
     ) {
-        if (previousProfileImage != null && previousProfileImage.equals(newProfileImage)) {
+        if (previousProfileImage != null && !previousProfileImage.equals(newProfileImage)) {
             imageService.deleteFile(previousProfileImage);
         }
     }

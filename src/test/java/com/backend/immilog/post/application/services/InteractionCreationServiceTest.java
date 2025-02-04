@@ -28,13 +28,10 @@ class InteractionCreationServiceTest {
         Long postSeq = 1L;
         String post = "post";
         String interaction = "like";
-        InteractionUser interactionUser = InteractionUser.builder().build();
-        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
-                any(), any(), any(), any()
-        )).thenReturn(Optional.of(interactionUser));
+        InteractionUser interactionUser = mock(InteractionUser.class);
+        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(any(), any(), any(), any())).thenReturn(Optional.of(interactionUser));
         // when
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);
-
         // then
         verify(interactionUserCommandService).delete(any());
     }
@@ -47,12 +44,9 @@ class InteractionCreationServiceTest {
         Long postSeq = 1L;
         String post = "post";
         String interaction = "like";
-        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
-                any(), any(), any(), any()
-        )).thenReturn(Optional.empty());
+        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(any(), any(), any(), any())).thenReturn(Optional.empty());
         // when
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);
-
         // then
         verify(interactionUserCommandService).save(any());
     }

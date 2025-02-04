@@ -1,11 +1,11 @@
 package com.backend.immilog.global.application;
 
+import com.backend.immilog.image.application.service.ImageService;
 import com.backend.immilog.image.application.service.command.ImageCommandService;
 import com.backend.immilog.image.application.service.query.ImageQueryService;
 import com.backend.immilog.image.domain.enums.ImageType;
 import com.backend.immilog.image.domain.model.Image;
 import com.backend.immilog.image.infrastructure.gateway.FileStorageHandler;
-import com.backend.immilog.image.application.service.ImageService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,11 +52,9 @@ class ImageServiceTest {
     void deleteImage() {
         // given
         String imagePath = "https://imagePath";
-        when(imageQueryService.getImageByPath(imagePath))
-                .thenReturn(new Image(imagePath, ImageType.POST));
+        when(imageQueryService.getImageByPath(imagePath)).thenReturn(Image.of(imagePath, ImageType.POST));
         // when
         imageService.deleteFile(imagePath);
-
         // then
         verify(fileStorageHandler, times(1)).deleteFile(eq(imagePath));
     }

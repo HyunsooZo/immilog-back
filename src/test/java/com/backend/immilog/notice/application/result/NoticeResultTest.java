@@ -1,7 +1,7 @@
 package com.backend.immilog.notice.application.result;
 
 import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import org.junit.jupiter.api.DisplayName;
@@ -24,15 +24,15 @@ class NoticeResultTest {
     @DisplayName("Notice 객체를 NoticeResult 객체로 변환")
     void fromNoticeToNoticeResult() {
         Notice notice = mock(Notice.class);
-        when(notice.getSeq()).thenReturn(1L);
-        when(notice.getUserSeq()).thenReturn(2L);
-        when(notice.getTitle()).thenReturn("Title");
-        when(notice.getContent()).thenReturn("Content");
-        when(notice.getType()).thenReturn(NoticeType.NOTICE);
-        when(notice.getStatus()).thenReturn(NoticeStatus.NORMAL);
-        when(notice.getTargetCountries()).thenReturn(List.of(NoticeCountry.SOUTH_KOREA));
-        when(notice.getReadUsers()).thenReturn(List.of(3L));
-        when(notice.getCreatedAt()).thenReturn(LocalDateTime.of(2023, 1, 1, 0, 0));
+        when(notice.seq()).thenReturn(1L);
+        when(notice.userSeq()).thenReturn(2L);
+        when(notice.title()).thenReturn("Title");
+        when(notice.content()).thenReturn("Content");
+        when(notice.type()).thenReturn(NoticeType.NOTICE);
+        when(notice.status()).thenReturn(NoticeStatus.NORMAL);
+        when(notice.targetCountry()).thenReturn(List.of(Country.SOUTH_KOREA));
+        when(notice.readUsers()).thenReturn(List.of(3L));
+        when(notice.createdAt()).thenReturn(LocalDateTime.of(2023, 1, 1, 0, 0));
 
         NoticeResult result = NoticeResult.from(notice);
 
@@ -42,7 +42,7 @@ class NoticeResultTest {
         assertThat(result.content()).isEqualTo("Content");
         assertThat(result.type()).isEqualTo(NoticeType.NOTICE);
         assertThat(result.status()).isEqualTo(NoticeStatus.NORMAL);
-        assertThat(result.targetCountries()).containsExactly(NoticeCountry.SOUTH_KOREA);
+        assertThat(result.targetCountry()).containsExactly(Country.SOUTH_KOREA);
         assertThat(result.readUsers()).containsExactly(3L);
         assertThat(result.createdAt()).isEqualTo(LocalDateTime.of(2023, 1, 1, 0, 0));
     }
@@ -57,10 +57,10 @@ class NoticeResultTest {
         when(rs.getString("content")).thenReturn("Content");
         when(rs.getString("type")).thenReturn("NOTICE");
         when(rs.getString("status")).thenReturn("NORMAL");
-        java.sql.Array targetCountriesArray = mock(java.sql.Array.class);
+        java.sql.Array targetCountryArray = mock(java.sql.Array.class);
         java.sql.Array readUsersArray = mock(java.sql.Array.class);
-        when(rs.getArray("target_countries")).thenReturn(targetCountriesArray);
-        when(targetCountriesArray.getArray()).thenReturn(new NoticeCountry[]{NoticeCountry.SOUTH_KOREA});
+        when(rs.getArray("target_Country")).thenReturn(targetCountryArray);
+        when(targetCountryArray.getArray()).thenReturn(new Country[]{Country.SOUTH_KOREA});
         when(rs.getArray("read_users")).thenReturn(readUsersArray);
         when(readUsersArray.getArray()).thenReturn(new Long[]{3L});
         when(rs.getTimestamp("created_at")).thenReturn(Timestamp.valueOf(LocalDateTime.of(2023, 1, 1, 0, 0)));
@@ -73,7 +73,7 @@ class NoticeResultTest {
         assertThat(result.content()).isEqualTo("Content");
         assertThat(result.type()).isEqualTo(NoticeType.NOTICE);
         assertThat(result.status()).isEqualTo(NoticeStatus.NORMAL);
-        assertThat(result.targetCountries()).containsExactly(NoticeCountry.SOUTH_KOREA);
+        assertThat(result.targetCountry()).containsExactly(Country.SOUTH_KOREA);
         assertThat(result.readUsers()).containsExactly(3L);
         assertThat(result.createdAt()).isEqualTo(LocalDateTime.of(2023, 1, 1, 0, 0));
     }

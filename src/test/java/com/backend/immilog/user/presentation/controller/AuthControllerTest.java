@@ -38,22 +38,21 @@ class AuthControllerTest {
         HttpServletRequest request = mock(HttpServletRequest.class);
         Double latitude = 37.123456;
         Double longitude = 126.123456;
-        UserSignInResult userSignInResult = UserSignInResult.builder()
-                .userSeq(userSeq)
-                .email("test@email.com")
-                .nickname("test")
-                .accessToken("accessToken")
-                .refreshToken("refreshToken")
-                .country("South Korea")
-                .interestCountry("South Korea")
-                .region("Seoul")
-                .userProfileUrl("image")
-                .isLocationMatch(true)
-                .build();
-
+        String mail = "test@email.com";
+        UserSignInResult userSignInResult = new UserSignInResult(
+                userSeq,
+                mail,
+                "test",
+                "accessToken",
+                "refreshToken",
+                "South Korea",
+                "South Korea",
+                "Seoul",
+                "image",
+                true
+        );
         Pair<String, String> location = Pair.of("KR", "South Korea");
-        CompletableFuture<Pair<String, String>> value =
-                CompletableFuture.completedFuture(location);
+        CompletableFuture<Pair<String, String>> value = CompletableFuture.completedFuture(location);
         when(locationService.getCountry(latitude, longitude)).thenReturn(value);
         when(locationService.joinCompletableFutureLocation(value)).thenReturn(location);
         when(userSignInService.getUserSignInDTO(userSeq, location)).thenReturn(userSignInResult);

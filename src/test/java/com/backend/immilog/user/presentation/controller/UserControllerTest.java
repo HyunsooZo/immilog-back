@@ -1,12 +1,19 @@
 package com.backend.immilog.user.presentation.controller;
 
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.*;
+import com.backend.immilog.user.domain.enums.ReportReason;
+import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.enums.EmailComponents;
 import com.backend.immilog.user.presentation.request.*;
 import com.backend.immilog.user.presentation.response.UserApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Pair;
@@ -16,8 +23,6 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 import static com.backend.immilog.user.domain.enums.ReportReason.FRAUD;
-import static com.backend.immilog.user.domain.enums.UserCountry.INDONESIA;
-import static com.backend.immilog.user.domain.enums.UserCountry.JAPAN;
 import static com.backend.immilog.user.domain.enums.UserStatus.ACTIVE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -44,18 +49,16 @@ class UserControllerTest {
     @DisplayName("회원가입")
     void signUp() {
         // given
-        UserSignUpRequest param = UserSignUpRequest.builder()
-                .nickName("test")
-                .password("test1234")
-                .email("email@email.com")
-                .country("SOUTH_KOREA")
-                .interestCountry("SOUTH_KOREA")
-                .region("Seoul")
-                .profileImage("image")
-                .build();
-
-        when(userSignUpService.signUp(param.toCommand()))
-                .thenReturn(Pair.of(1L, "test"));
+        UserSignUpRequest param = new UserSignUpRequest(
+                "test",
+                "test1234",
+                "email@email.com",
+                "SOUTH_KOREA",
+                "SOUTH_KOREA",
+                "Seoul",
+                "image"
+        );
+        when(userSignUpService.signUp(param.toCommand())).thenReturn(Pair.of(1L, "test"));
 
         // when
         ResponseEntity<UserApiResponse> response = userController.signUp(param);
@@ -64,14 +67,7 @@ class UserControllerTest {
         verify(emailService, times(1)).sendHtmlEmail(
                 param.email(),
                 EmailComponents.EMAIL_SIGN_UP_SUBJECT,
-                String.format(
-                        EmailComponents.HTML_SIGN_UP_CONTENT,
-                        "test",
-                        String.format(
-                                EmailComponents.API_LINK,
-                                1L
-                        )
-                )
+                String.format(EmailComponents.HTML_SIGN_UP_CONTENT, "test", String.format(EmailComponents.API_LINK, 1L))
         );
         assertThat(response.getStatusCode()).isEqualTo(CREATED);
     }
@@ -80,19 +76,9 @@ class UserControllerTest {
     @DisplayName("로그인")
     void signIn() {
         // given
-        UserSignInRequest param = UserSignInRequest.builder()
-                .email("email")
-                .password("password")
-                .latitude(37.1234)
-                .longitude(127.1234)
-                .build();
-
-        when(locationService.getCountry(param.latitude(), param.longitude()))
-                .thenReturn(CompletableFuture.completedFuture(Pair.of("대한민국", "서울")));
-        when(userSignInService.signIn(
-                param.toCommand(),
-                locationService.getCountry(param.latitude(), param.longitude()))
-        ).thenReturn(UserSignInResult.builder().build());
+        UserSignInRequest param = new UserSignInRequest("email", "password", 37.1234, 127.1234);
+        when(locationService.getCountry(param.latitude(), param.longitude())).thenReturn(CompletableFuture.completedFuture(Pair.of("대한민국", "서울")));
+        when(userSignInService.signIn(param.toCommand(), locationService.getCountry(param.latitude(), param.longitude()))).thenReturn(mock(UserSignInResult.class));
         // when
         ResponseEntity<UserApiResponse> response = userController.signIn(param);
 
@@ -106,29 +92,24 @@ class UserControllerTest {
         // given
         HttpServletRequest request = mock(HttpServletRequest.class);
         UserInfoUpdateRequest param =
-                UserInfoUpdateRequest.builder()
-                        .nickName("newNickName")
-                        .profileImage("newImage")
-                        .country(JAPAN)
-                        .interestCountry(INDONESIA)
-                        .latitude(37.123456)
-                        .longitude(126.123456)
-                        .status(ACTIVE)
-                        .build();
+                new UserInfoUpdateRequest(
+                        "newNickName",
+                        "newImage",
+                        Country.JAPAN,
+                        Country.INDONESIA,
+                        37.123456,
+                        126.123456,
+                        UserStatus.ACTIVE
+                );
 
         Long userSeq = 1L;
-        when(locationService.getCountry(param.latitude(), param.longitude()))
-                .thenReturn(CompletableFuture.completedFuture(Pair.of("Japan", "Tokyo")));
+        when(locationService.getCountry(param.latitude(), param.longitude())).thenReturn(CompletableFuture.completedFuture(Pair.of("Japan", "Tokyo")));
         // when
         ResponseEntity<UserApiResponse> response = userController.updateInformation(userSeq, param);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        verify(userInformationService, times(1)).updateInformation(
-                1L,
-                locationService.getCountry(param.latitude(), param.longitude()),
-                param.toCommand()
-        );
+        verify(userInformationService, times(1)).updateInformation(1L, locationService.getCountry(param.latitude(), param.longitude()), param.toCommand());
     }
 
     @Test
@@ -136,10 +117,10 @@ class UserControllerTest {
     void resetPassword() {
         // given
         Long userSeq = 1L;
-        UserPasswordChangeRequest param = UserPasswordChangeRequest.builder()
-                .existingPassword("existingPassword")
-                .newPassword("newPassword")
-                .build();
+        UserPasswordChangeRequest param = new UserPasswordChangeRequest(
+                "existingPassword",
+                "newPassword"
+        );
         // when
         ResponseEntity<UserApiResponse> response = userController.changePassword(userSeq, param);
 
@@ -154,7 +135,7 @@ class UserControllerTest {
     void checkNickname() {
         // given
         String nickname = "test";
-        when(userSignUpService.checkNickname(nickname)).thenReturn(true);
+        when(userSignUpService.isNicknameAvailable(nickname)).thenReturn(true);
 
         // when
         ResponseEntity<UserApiResponse> response = userController.checkNickname(nickname);
@@ -188,9 +169,10 @@ class UserControllerTest {
         // given
         Long targetUserSeq = 2L;
         Long userSeq = 1L;
-        UserReportRequest param = UserReportRequest.builder()
-                .reason(FRAUD)
-                .build();
+        UserReportRequest param = new UserReportRequest(
+                ReportReason.FRAUD,
+                "test"
+        );
         // when
         ResponseEntity<Void> response = userController.reportUser(userSeq, targetUserSeq, param);
         // then

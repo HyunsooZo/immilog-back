@@ -41,7 +41,7 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.handleCustomException(exception);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getErrorCode()).isEqualTo(EXISTING_USER);
+        assertThat(response.getBody().errorCode()).isEqualTo(EXISTING_USER);
     }
 
     @Test
@@ -51,6 +51,6 @@ class GlobalExceptionHandlerTest {
         ResponseEntity<ErrorResponse> response = globalExceptionHandler.undefinedException(exception);
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().getErrorCode()).isEqualTo(UNDEFINED_EXCEPTION);
+        assertThat(response.getBody().errorCode()).isEqualTo(UNDEFINED_EXCEPTION);
     }
 }

@@ -1,8 +1,8 @@
 package com.backend.immilog.notice.infrastructure.jpa.entities;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.NoticeDetail;
-import com.backend.immilog.notice.domain.model.enums.NoticeCountry;
 import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeEntity;
@@ -19,63 +19,66 @@ class NoticeEntityTest {
     @Test
     @DisplayName("NoticeEntity 생성 테스트")
     void from_createsNoticeEntityFromNotice() {
-        Notice notice = Notice.builder()
-                .seq(1L)
-                .userSeq(2L)
-                .detail(NoticeDetail.of("Title", "Content", NoticeType.NOTICE, NoticeStatus.NORMAL))
-                .targetCountries(List.of(NoticeCountry.SINGAPORE))
-                .readUsers(List.of(3L))
-                .build();
-
+        Notice notice = new Notice(
+                1L,
+                2L,
+                List.of(Country.SINGAPORE),
+                List.of(3L),
+                null,
+                NoticeDetail.of("Title", "Content", NoticeType.NOTICE, NoticeStatus.NORMAL),
+                null
+        );
         NoticeEntity noticeEntity = NoticeEntity.from(notice);
         Notice domain = noticeEntity.toDomain();
 
-        assertThat(domain.getSeq()).isEqualTo(notice.getSeq());
-        assertThat(domain.getUserSeq()).isEqualTo(notice.getUserSeq());
-        assertThat(domain.getTitle()).isEqualTo(notice.getTitle());
-        assertThat(domain.getContent()).isEqualTo(notice.getContent());
-        assertThat(domain.getType()).isEqualTo(notice.getType());
-        assertThat(domain.getStatus()).isEqualTo(notice.getStatus());
-        assertThat(domain.getTargetCountries()).isEqualTo(notice.getTargetCountries());
-        assertThat(domain.getReadUsers()).isEqualTo(notice.getReadUsers());
+        assertThat(domain.seq()).isEqualTo(notice.seq());
+        assertThat(domain.userSeq()).isEqualTo(notice.userSeq());
+        assertThat(domain.title()).isEqualTo(notice.title());
+        assertThat(domain.content()).isEqualTo(notice.content());
+        assertThat(domain.type()).isEqualTo(notice.type());
+        assertThat(domain.status()).isEqualTo(notice.status());
+        assertThat(domain.targetCountry()).isEqualTo(notice.targetCountry());
+        assertThat(domain.readUsers()).isEqualTo(notice.readUsers());
     }
 
     @Test
     @DisplayName("NoticeEntity toDomain 메서드 테스트")
     void toDomain_createsNoticeFromNoticeEntity() {
-        NoticeEntity noticeEntity = NoticeEntity.builder()
-                .seq(1L)
-                .userSeq(2L)
-                .title("Title")
-                .content("Content")
-                .type(NoticeType.NOTICE)
-                .status(NoticeStatus.NORMAL)
-                .targetCountries(List.of(NoticeCountry.SINGAPORE))
-                .readUsers(List.of(3L))
-                .build();
+
+        NoticeEntity noticeEntity = NoticeEntity.from(new Notice(
+                1L,
+                2L,
+                List.of(Country.SINGAPORE),
+                List.of(3L),
+                null,
+                NoticeDetail.of("Title", "Content", NoticeType.NOTICE, NoticeStatus.NORMAL),
+                null
+        ));
 
         Notice notice = noticeEntity.toDomain();
 
-        assertThat(notice.getSeq()).isEqualTo(1L);
-        assertThat(notice.getUserSeq()).isEqualTo(2L);
-        assertThat(notice.getTitle()).isEqualTo("Title");
-        assertThat(notice.getContent()).isEqualTo("Content");
-        assertThat(notice.getType()).isEqualTo(NoticeType.NOTICE);
-        assertThat(notice.getStatus()).isEqualTo(NoticeStatus.NORMAL);
-        assertThat(notice.getTargetCountries()).isEqualTo(List.of(NoticeCountry.SINGAPORE));
-        assertThat(notice.getReadUsers()).isEqualTo(List.of(3L));
+        assertThat(notice.seq()).isEqualTo(1L);
+        assertThat(notice.userSeq()).isEqualTo(2L);
+        assertThat(notice.title()).isEqualTo("Title");
+        assertThat(notice.content()).isEqualTo("Content");
+        assertThat(notice.type()).isEqualTo(NoticeType.NOTICE);
+        assertThat(notice.status()).isEqualTo(NoticeStatus.NORMAL);
+        assertThat(notice.targetCountry()).isEqualTo(List.of(Country.SINGAPORE));
+        assertThat(notice.readUsers()).isEqualTo(List.of(3L));
     }
 
     @Test
     @DisplayName("NoticeEntity null 값 처리 테스트")
     void from_handlesNullValues() {
-        Notice notice = Notice.builder()
-                .seq(null)
-                .userSeq(null)
-                .detail(NoticeDetail.of(null, null, null, null))
-                .targetCountries(null)
-                .readUsers(null)
-                .build();
+        Notice notice = new Notice(
+                null,
+                null,
+                null,
+                null,
+                null,
+                NoticeDetail.of(null, null, null, null),
+                null
+        );
 
         NoticeEntity noticeEntity = NoticeEntity.from(notice);
     }
@@ -83,37 +86,25 @@ class NoticeEntityTest {
     @Test
     @DisplayName("NoticeEntity toDomain null 값 처리 테스트")
     void toDomain_handlesNullValues() {
-        NoticeEntity noticeEntity = NoticeEntity.builder()
-                .seq(null)
-                .userSeq(null)
-                .title(null)
-                .content(null)
-                .type(null)
-                .status(null)
-                .targetCountries(null)
-                .readUsers(null)
-                .build();
-
+        NoticeEntity noticeEntity = NoticeEntity.from(
+                new Notice(
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        NoticeDetail.of(null, null, null, null),
+                        null
+                )
+        );
         Notice notice = noticeEntity.toDomain();
-
-        assertThat(notice.getSeq()).isNull();
-        assertThat(notice.getUserSeq()).isNull();
-        assertThat(notice.getTitle()).isNull();
-        assertThat(notice.getContent()).isNull();
-        assertThat(notice.getType()).isNull();
-        assertThat(notice.getStatus()).isNull();
-        assertThat(notice.getTargetCountries()).isNull();
-        assertThat(notice.getReadUsers()).isNull();
-    }
-
-    @Test
-    @DisplayName("NoticeEntity Setter 테스트")
-    void setter_test() {
-        NoticeEntity noticeEntity = NoticeEntity.builder()
-                .title("Title")
-                .content("Content")
-                .type(NoticeType.NOTICE)
-                .status(NoticeStatus.NORMAL)
-                .build();
+        assertThat(notice.seq()).isNull();
+        assertThat(notice.userSeq()).isNull();
+        assertThat(notice.title()).isNull();
+        assertThat(notice.content()).isNull();
+        assertThat(notice.type()).isNull();
+        assertThat(notice.status()).isNull();
+        assertThat(notice.targetCountry()).isNull();
+        assertThat(notice.readUsers()).isNull();
     }
 }
