@@ -2,10 +2,11 @@ package com.backend.immilog.image.presentation.controller;
 
 import com.backend.immilog.image.application.service.ImageService;
 import com.backend.immilog.image.domain.enums.ImageType;
-import com.backend.immilog.image.presentation.request.ImageRequest;
+import com.backend.immilog.image.presentation.payload.ImageRequest;
+import com.backend.immilog.image.presentation.payload.ImageResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,12 +30,11 @@ public class ImageController {
     @PostMapping
     @Operation(summary = "이미지 업로드", description = "이미지를 업로드합니다.")
     public ResponseEntity<ImageResponse> uploadImage(
-            @RequestParam("multipartFile") List<MultipartFile> multipartFile,
-            @RequestParam("imagePath") String imagePath,
-            @RequestParam("imageType") ImageType imageType
+            @Schema(description = "이미지 파일") @RequestParam("multipartFile") List<MultipartFile> multipartFile,
+            @Schema(description = "이미지 경로") @RequestParam("imagePath") String imagePath,
+            @Schema(description = "이미지 타입") @RequestParam("imageType") ImageType imageType
     ) {
         List<String> data = imageService.saveFiles(multipartFile, imagePath, imageType);
-
         return ResponseEntity.status(OK).body(ImageResponse.of(data));
     }
 
@@ -47,19 +47,4 @@ public class ImageController {
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
-    public record ImageResponse(
-            Integer status,
-            String message,
-            Object data,
-            List<Object> list
-    ) {
-        public static ImageResponse of(Object data) {
-            return new ImageResponse(
-                    HttpStatus.OK.value(),
-                    null,
-                    data,
-                    null
-            );
-        }
-    }
 }

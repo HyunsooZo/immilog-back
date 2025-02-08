@@ -2,6 +2,7 @@ package com.backend.immilog.notice.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
+import com.backend.immilog.notice.application.result.NoticeResult;
 import com.backend.immilog.notice.application.services.NoticeCreateService;
 import com.backend.immilog.notice.application.services.NoticeInquiryService;
 import com.backend.immilog.notice.application.services.NoticeModifyService;
@@ -9,16 +10,20 @@ import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
 import com.backend.immilog.notice.domain.model.enums.NoticeType;
 import com.backend.immilog.notice.presentation.request.NoticeModifyRequest;
 import com.backend.immilog.notice.presentation.request.NoticeRegisterRequest;
-import com.backend.immilog.notice.presentation.response.NoticeApiResponse;
+import com.backend.immilog.notice.presentation.response.NoticeDetailResponse;
+import com.backend.immilog.notice.presentation.response.NoticeListResponse;
+import com.backend.immilog.notice.presentation.response.NoticeRegistrationResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 @DisplayName("공지사항 컨트롤러 테스트")
 class NoticeControllerTest {
@@ -47,7 +52,7 @@ class NoticeControllerTest {
 
         NoticeRegisterRequest param = new NoticeRegisterRequest(title, content, NoticeType.NOTICE, List.of(Country.SOUTH_KOREA));
         // when
-        ResponseEntity<NoticeApiResponse> response = noticeController.registerNotice(token, param);
+        ResponseEntity<NoticeRegistrationResponse> response = noticeController.registerNotice(token, param);
         // then
         verify(noticeRegisterService).registerNotice(token, param.toCommand());
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
@@ -62,10 +67,12 @@ class NoticeControllerTest {
         Integer page = 0;
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getAttribute("userSeq")).thenReturn(userSeq);
-        when(noticeInquiryService.getNotices(userSeq, page)).thenReturn(null);
+        Page<NoticeResult> results = mock(Page.class);
+        when(results.isEmpty()).thenReturn(false);
+        when(noticeInquiryService.getNotices(userSeq, page)).thenReturn(results);
 
         // when
-        ResponseEntity<NoticeApiResponse> response = noticeController.getNotices(userSeq,page);
+        ResponseEntity<NoticeListResponse> response = noticeController.getNotices(userSeq,page);
 
         // then
         verify(noticeInquiryService).getNotices(userSeq, page);
@@ -77,10 +84,10 @@ class NoticeControllerTest {
     void getNoticeDetail_success() {
         // given
         Long noticeSeq = 1L;
-        when(noticeInquiryService.getNoticeDetail(noticeSeq)).thenReturn(null);
+        when(noticeInquiryService.getNoticeDetail(noticeSeq)).thenReturn(mock(NoticeResult.class));
 
         // when
-        ResponseEntity<NoticeApiResponse> response = noticeController.getNoticeDetail(noticeSeq);
+        ResponseEntity<NoticeDetailResponse> response = noticeController.getNoticeDetail(noticeSeq);
 
         // then
         verify(noticeInquiryService).getNoticeDetail(noticeSeq);
@@ -97,7 +104,7 @@ class NoticeControllerTest {
         when(noticeInquiryService.isUnreadNoticeExist(userSeq)).thenReturn(true);
 
         // when
-        ResponseEntity<NoticeApiResponse> response = noticeController.isNoticeExist(userSeq);
+        ResponseEntity<NoticeRegistrationResponse> response = noticeController.isNoticeExist(userSeq);
 
         // then
         verify(noticeInquiryService).isUnreadNoticeExist(userSeq);
