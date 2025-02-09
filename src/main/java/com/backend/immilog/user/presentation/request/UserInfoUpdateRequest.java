@@ -7,13 +7,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "사용자 정보 수정 요청 DTO")
 public record UserInfoUpdateRequest(
-        String nickName,
-        String profileImage,
-        Country country,
-        Country interestCountry,
-        Double latitude,
-        Double longitude,
-        UserStatus status
+        @Schema(description = "닉네임", example = "닉네임") String nickName,
+        @Schema(description = "프로필 이미지", example = "프로필 이미지") String profileImage,
+        @Schema(description = "국가", example = "SOUTH_KOREA") Country country,
+        @Schema(description = "관심 국가", example = "MALAYSIA") Country interestCountry,
+        @Schema(description = "위도", example = "37.123456") Double latitude,
+        @Schema(description = "경도", example = "127.123456") Double longitude,
+        @Schema(description = "사용자 상태", example = "ACTIVE") UserStatus status
 ) {
     public UserInfoUpdateCommand toCommand() {
         return new UserInfoUpdateCommand(

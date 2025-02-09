@@ -6,8 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "사용자 신고 요청 DTO")
 public record UserReportRequest(
-        ReportReason reason,
-        String description
+        @Schema(description = "신고 사유", example = "SPAM") ReportReason reason,
+        @Schema(description = "신고 내용", example = "신고 내용") String description
 ) {
     public UserReportCommand toCommand() {
         return new UserReportCommand(

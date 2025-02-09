@@ -2,8 +2,7 @@ package com.backend.immilog.user.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.services.LocationService;
-import com.backend.immilog.user.presentation.response.LocationResponse;
-import com.backend.immilog.user.presentation.response.UserApiResponse;
+import com.backend.immilog.user.presentation.response.UserLocationResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.util.Pair;
@@ -27,21 +26,16 @@ public class LocationController {
 
     @GetMapping
     @Operation(summary = "위치 정보", description = "위치 정보를 가져옵니다.")
-    public ResponseEntity<UserApiResponse> getLocation(
+    public ResponseEntity<UserLocationResponse> getLocation(
             @RequestParam("latitude") Double latitude,
             @RequestParam("longitude") Double longitude
     ) {
-        Pair<String, String> country =
-                locationService.getCountry(latitude, longitude).join();
-
-        return ResponseEntity
-                .status(OK)
-                .body(UserApiResponse.of(
-                                LocationResponse.from(
-                                        Country.getCountryByKoreanName(country.getFirst()),
-                                        country.getSecond()
-                                )
-                        )
-                );
+        Pair<String, String> country = locationService.getCountry(latitude, longitude).join();
+        return ResponseEntity.status(OK).body(
+                new UserLocationResponse(
+                        Country.getCountryByKoreanName(country.getFirst()).koreanName(),
+                        country.getSecond()
+                )
+        );
     }
 }

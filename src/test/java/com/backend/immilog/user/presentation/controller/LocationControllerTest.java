@@ -2,8 +2,8 @@ package com.backend.immilog.user.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.services.LocationService;
-import com.backend.immilog.user.presentation.response.LocationResponse;
-import com.backend.immilog.user.presentation.response.UserApiResponse;
+import com.backend.immilog.user.presentation.response.UserGeneralResponse;
+import com.backend.immilog.user.presentation.response.UserLocationResponse;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,12 +39,12 @@ class LocationControllerTest {
         when(locationService.getCountry(latitude, longitude)).thenReturn(CompletableFuture.completedFuture(countryPair));
 
         // when
-        ResponseEntity<?> response = locationController.getLocation(latitude, longitude);
+        ResponseEntity<UserLocationResponse> response = locationController.getLocation(latitude, longitude);
 
         // then
         assertThat(response).isNotNull();
         assertThat(OK).isEqualTo(response.getStatusCode());
-        LocationResponse locationResponse = (LocationResponse) ((UserApiResponse) Objects.requireNonNull(response.getBody())).data();
+        UserLocationResponse.LocationResponse locationResponse = Objects.requireNonNull(response.getBody()).data();
         assertThat(locationResponse).isNotNull();
         System.out.println(locationResponse.country());
         assertThat(Country.getCountryByKoreanName(country).name()).isEqualTo(locationResponse.country());

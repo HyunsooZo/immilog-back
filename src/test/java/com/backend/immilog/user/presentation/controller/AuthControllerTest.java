@@ -3,12 +3,9 @@ package com.backend.immilog.user.presentation.controller;
 import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.LocationService;
 import com.backend.immilog.user.application.services.UserSignInService;
-import com.backend.immilog.user.presentation.response.UserApiResponse;
-import org.junit.jupiter.api.BeforeEach;
+import com.backend.immilog.user.presentation.response.UserSignInResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 
@@ -59,7 +56,7 @@ class AuthControllerTest {
         when(request.getAttribute("userSeq")).thenReturn(1L);
 
         // when
-        ResponseEntity<UserApiResponse> response = authController.getUser(userSeq, latitude, longitude);
+        ResponseEntity<UserSignInResponse> response = authController.getUser(userSeq, latitude, longitude);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
