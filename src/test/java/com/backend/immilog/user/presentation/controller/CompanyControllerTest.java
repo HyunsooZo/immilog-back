@@ -2,19 +2,21 @@ package com.backend.immilog.user.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.command.CompanyRegisterCommand;
+import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
 import com.backend.immilog.user.application.services.CompanyRegisterService;
 import com.backend.immilog.user.domain.enums.Industry;
+import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.presentation.request.CompanyRegisterRequest;
-import com.backend.immilog.user.presentation.response.UserApiResponse;
+import com.backend.immilog.user.presentation.response.UserCompanyResponse;
+import com.backend.immilog.user.presentation.response.UserGeneralResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 @DisplayName("CompanyController 테스트")
 class CompanyControllerTest {
@@ -44,7 +46,7 @@ class CompanyControllerTest {
         );
         CompanyRegisterCommand command = param.toCommand();
         // when
-        ResponseEntity<UserApiResponse> response = companyController.registerCompany(userSeq, param);
+        ResponseEntity<UserGeneralResponse> response = companyController.registerCompany(userSeq, param);
         // then
         verify(companyRegisterService).registerOrEditCompany(anyLong(), any());
     }
@@ -54,8 +56,9 @@ class CompanyControllerTest {
     void getCompany() {
         // given
         Long userSeq = 1L;
+        when(companyInquiryService.getCompany(userSeq)).thenReturn(CompanyResult.empty());
         // when
-        ResponseEntity<UserApiResponse> response = companyController.getCompany(userSeq);
+        ResponseEntity<UserCompanyResponse> response = companyController.getCompany(userSeq);
         // then
         verify(companyInquiryService).getCompany(anyLong());
     }

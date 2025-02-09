@@ -3,7 +3,9 @@ package com.backend.immilog.user.presentation.controller;
 import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.*;
 import com.backend.immilog.user.presentation.request.*;
-import com.backend.immilog.user.presentation.response.UserApiResponse;
+import com.backend.immilog.user.presentation.response.UserGeneralResponse;
+import com.backend.immilog.user.presentation.response.UserNicknameResponse;
+import com.backend.immilog.user.presentation.response.UserSignInResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -45,7 +47,7 @@ public class UserController {
 
     @PostMapping
     @Operation(summary = "사용자 회원가입", description = "사용자 회원가입 진행")
-    public ResponseEntity<UserApiResponse> signUp(
+    public ResponseEntity<UserGeneralResponse> signUp(
             @Valid @RequestBody UserSignUpRequest request
     ) {
         final Pair<Long, String> userSeqAndName = userSignUpService.signUp(request.toCommand());
@@ -61,34 +63,28 @@ public class UserController {
 
     @PostMapping("/sign-in")
     @Operation(summary = "사용자 로그인", description = "사용자 로그인 진행")
-    public ResponseEntity<UserApiResponse> signIn(
+    public ResponseEntity<UserSignInResponse> signIn(
             @Valid @RequestBody UserSignInRequest request
     ) {
-        CompletableFuture<Pair<String, String>> country = locationService.getCountry(
-                        request.latitude(),
-                        request.longitude()
-                );
+        CompletableFuture<Pair<String, String>> country = locationService.getCountry(request.latitude(), request.longitude());
         final UserSignInResult userSignInResult = userSignInService.signIn(request.toCommand(), country);
-        return ResponseEntity.status(OK).body(UserApiResponse.of(userSignInResult));
+        return ResponseEntity.status(OK).body(userSignInResult.toResponse());
     }
 
     @PatchMapping("/{userSeq}/information")
     @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정 진행")
-    public ResponseEntity<UserApiResponse> updateInformation(
+    public ResponseEntity<UserGeneralResponse> updateInformation(
             @PathVariable("userSeq") Long userSeq,
             @RequestBody UserInfoUpdateRequest request
     ) {
-        CompletableFuture<Pair<String, String>> country = locationService.getCountry(
-                request.latitude(),
-                request.longitude()
-        );
+        CompletableFuture<Pair<String, String>> country = locationService.getCountry(request.latitude(), request.longitude());
         userInformationService.updateInformation(userSeq, country, request.toCommand());
-        return ResponseEntity.status(OK).body(UserApiResponse.of(OK.value()));
+        return ResponseEntity.status(OK).body(UserGeneralResponse.success());
     }
 
     @PatchMapping("/{userSeq}/password/change")
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경 진행")
-    public ResponseEntity<UserApiResponse> changePassword(
+    public ResponseEntity<Void> changePassword(
             @PathVariable("userSeq") Long userSeq,
             @RequestBody UserPasswordChangeRequest request
     ) {
@@ -98,11 +94,11 @@ public class UserController {
 
     @GetMapping("/nicknames")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복 체크 진행")
-    public ResponseEntity<UserApiResponse> checkNickname(
+    public ResponseEntity<UserNicknameResponse> checkNickname(
             @RequestParam("nickname") String nickname
     ) {
         Boolean isNicknameAvailable = userSignUpService.isNicknameAvailable(nickname);
-        return ResponseEntity.status(OK).body(UserApiResponse.of(isNicknameAvailable));
+        return ResponseEntity.status(OK).body(new UserNicknameResponse(isNicknameAvailable));
     }
 
     @PatchMapping("/{userSeq}/targets/{targetSeq}/{status}")

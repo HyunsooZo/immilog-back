@@ -3,7 +3,7 @@ package com.backend.immilog.user.presentation.controller;
 import com.backend.immilog.user.application.result.UserSignInResult;
 import com.backend.immilog.user.application.services.LocationService;
 import com.backend.immilog.user.application.services.UserSignInService;
-import com.backend.immilog.user.presentation.response.UserApiResponse;
+import com.backend.immilog.user.presentation.response.UserSignInResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.util.Pair;
@@ -31,7 +31,7 @@ public class AuthController {
 
     @GetMapping("/user/{userSeq}")
     @Operation(summary = "사용자 정보 조회", description = "사용자 정보를 조회합니다.")
-    public ResponseEntity<UserApiResponse> getUser(
+    public ResponseEntity<UserSignInResponse> getUser(
             @PathVariable("userSeq") Long userSeq,
             @RequestParam("latitude") Double latitude,
             @RequestParam("longitude") Double longitude
@@ -39,7 +39,7 @@ public class AuthController {
         CompletableFuture<Pair<String, String>> countryFuture = locationService.getCountry(latitude, longitude);
         Pair<String, String> country = locationService.joinCompletableFutureLocation(countryFuture);
         UserSignInResult userSignInResult = userSignInService.getUserSignInDTO(userSeq, country);
-        return ResponseEntity.status(OK).body(UserApiResponse.of(userSignInResult));
+        return ResponseEntity.status(OK).body(userSignInResult.toResponse());
     }
 
 }

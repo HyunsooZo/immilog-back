@@ -4,7 +4,8 @@ import com.backend.immilog.user.application.result.CompanyResult;
 import com.backend.immilog.user.application.services.CompanyInquiryService;
 import com.backend.immilog.user.application.services.CompanyRegisterService;
 import com.backend.immilog.user.presentation.request.CompanyRegisterRequest;
-import com.backend.immilog.user.presentation.response.UserApiResponse;
+import com.backend.immilog.user.presentation.response.UserGeneralResponse;
+import com.backend.immilog.user.presentation.response.UserCompanyResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +31,7 @@ public class CompanyController {
 
     @PostMapping("/users/{userSeq}")
     @Operation(summary = "회사정보 등록", description = "회사정보를 등록합니다.")
-    public ResponseEntity<UserApiResponse> registerCompany(
+    public ResponseEntity<UserGeneralResponse> registerCompany(
             @PathVariable("userSeq") Long userSeq,
             @RequestBody CompanyRegisterRequest param
     ) {
@@ -40,10 +41,10 @@ public class CompanyController {
 
     @GetMapping("/users/{userSeq}")
     @Operation(summary = "본인 회사정보 조회", description = "본인 회사정보를 조회합니다.")
-    public ResponseEntity<UserApiResponse> getCompany(
+    public ResponseEntity<UserCompanyResponse> getCompany(
             @PathVariable("userSeq") Long userSeq
     ) {
         CompanyResult result = companyInquiryService.getCompany(userSeq);
-        return ResponseEntity.status(OK).body(UserApiResponse.of(result));
+        return ResponseEntity.status(OK).body(result.toResponse());
     }
 }
