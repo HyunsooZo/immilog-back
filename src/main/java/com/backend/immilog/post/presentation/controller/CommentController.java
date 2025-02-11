@@ -2,7 +2,6 @@ package com.backend.immilog.post.presentation.controller;
 
 import com.backend.immilog.post.application.services.CommentUploadService;
 import com.backend.immilog.post.presentation.request.CommentUploadRequest;
-import com.backend.immilog.post.presentation.response.PostApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,7 +22,7 @@ public class CommentController {
 
     @PostMapping("/{referenceType}/{postSeq}/users/{userSeq}")
     @Operation(summary = "댓글 작성", description = "댓글을 작성합니다.")
-    public ResponseEntity<PostApiResponse> createComment(
+    public ResponseEntity<Void> createComment(
             @PathVariable("referenceType") String referenceType,
             @PathVariable("postSeq") Long postSeq,
             @PathVariable("userSeq") Long userSeq,

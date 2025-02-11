@@ -6,7 +6,8 @@ import com.backend.immilog.post.application.services.JobBoardUpdateService;
 import com.backend.immilog.post.application.services.JobBoardUploadService;
 import com.backend.immilog.post.presentation.request.JobBoardUpdateRequest;
 import com.backend.immilog.post.presentation.request.JobBoardUploadRequest;
-import com.backend.immilog.post.presentation.response.PostApiResponse;
+import com.backend.immilog.post.presentation.response.JobBoardPageResponse;
+import com.backend.immilog.post.presentation.response.PostGeneralResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
@@ -35,17 +36,17 @@ public class JobBoardController {
 
     @PostMapping("/users/{userSeq}")
     @Operation(summary = "구인구직 게시글 업로드", description = "구인구직 게시글을 업로드합니다.")
-    public ResponseEntity<PostApiResponse> uploadJobBoard(
+    public ResponseEntity<PostGeneralResponse> uploadJobBoard(
             @PathVariable("userSeq") Long userSeq,
             @RequestBody JobBoardUploadRequest jobBoardRequest
     ) {
         jobBoardUploadService.uploadJobBoard(userSeq, jobBoardRequest.toCommand());
-        return ResponseEntity.status(CREATED).build();
+        return ResponseEntity.status(CREATED).body(PostGeneralResponse.noContent());
     }
 
     @GetMapping
     @Operation(summary = "구인구직 게시글 조회", description = "구인구직 게시글을 조회합니다.")
-    public ResponseEntity<PostApiResponse> searchJobBoard(
+    public ResponseEntity<JobBoardPageResponse> searchJobBoard(
             @RequestParam(required = false, name = "country") String country,
             @RequestParam(required = false, name = "sortingMethod") String sortingMethod,
             @RequestParam(required = false, name = "industry") String industry,
@@ -53,7 +54,7 @@ public class JobBoardController {
             @RequestParam(required = false, name = "page") Integer page
     ) {
         Page<JobBoardResult> jobBoards = jobBoardInquiryService.getJobBoards(country, sortingMethod, industry, experience, page);
-        return ResponseEntity.status(OK).body(PostApiResponse.of(jobBoards));
+        return ResponseEntity.status(OK).body(JobBoardPageResponse.of(jobBoards));
     }
 
     @PatchMapping("/{jobBoardSeq}/users/{userSeq}")
