@@ -2,18 +2,17 @@ package com.backend.immilog.post.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.PostDeleteService;
 import com.backend.immilog.post.application.services.PostInquiryService;
 import com.backend.immilog.post.application.services.PostUpdateService;
 import com.backend.immilog.post.application.services.PostUploadService;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
-import com.backend.immilog.post.presentation.response.PostApiResponse;
+import com.backend.immilog.post.presentation.response.PostPageResponse;
+import com.backend.immilog.post.presentation.response.PostSingleResponse;
 import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.*;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +67,7 @@ class PostControllerTest {
         Long userSeq = 1L;
 
         // when
-        ResponseEntity<PostApiResponse> response = postController.createPost(
+        ResponseEntity<Void> response = postController.createPost(
                 userSeq,
                 postUploadRequest
         );
@@ -104,7 +103,7 @@ class PostControllerTest {
                 true
         );
         // when
-        ResponseEntity<PostApiResponse> response = postController.updatePost(
+        ResponseEntity<Void> response = postController.updatePost(
                 postSeq,
                 userSeq,
                 postUpdateRequest
@@ -140,7 +139,7 @@ class PostControllerTest {
         Long postSeq = 1L;
 
         // when
-        ResponseEntity<PostApiResponse> response = postController.increaseViewCount(postSeq);
+        ResponseEntity<Void> response = postController.increaseViewCount(postSeq);
 
         // then
         verify(postUpdateService).increaseViewCount(postSeq);
@@ -214,7 +213,7 @@ class PostControllerTest {
         )).thenReturn(posts);
 
         // when
-        ResponseEntity<PostApiResponse> response = postController.getPosts(
+        ResponseEntity<PostPageResponse> response = postController.getPosts(
                 Country.SOUTH_KOREA,
                 sortingMethod,
                 isPublic,
@@ -261,7 +260,7 @@ class PostControllerTest {
         when(postInquiryService.getPostDetail(postSeq)).thenReturn(postResult);
 
         // when
-        ResponseEntity<PostApiResponse> response = postController.getPost(postSeq);
+        ResponseEntity<PostSingleResponse> response = postController.getPost(postSeq);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
@@ -306,7 +305,7 @@ class PostControllerTest {
         )).thenReturn(posts);
 
         // when
-        ResponseEntity<PostApiResponse> response = postController.searchPosts(
+        ResponseEntity<PostPageResponse> response = postController.searchPosts(
                 keyword,
                 page
         );
@@ -354,7 +353,7 @@ class PostControllerTest {
         )).thenReturn(posts);
 
         // when
-        ResponseEntity<PostApiResponse> response = postController.getUserPosts(
+        ResponseEntity<PostPageResponse> response = postController.getUserPosts(
                 userSeq,
                 page
         );

@@ -10,7 +10,9 @@ import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
-import com.backend.immilog.post.presentation.response.PostApiResponse;
+import com.backend.immilog.post.presentation.response.PostListResponse;
+import com.backend.immilog.post.presentation.response.PostPageResponse;
+import com.backend.immilog.post.presentation.response.PostSingleResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -45,7 +47,7 @@ public class PostController {
 
     @PostMapping("/users/{userSeq}")
     @Operation(summary = "게시물 작성", description = "게시물을 작성합니다.")
-    public ResponseEntity<PostApiResponse> createPost(
+    public ResponseEntity<Void> createPost(
             @PathVariable("userSeq") Long userSeq,
             @Valid @RequestBody PostUploadRequest postUploadRequest
     ) {
@@ -55,7 +57,7 @@ public class PostController {
 
     @PatchMapping("/{postSeq}/users/{userSeq}")
     @Operation(summary = "게시물 수정", description = "게시물을 수정합니다.")
-    public ResponseEntity<PostApiResponse> updatePost(
+    public ResponseEntity<Void> updatePost(
             @PathVariable("postSeq") Long postSeq,
             @PathVariable("userSeq") Long userSeq,
             @Valid @RequestBody PostUpdateRequest postUpdateRequest
@@ -76,7 +78,7 @@ public class PostController {
 
     @PatchMapping("/{postSeq}/view")
     @Operation(summary = "게시물 조회수 증가", description = "게시물 조회수를 증가시킵니다.")
-    public ResponseEntity<PostApiResponse> increaseViewCount(
+    public ResponseEntity<Void> increaseViewCount(
             @PathVariable Long postSeq
     ) {
         postUpdateService.increaseViewCount(postSeq);
@@ -85,7 +87,7 @@ public class PostController {
 
     @GetMapping
     @Operation(summary = "게시물 목록 조회", description = "게시물 목록을 조회합니다.")
-    public ResponseEntity<PostApiResponse> getPosts(
+    public ResponseEntity<PostPageResponse> getPosts(
             @RequestParam(required = false, name = "country") Country country,
             @RequestParam(required = false, name = "sortingMethod") SortingMethods sortingMethod,
             @RequestParam(required = false, name = "isPublic") String isPublic,
@@ -93,48 +95,48 @@ public class PostController {
             @RequestParam(required = false, name = "page") Integer page
     ) {
         Page<PostResult> posts = postInquiryService.getPosts(country, sortingMethod, isPublic, category, page);
-        return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
+        return ResponseEntity.status(OK).body(PostPageResponse.of(posts));
     }
 
     @GetMapping("/{postSeq}")
     @Operation(summary = "게시물 상세 조회", description = "게시물 상세 정보를 조회합다.")
-    public ResponseEntity<PostApiResponse> getPost(@PathVariable("postSeq") Long postSeq) {
+    public ResponseEntity<PostSingleResponse> getPost(@PathVariable("postSeq") Long postSeq) {
         PostResult post = postInquiryService.getPostDetail(postSeq);
-        return ResponseEntity.status(OK).body(PostApiResponse.of(post));
+        return ResponseEntity.status(OK).body(post.toResponse());
     }
 
     @GetMapping("/search")
     @Operation(summary = "게시물 검색", description = "게시물을 검색합니다.")
-    public ResponseEntity<PostApiResponse> searchPosts(
+    public ResponseEntity<PostPageResponse> searchPosts(
             @RequestParam(name = "keyword") String keyword,
             @RequestParam(name = "page") Integer page
     ) {
         Page<PostResult> posts = postInquiryService.searchKeyword(keyword, page);
-        return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
+        return ResponseEntity.status(OK).body(PostPageResponse.of(posts));
     }
 
     @GetMapping("/users/{userSeq}/page/{page}")
     @Operation(summary = "사용자 게시물 목록 조회", description = "사용자 게시물 목록을 조회합니다.")
-    public ResponseEntity<PostApiResponse> getUserPosts(
+    public ResponseEntity<PostPageResponse> getUserPosts(
             @PathVariable("userSeq") Long userSeq,
             @PathVariable("page") Integer page
     ) {
         Page<PostResult> posts = postInquiryService.getUserPosts(userSeq, page);
-        return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
+        return ResponseEntity.status(OK).body(PostPageResponse.of(posts));
     }
 
     @GetMapping("/hot")
     @Operation(summary = "인기 게시물 조회", description = "인기 게시물을 조회합니다.")
-    public ResponseEntity<PostApiResponse> getHotPosts() {
+    public ResponseEntity<PostListResponse> getHotPosts() {
         List<PostResult> posts = postInquiryService.getHotPosts();
-        return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
+        return ResponseEntity.status(OK).body(PostListResponse.of(posts));
     }
 
     @GetMapping("/most-viewed")
     @Operation(summary = "가장 많이 조회된 게시물 조회", description = "가장 많이 조회된 게시물을 조회합니다.")
-    public ResponseEntity<PostApiResponse> getMostViewedPosts() {
+    public ResponseEntity<PostListResponse> getMostViewedPosts() {
         List<PostResult> posts = postInquiryService.getMostViewedPosts();
-        return ResponseEntity.status(OK).body(PostApiResponse.of(posts));
+        return ResponseEntity.status(OK).body(PostListResponse.of(posts));
     }
 
 }

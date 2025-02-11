@@ -23,7 +23,7 @@ public class InteractionController {
 
     @PostMapping("/{interactionType}/posts/{postSeq}/types/{postType}/users/{userSeq}")
     @Operation(summary = "인터랙션 등록", description = "게시물 좋아요/북마크 등록")
-    public ResponseEntity<?> createInteraction(
+    public ResponseEntity<Void> createInteraction(
             @PathVariable("interactionType") String interactionType,
             @PathVariable("postType") String postType,
             @PathVariable("postSeq") Long postSeq,

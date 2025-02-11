@@ -6,8 +6,10 @@ import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.enums.ResourceType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.presentation.response.PostSingleResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -219,5 +221,9 @@ public final class PostResult {
                 .filter(r -> r.resourceType() == ResourceType.ATTACHMENT)
                 .map(PostResource::content)
                 .toList());
+    }
+
+    public PostSingleResponse toResponse() {
+        return new PostSingleResponse(HttpStatus.OK.value(), "success", this);
     }
 }

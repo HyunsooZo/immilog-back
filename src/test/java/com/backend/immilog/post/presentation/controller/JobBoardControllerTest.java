@@ -9,9 +9,9 @@ import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.presentation.request.JobBoardUpdateRequest;
 import com.backend.immilog.post.presentation.request.JobBoardUploadRequest;
-import com.backend.immilog.post.presentation.response.PostApiResponse;
+import com.backend.immilog.post.presentation.response.JobBoardPageResponse;
+import com.backend.immilog.post.presentation.response.PostGeneralResponse;
 import com.backend.immilog.user.domain.enums.Industry;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -58,7 +57,7 @@ class JobBoardControllerTest {
                 PostStatus.NORMAL
         );
         // when
-        ResponseEntity<PostApiResponse> result = jobBoardController.uploadJobBoard(userSeq, param);
+        ResponseEntity<PostGeneralResponse> result = jobBoardController.uploadJobBoard(userSeq, param);
         // then
         assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
     }
@@ -103,7 +102,7 @@ class JobBoardControllerTest {
 
         when(jobBoardInquiryService.getJobBoards(country, sortingMethod, industry, experience, page)).thenReturn(new PageImpl<>(List.of(jobBoardResult)));
         // when
-        ResponseEntity<PostApiResponse> result = jobBoardController.searchJobBoard(country, sortingMethod, industry, experience, page);
+        ResponseEntity<JobBoardPageResponse> result = jobBoardController.searchJobBoard(country, sortingMethod, industry, experience, page);
         // then
         assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
     }
