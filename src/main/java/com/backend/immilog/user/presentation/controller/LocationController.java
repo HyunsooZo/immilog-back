@@ -4,6 +4,7 @@ import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.services.LocationService;
 import com.backend.immilog.user.presentation.response.UserLocationResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
@@ -27,8 +28,8 @@ public class LocationController {
     @GetMapping
     @Operation(summary = "위치 정보", description = "위치 정보를 가져옵니다.")
     public ResponseEntity<UserLocationResponse> getLocation(
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude
+            @Parameter(description = "위도") @RequestParam("latitude") Double latitude,
+            @Parameter(description = "경도") @RequestParam("longitude") Double longitude
     ) {
         Pair<String, String> country = locationService.getCountry(latitude, longitude).join();
         return ResponseEntity.status(OK).body(

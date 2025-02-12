@@ -5,6 +5,7 @@ import com.backend.immilog.user.application.services.LocationService;
 import com.backend.immilog.user.application.services.UserSignInService;
 import com.backend.immilog.user.presentation.response.UserSignInResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +33,9 @@ public class AuthController {
     @GetMapping("/user/{userSeq}")
     @Operation(summary = "사용자 정보 조회", description = "사용자 정보를 조회합니다.")
     public ResponseEntity<UserSignInResponse> getUser(
-            @PathVariable("userSeq") Long userSeq,
-            @RequestParam("latitude") Double latitude,
-            @RequestParam("longitude") Double longitude
+            @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
+            @Parameter(description = "위도") @RequestParam("latitude") Double latitude,
+            @Parameter(description = "경도") @RequestParam("longitude") Double longitude
     ) {
         CompletableFuture<Pair<String, String>> countryFuture = locationService.getCountry(latitude, longitude);
         Pair<String, String> country = locationService.joinCompletableFutureLocation(countryFuture);

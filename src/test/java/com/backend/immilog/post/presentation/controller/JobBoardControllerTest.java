@@ -1,16 +1,15 @@
 package com.backend.immilog.post.presentation.controller;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.application.services.JobBoardInquiryService;
 import com.backend.immilog.post.application.services.JobBoardUpdateService;
 import com.backend.immilog.post.application.services.JobBoardUploadService;
-import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.Experience;
 import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.presentation.request.JobBoardUpdateRequest;
 import com.backend.immilog.post.presentation.request.JobBoardUploadRequest;
 import com.backend.immilog.post.presentation.response.JobBoardPageResponse;
-import com.backend.immilog.post.presentation.response.PostGeneralResponse;
 import com.backend.immilog.user.domain.enums.Industry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,7 +56,7 @@ class JobBoardControllerTest {
                 PostStatus.NORMAL
         );
         // when
-        ResponseEntity<PostGeneralResponse> result = jobBoardController.uploadJobBoard(userSeq, param);
+        ResponseEntity<Void> result = jobBoardController.uploadJobBoard(userSeq, param);
         // then
         assertThat(result.getStatusCode().is2xxSuccessful()).isTrue();
     }
