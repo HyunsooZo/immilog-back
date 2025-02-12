@@ -7,6 +7,7 @@ import com.backend.immilog.user.presentation.response.UserGeneralResponse;
 import com.backend.immilog.user.presentation.response.UserNicknameResponse;
 import com.backend.immilog.user.presentation.response.UserSignInResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.util.Pair;
@@ -74,7 +75,7 @@ public class UserController {
     @PatchMapping("/{userSeq}/information")
     @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정 진행")
     public ResponseEntity<UserGeneralResponse> updateInformation(
-            @PathVariable("userSeq") Long userSeq,
+            @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @RequestBody UserInfoUpdateRequest request
     ) {
         CompletableFuture<Pair<String, String>> country = locationService.getCountry(request.latitude(), request.longitude());
@@ -85,7 +86,7 @@ public class UserController {
     @PatchMapping("/{userSeq}/password/change")
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경 진행")
     public ResponseEntity<Void> changePassword(
-            @PathVariable("userSeq") Long userSeq,
+            @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @RequestBody UserPasswordChangeRequest request
     ) {
         userInformationService.changePassword(userSeq, request.toCommand());
@@ -95,7 +96,7 @@ public class UserController {
     @GetMapping("/nicknames")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복 체크 진행")
     public ResponseEntity<UserNicknameResponse> checkNickname(
-            @RequestParam("nickname") String nickname
+            @Parameter(description = "닉네임") @RequestParam("nickname") String nickname
     ) {
         Boolean isNicknameAvailable = userSignUpService.isNicknameAvailable(nickname);
         return ResponseEntity.status(OK).body(new UserNicknameResponse(isNicknameAvailable));
@@ -104,9 +105,9 @@ public class UserController {
     @PatchMapping("/{userSeq}/targets/{targetSeq}/{status}")
     @Operation(summary = "사용자 차단/해제", description = "사용자 차단/해제 진행")
     public ResponseEntity<Void> blockUser(
-            @PathVariable("userSeq") Long userSeq,
-            @PathVariable("targetSeq") Long targetSeq,
-            @PathVariable("status") String status
+            @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
+            @Parameter(description = "대상 사용자 고유번호") @PathVariable("targetSeq") Long targetSeq,
+            @Parameter(description = "상태") @PathVariable("status") String status
     ) {
         userInformationService.blockOrUnblockUser(targetSeq, userSeq, status);
         return ResponseEntity.status(NO_CONTENT).build();
@@ -115,8 +116,8 @@ public class UserController {
     @PatchMapping("/{userSeq}/targets/{targetSeq}/report")
     @Operation(summary = "사용자 신고", description = "사용자 신고 진행")
     public ResponseEntity<Void> reportUser(
-            @PathVariable("userSeq") Long userSeq,
-            @PathVariable("targetSeq") Long targetSeq,
+            @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
+            @Parameter(description = "대상 사용자 고유번호") @PathVariable("targetSeq") Long targetSeq,
             @Valid @RequestBody UserReportRequest request
     ) {
         userReportService.reportUser(targetSeq, userSeq, request.toCommand());

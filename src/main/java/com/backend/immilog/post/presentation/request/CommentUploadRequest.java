@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(description = "댓글 업로드 요청 DTO")
 public record CommentUploadRequest(
-        @NotNull(message = "댓글 내용을 입력해주세요.") String content
+        @NotNull(message = "댓글 내용을 입력해주세요.")
+        @Schema(description = "댓글 내용", example = "댓글 내용")
+        String content
 ) {
 }

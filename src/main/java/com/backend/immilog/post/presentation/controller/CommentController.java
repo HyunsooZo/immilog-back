@@ -3,6 +3,7 @@ package com.backend.immilog.post.presentation.controller;
 import com.backend.immilog.post.application.services.CommentUploadService;
 import com.backend.immilog.post.presentation.request.CommentUploadRequest;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +24,9 @@ public class CommentController {
     @PostMapping("/{referenceType}/{postSeq}/users/{userSeq}")
     @Operation(summary = "댓글 작성", description = "댓글을 작성합니다.")
     public ResponseEntity<Void> createComment(
-            @PathVariable("referenceType") String referenceType,
-            @PathVariable("postSeq") Long postSeq,
-            @PathVariable("userSeq") Long userSeq,
+            @Parameter(description = "레퍼런스 타입") @PathVariable("referenceType") String referenceType,
+            @Parameter(description = "게시물 고유번호") @PathVariable("postSeq") Long postSeq,
+            @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Valid @RequestBody CommentUploadRequest request
     ) {
         commentUploadService.uploadComment(userSeq, postSeq, referenceType, request.content());

@@ -2,6 +2,7 @@ package com.backend.immilog.user.presentation.controller;
 
 import com.backend.immilog.user.application.services.UserSignUpService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Controller;
@@ -23,7 +24,7 @@ public class UserViewController {
     @GetMapping("/{userSeq}/verification")
     @Operation(summary = "사용자 이메일 인증", description = "사용자 이메일 인증 진행")
     public String verifyEmail(
-            @PathVariable("userSeq") Long userSeq,
+            @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             Model model
     ) {
         final Pair<String, Boolean> result = userSignUpService.verifyEmail(userSeq);
