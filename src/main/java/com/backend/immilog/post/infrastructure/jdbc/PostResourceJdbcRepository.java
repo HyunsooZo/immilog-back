@@ -23,6 +23,9 @@ public class PostResourceJdbcRepository {
             ResourceType resourceType,
             List<String> deleteAttachments
     ) {
+        if(deleteAttachments.isEmpty()) {
+            return;
+        }
         String inClause = deleteAttachments.stream()
                 .map(item -> "?")
                 .collect(Collectors.joining(", "));
@@ -56,13 +59,24 @@ public class PostResourceJdbcRepository {
             List<Long> postSeqList,
             PostType postType
     ) {
-        return jdbcClient.sql("""
-                        SELECT *
-                        FROM post_resource
-                        WHERE post_seq IN (:postSeqList)
-                        AND post_type = :postType
-                        """)
-                .params(postSeqList)
+        if (postSeqList.isEmpty()) {
+            return List.of();
+        }
+
+        String inClause = postSeqList.stream()
+                .map(seq -> "?")
+                .collect(Collectors.joining(", "));
+
+        String sql = """
+                SELECT *
+                FROM post_resource
+                WHERE post_seq IN (%s)
+                AND post_type = ?
+                """.formatted(inClause);
+
+        return jdbcClient.sql(sql)
+                .params(postSeqList.toArray())
+                .param(postType.name())
                 .query(PostResource.class)
                 .list();
     }

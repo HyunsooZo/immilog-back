@@ -19,7 +19,9 @@ import java.util.Optional;
 public class PostJdbcRepository {
     private final JdbcClient jdbcClient;
 
-    public PostJdbcRepository(JdbcClient jdbcClient) {this.jdbcClient = jdbcClient;}
+    public PostJdbcRepository(JdbcClient jdbcClient) {
+        this.jdbcClient = jdbcClient;
+    }
 
     public Page<Post> getPosts(
             Country country,
@@ -29,35 +31,35 @@ public class PostJdbcRepository {
             Pageable pageable
     ) {
         String sql = """
-                SELECT * 
-                FROM post
-                WHERE country = ?
-                AND is_public = ?
-                AND category = ?
-                """ + getOrderByClause(sortingMethod) + """
-                LIMIT ?
-                OFFSET ?
-                """;
+            SELECT * 
+            FROM post
+            WHERE country = ?
+            AND is_public = ?
+            AND category = ?
+            """ + this.getOrderByClause(sortingMethod) + """
+            LIMIT ?
+            OFFSET ?
+            """;
 
         List<PostEntity> posts = jdbcClient.sql(sql)
-                .param(country)
+                .param(country.name())
                 .param(isPublic)
-                .param(category)
+                .param(category.name())
                 .param(pageable.getPageSize())
                 .param(pageable.getOffset())
                 .query(PostEntity.class)
                 .list();
 
         int count = jdbcClient.sql("""
-                        SELECT COUNT(*) 
-                        FROM post
-                        WHERE country = ?
-                        AND is_public = ?
-                        AND category = ?
-                        """)
-                .param(country)
+                    SELECT COUNT(*) 
+                    FROM post
+                    WHERE country = ?
+                    AND is_public = ?
+                    AND category = ?
+                    """)
+                .param(country.name())
                 .param(isPublic)
-                .param(category)
+                .param(category.name())
                 .query(Integer.class)
                 .single();
 
@@ -111,9 +113,7 @@ public class PostJdbcRepository {
             case LIKE_COUNT -> "like_count";
             case VIEW_COUNT -> "view_count";
         };
-        return """
-                ORDER BY %s DESC
-                """.formatted(column);
+        return "ORDER BY " + column + " DESC ";
     }
 
     public Page<Post> getPostsByKeyword(
@@ -177,9 +177,9 @@ public class PostJdbcRepository {
                 SELECT * 
                 FROM post
                 WHERE created_at BETWEEN ? AND ?
-                ORDER BY %s DESC
+                """ + this.getOrderByClause(sortingMethods) + """
                 LIMIT 10
-                """.formatted(getOrderByClause(sortingMethods));
+                """;
 
         return jdbcClient.sql(sql)
                 .param(from)
