@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public class InteractionUserJdbcRepository {
@@ -19,13 +20,24 @@ public class InteractionUserJdbcRepository {
             List<Long> postSeqList,
             PostType postType
     ) {
-        return jdbcClient.sql("""
-                        SELECT *
-                        FROM interaction_user
-                        WHERE post_seq IN (:postSeqList)
-                        AND post_type = :postType
-                        """)
-                .params(postSeqList)
+        if (postSeqList.isEmpty()) {
+            return List.of();
+        }
+
+        String placeholders = postSeqList.stream()
+                .map(seq -> "?")
+                .collect(Collectors.joining(", "));
+
+        String sql = """
+                SELECT *
+                FROM interaction_user
+                WHERE post_seq IN (%s)
+                AND post_type = :postType
+                """.formatted(placeholders);
+
+        return jdbcClient.sql(sql)
+                .params(postSeqList.toArray())
+                .param("postType", postType.name())
                 .query(InteractionUser.class)
                 .list();
     }

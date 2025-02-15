@@ -105,7 +105,7 @@ public class UserEntity {
                 this.seq,
                 this.auth.toDomain(),
                 this.userRole,
-                this.report.toDomain(),
+                this.report == null ? null : this.report.toDomain(),
                 this.profile.toDomain(),
                 this.location.toDomain(),
                 this.userStatus,
