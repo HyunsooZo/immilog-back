@@ -49,7 +49,7 @@ public class PostEntity {
 
     protected PostEntity() {}
 
-    protected PostEntity(
+    public PostEntity(
             Long seq,
             PostUserInfo postUserInfo,
             PostInfo postInfo,
@@ -99,8 +99,8 @@ public class PostEntity {
     public Post toDomain() {
         return new Post(
                 this.seq,
-                this.postUserInfo.toDomain(),
-                this.postInfo.toDomain(),
+                this.postUserInfo == null ? null : this.postUserInfo.toDomain(),
+                this.postInfo == null ? null :  this.postInfo.toDomain(),
                 this.category,
                 this.isPublic,
                 this.badge,

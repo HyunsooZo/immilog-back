@@ -35,7 +35,7 @@ public class PostInfoValue {
 
     protected PostInfoValue() {}
 
-    PostInfoValue(
+    public PostInfoValue(
             String title,
             String content,
             Long viewCount,
