@@ -68,7 +68,7 @@ public class PostQueryService {
                 category,
                 pageable
         );
-        List<Long> postSeqList = this.getSeqList(posts);
+        List<Long> postSeqList = getSeqList(posts);
         Page<PostResult> postResults = posts.map(Post::toResult);
         return this.assemblePostResult(postSeqList, postResults);
     }

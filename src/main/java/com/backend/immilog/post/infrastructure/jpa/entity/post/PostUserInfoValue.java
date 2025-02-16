@@ -17,7 +17,7 @@ public class PostUserInfoValue {
 
     protected PostUserInfoValue() {}
 
-    PostUserInfoValue(
+    public PostUserInfoValue(
             Long userSeq,
             String nickname,
             String profileImage

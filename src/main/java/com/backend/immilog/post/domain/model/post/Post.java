@@ -235,7 +235,7 @@ public record Post(
                 this.title(),
                 this.content(),
                 this.createdAt.toString(),
-                this.updatedAt.toString()
+                this.updatedAt == null ? null : this.updatedAt.toString()
         );
     }
 
