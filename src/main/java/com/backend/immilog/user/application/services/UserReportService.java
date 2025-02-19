@@ -20,7 +20,7 @@ import static com.backend.immilog.user.exception.UserErrorCode.CANNOT_REPORT_MYS
 @Slf4j
 @Service
 public class UserReportService {
-    final String LOCK_KEY = "reportUser : ";
+    final String LOCK_KEY = "'reportUser : '";
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final ReportCommandService reportCommandService;
@@ -39,7 +39,7 @@ public class UserReportService {
     }
 
     @Async
-    @DistributedLock(key = LOCK_KEY, identifier = "#targetUserSeq", expireTime = 5)
+    @DistributedLock(key = LOCK_KEY, identifier = "#p0.toString()", expireTime = 5)
     public void reportUser(
             Long targetUserSeq,
             Long reporterUserSeq,

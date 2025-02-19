@@ -27,7 +27,7 @@ public final class PostResult {
     private final List<CommentResult> comments;
     private final Long commentCount;
     private final Long viewCount;
-    private final Long likeCount;
+    private Long likeCount;
     private final List<String> tags;
     private final List<String> attachments;
     private final List<Long> likeUsers;
@@ -225,5 +225,9 @@ public final class PostResult {
 
     public PostSingleResponse toResponse() {
         return new PostSingleResponse(HttpStatus.OK.value(), "success", this);
+    }
+
+    public void updateLikeCount(int size) {
+        this.likeCount = (long) size;
     }
 }

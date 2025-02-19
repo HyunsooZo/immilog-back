@@ -2,6 +2,8 @@ package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.post.application.services.command.InteractionUserCommandService;
 import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
+import com.backend.immilog.post.domain.enums.InteractionType;
+import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +28,8 @@ class InteractionCreationServiceTest {
         // given
         Long userSeq = 1L;
         Long postSeq = 1L;
-        String post = "post";
-        String interaction = "like";
+        PostType post = PostType.POST;
+        InteractionType interaction = InteractionType.LIKE;
         InteractionUser interactionUser = mock(InteractionUser.class);
         when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(any(), any(), any(), any())).thenReturn(Optional.of(interactionUser));
         // when
@@ -42,8 +44,8 @@ class InteractionCreationServiceTest {
         // given
         Long userSeq = 1L;
         Long postSeq = 1L;
-        String post = "post";
-        String interaction = "like";
+        PostType post = PostType.POST;
+        InteractionType interaction = InteractionType.LIKE;
         when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(any(), any(), any(), any())).thenReturn(Optional.empty());
         // when
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);

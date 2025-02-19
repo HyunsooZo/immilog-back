@@ -80,7 +80,7 @@ public class PostController {
     @PatchMapping("/{postSeq}/view")
     @Operation(summary = "게시물 조회수 증가", description = "게시물 조회수를 증가시킵니다.")
     public ResponseEntity<Void> increaseViewCount(
-            @Parameter(description = "게시물 고유번호") @PathVariable Long postSeq
+            @Parameter(description = "게시물 고유번호") @PathVariable("postSeq") Long postSeq
     ) {
         postUpdateService.increaseViewCount(postSeq);
         return ResponseEntity.status(NO_CONTENT).build();

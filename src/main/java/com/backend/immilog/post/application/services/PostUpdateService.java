@@ -27,7 +27,7 @@ public class PostUpdateService {
     private final PostResourceCommandService postResourceCommandService;
     private final BulkCommandService bulkCommandService;
 
-    final String VIEW_LOCK_KEY = "viewPost : ";
+    final String VIEW_LOCK_KEY = "'viewPost:'";
 
     public PostUpdateService(
             PostQueryService postQueryService,
@@ -60,7 +60,7 @@ public class PostUpdateService {
     }
 
     @Async
-    @DistributedLock(key = VIEW_LOCK_KEY, identifier = "#postSeq", expireTime = 5)
+    @DistributedLock(key = VIEW_LOCK_KEY, identifier = "#p0.toString()", expireTime = 5)
     public void increaseViewCount(Long postSeq) {
         Post post = postQueryService.getPostById(postSeq);
         Post updatedPost = post.increaseViewCount();
