@@ -22,7 +22,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -126,6 +130,10 @@ public class PostQueryService {
             List<Long> resultSeqList,
             Page<PostResult> postResults
     ) {
+        Map<Long, Integer> orderMap = IntStream.range(0, resultSeqList.size())
+                .boxed()
+                .collect(Collectors.toMap(resultSeqList::get, i -> i));
+
         List<InteractionUser> interactionUsers = interactionUserQueryService.getInteractionUsersByPostSeqList(
                 resultSeqList,
                 PostType.POST
@@ -138,17 +146,21 @@ public class PostQueryService {
         return postResults.map(postResult -> {
             List<PostResource> resources = postResources.stream()
                     .filter(postResource -> postResource.postSeq().equals(postResult.getSeq()))
+                    .sorted(Comparator.comparingInt(pr -> orderMap.getOrDefault(pr.postSeq(), Integer.MAX_VALUE)))
                     .toList();
 
             List<InteractionUser> interactionUserList = interactionUsers.stream()
                     .filter(interactionUser -> interactionUser.postSeq().equals(postResult.getSeq()))
+                    .sorted(Comparator.comparingInt(iu -> orderMap.getOrDefault(iu.postSeq(), Integer.MAX_VALUE)))
                     .toList();
 
             postResult.addInteractionUsers(interactionUserList);
             postResult.addResources(resources);
+            postResult.updateLikeCount(interactionUserList.size());
 
             return postResult;
         });
     }
+
 
 }

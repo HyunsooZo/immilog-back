@@ -29,11 +29,9 @@ public class InteractionCreationService {
     public void createInteraction(
             Long userSeq,
             Long postSeq,
-            String post,
-            String interaction
+            PostType postType,
+            InteractionType interactionType
     ) {
-        PostType postType = PostType.convertToEnum(post);
-        InteractionType interactionType = InteractionType.convertToEnum(interaction);
         interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
                         postSeq,
                         userSeq,
