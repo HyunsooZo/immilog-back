@@ -42,7 +42,7 @@ public class PostEntity {
     private Long commentCount;
 
     @Column(name = "created_at")
-    private final LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
@@ -57,6 +57,7 @@ public class PostEntity {
             String isPublic,
             Badge badge,
             Long commentCount,
+            LocalDateTime createdAt,
             LocalDateTime updatedAt
     ) {
         PostUserInfoValue postUserInfoValue = PostUserInfoValue.of(
@@ -80,6 +81,7 @@ public class PostEntity {
         this.isPublic = isPublic;
         this.badge = badge;
         this.commentCount = commentCount;
+        this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
 
@@ -92,6 +94,7 @@ public class PostEntity {
                 post.isPublic(),
                 post.badge(),
                 post.commentCount(),
+                post.createdAt(),
                 post.seq() != null ? post.updatedAt() : null
         );
     }
@@ -108,6 +111,5 @@ public class PostEntity {
                 this.createdAt,
                 this.updatedAt
         );
-
     }
 }
