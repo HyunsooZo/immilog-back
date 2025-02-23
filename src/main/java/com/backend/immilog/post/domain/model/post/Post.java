@@ -83,7 +83,7 @@ public record Post(
                 this.badge,
                 this.commentCount,
                 this.createdAt,
-                this.updatedAt
+                LocalDateTime.now()
         );
     }
 
@@ -108,7 +108,7 @@ public record Post(
                 this.badge,
                 this.commentCount,
                 this.createdAt,
-                this.updatedAt
+                LocalDateTime.now()
         );
     }
 
@@ -133,7 +133,7 @@ public record Post(
                 this.badge,
                 this.commentCount,
                 this.createdAt,
-                this.updatedAt
+                LocalDateTime.now()
         );
     }
 
