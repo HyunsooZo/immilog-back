@@ -1,14 +1,13 @@
 package com.backend.immilog.image
 
 import com.amazonaws.services.s3.AmazonS3
-import com.backend.immilog.global.exception.CustomException
 import com.backend.immilog.global.exception.CommonErrorCode.IMAGE_UPLOAD_FAILED
-import com.backend.immilog.notification.applicaiton.service.DiscordSendingService
+import com.backend.immilog.global.exception.CustomException
 import com.backend.immilog.image.infrastructure.gateway.S3FileStorageHandler
-import org.junit.jupiter.api.BeforeEach
+import com.backend.immilog.notification.application.service.DiscordSendingService
+import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.mockito.ArgumentMatchers.anyString
 import org.mockito.ArgumentMatchers.eq
@@ -16,28 +15,19 @@ import org.mockito.Mockito.*
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.io.InputStream
-import java.lang.reflect.Field
 import java.net.URI
 import java.net.URISyntaxException
 
-@Suppress("CAST_NEVER_SUCCEEDS")
-@DisplayName("com.backend.immilog.image.infrastructure.gateway.S3FileStorageHandler 클래스 테스트")
+@DisplayName("S3FileStorageHandler 클래스 테스트")
 class S3FileStorageHandlerTest {
 
     private val amazonS3: AmazonS3 = mock(AmazonS3::class.java)
     private val discordSendingService: DiscordSendingService = mock(DiscordSendingService::class.java)
     private val multipartFile: MultipartFile = mock(MultipartFile::class.java)
-    private val s3FileStorageHandler = S3FileStorageHandler(amazonS3, discordSendingService)
-
-    @BeforeEach
-    fun setUp() {
-        setFieldValue(s3FileStorageHandler)
-    }
-
-    private fun setFieldValue(target: Any) {
-        val field: Field = target.javaClass.getDeclaredField("bucket")
+    private val s3FileStorageHandler = S3FileStorageHandler(amazonS3, discordSendingService).apply {
+        val field = this::class.java.getDeclaredField("bucket")
         field.isAccessible = true
-        field.set(target, "test-bucket")
+        field.set(this, "test-bucket")
     }
 
     @Test
