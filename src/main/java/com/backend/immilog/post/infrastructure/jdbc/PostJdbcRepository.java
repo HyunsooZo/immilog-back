@@ -236,6 +236,7 @@ public class PostJdbcRepository {
                     rs.getString("is_public"),
                     getEnum(rs, "badge", Badge.class),
                     getNullableLong(rs, "comment_count"),
+                    getNullableTimestamp(rs, "created_at"),
                     getNullableTimestamp(rs, "updated_at")
             );
         }

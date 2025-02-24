@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3
 import com.amazonaws.services.s3.model.ObjectMetadata
 import com.backend.immilog.global.exception.CommonErrorCode
 import com.backend.immilog.global.exception.CustomException
-import com.backend.immilog.notification.applicaiton.service.DiscordSendingService
+import com.backend.immilog.notification.application.service.DiscordSendingService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile

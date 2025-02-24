@@ -18,8 +18,7 @@ class S3ConfigTest {
     fun setUp() {
         MockitoAnnotations.openMocks(this)
         // 더미 값을 직접 전달
-        S3Config("dummyAccessKey", "dummySecretKey", "dummyRegion").also { s3Config = it }
-        setFieldValue(s3Config, "accessKey", "testAccessKey")
+        s3Config = S3Config("testAccessKey", "testSecretKey", "us-west-2")
         setFieldValue(s3Config, "secretKey", "testSecretKey")
         setFieldValue(s3Config, "region", "us-west-2")
     }
