@@ -62,15 +62,6 @@ class S3FileStorageHandlerTest {
     }
 
     @Test
-    @DisplayName("파일 업로드 시 파일이 null인 경우 예외가 발생하는지 테스트")
-    fun uploadFileThrowsExceptionWhenFileIsNull() {
-        val imagePath = "path/to/image"
-        assertThrows<NullPointerException> {
-            s3FileStorageHandler.uploadFile(null, imagePath)
-        }
-    }
-
-    @Test
     @DisplayName("파일 삭제 시 경로가 null인 경우 예외가 발생하지 않는지 테스트")
     fun deleteFileDoesNotThrowExceptionWhenPathIsNull() {
         s3FileStorageHandler.deleteFile(null)

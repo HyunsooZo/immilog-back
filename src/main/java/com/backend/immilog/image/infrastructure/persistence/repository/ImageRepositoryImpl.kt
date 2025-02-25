@@ -13,7 +13,7 @@ class ImageRepositoryImpl(
     private val imageJpaRepository: ImageJpaRepository
 ) : ImageRepository {
     override fun save(image: Image): Image {
-        return ImageEntity.from(image)?.let { imageJpaRepository.save(it).toDomain() } ?: throw ImageException(ImageErrorCode.IMAGE_SAVE_FAILED)
+        return ImageEntity.from(image).let { imageJpaRepository.save(it).toDomain() }
     }
 
     override fun findByPath(imagePath: String): Image {

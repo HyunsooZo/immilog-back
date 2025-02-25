@@ -45,7 +45,7 @@ class ImageControllerTest {
         // when
         val response = imageController.deleteImage(param)
         // then
-        verify(imageService, times(1)).deleteFile(eq(imagePath))
+        verify(imageService, times(1)).deleteFile(imagePath)
         assertThat(response.statusCode).isEqualTo(NO_CONTENT)
     }
 }

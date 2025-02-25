@@ -9,9 +9,11 @@ import com.backend.immilog.image.domain.model.Image
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.any
+import org.mockito.ArgumentMatchers
 import org.mockito.ArgumentMatchers.eq
+import org.mockito.Mockito
 import org.mockito.Mockito.*
+import org.springframework.mock.web.MockMultipartFile
 import org.springframework.web.multipart.MultipartFile
 
 @DisplayName("이미지 서비스 테스트")
@@ -25,11 +27,12 @@ class ImageServiceTest {
     @DisplayName("이미지 업로드")
     fun uploadImage() {
         // given
-        val files: List<MultipartFile> = listOf(mock(MultipartFile::class.java))
+        val dummyFile = MockMultipartFile("file", "test.jpg", "image/jpeg", "test".toByteArray())
+        val files: List<MultipartFile> = listOf(dummyFile)
         val imagePath = "imagePath"
         val mockUrl = "https://example.com/path"
 
-        `when`(fileStorageHandler.uploadFile(any(MultipartFile::class.java), eq<String>(imagePath))).thenReturn(mockUrl)
+        `when`(fileStorageHandler.uploadFile(dummyFile, imagePath)).thenReturn(mockUrl)
 
         // when
         val images = imageService.saveFiles(files, imagePath, ImageType.POST)
@@ -37,8 +40,7 @@ class ImageServiceTest {
         // then
         assertThat(images).isNotEmpty
         assertThat(images[0]).isEqualTo(mockUrl)
-        verify(fileStorageHandler, times(1)).uploadFile(any(MultipartFile::class.java), eq<String>(imagePath))
-
+        verify(fileStorageHandler, times(1)).uploadFile(dummyFile, imagePath)
     }
 
     @Test
