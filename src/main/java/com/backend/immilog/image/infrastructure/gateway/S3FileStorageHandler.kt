@@ -18,7 +18,7 @@ class S3FileStorageHandler(
     @Value("\${cloud.aws.s3.bucket}") private val bucket: String = "default-bucket"
 ) : FileStorageHandler {
 
-    override fun uploadFile(file: MultipartFile?, imagePath: String?): String {
+    override fun uploadFile(file: MultipartFile, imagePath: String): String {
         val originalFileName = this.generateFileName(file, imagePath)
         this.uploadFileToS3(file, originalFileName)
         return generateFileUrl(originalFileName)
@@ -28,7 +28,6 @@ class S3FileStorageHandler(
         if (imagePath.isNullOrBlank()) return
         amazonS3.deleteObject(bucket, imagePath)
     }
-
 
     private fun generateFileName(multipartFile: MultipartFile?, imagePath: String?): String {
         return "$imagePath/${randomUUIDString(16)}.${multipartFile?.extension}"

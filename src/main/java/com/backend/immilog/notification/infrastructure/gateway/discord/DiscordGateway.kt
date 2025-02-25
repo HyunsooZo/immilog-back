@@ -13,12 +13,9 @@ import org.springframework.web.client.RestClient
 
 @Component
 class DiscordGateway(
-    private val restClient: RestClient
+    private val restClient: RestClient,
+    @Value("\${discord.webhookURL}") private val webHookUrl: String
 ) {
-
-    @Value("\${discord.webhookURL}")
-    lateinit var webHookUrl: String
-
     private val log = LoggerFactory.getLogger(DiscordGateway::class.java)
 
     fun send(discordCommand: DiscordCommand) {
@@ -45,10 +42,9 @@ class DiscordGateway(
                     response.statusCode,
                     response.statusText
                 )
-                null
             }
         )
-            .toEntity(String::class.java)
+            .toBodilessEntity()
     }
 
     private fun toJson(discordCommand: DiscordCommand): JsonObject {

@@ -88,7 +88,6 @@ tasks.withType(JavaCompile).configureEach {
 tasks.withType(KotlinCompile).configureEach {
     kotlinOptions {
         jvmTarget = "21"
-        freeCompilerArgs += ["-Xjsr305=strict"]
     }
 }
 
