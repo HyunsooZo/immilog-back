@@ -14,7 +14,7 @@ import java.lang.reflect.Field
 class DiscordGatewayTest {
 
     private val restClient: RestClient = mock(RestClient::class.java)
-    private val discordGateway = DiscordGateway(restClient)
+    private val discordGateway = DiscordGateway(restClient, "webHookUrl")
 
     @BeforeEach
     fun setUp() {

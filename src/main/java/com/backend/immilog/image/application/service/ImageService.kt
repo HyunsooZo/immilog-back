@@ -20,14 +20,12 @@ class ImageService(
         imagePath: String,
         imageType: ImageType
     ): List<String> {
-        if (files.isEmpty()) return emptyList()
-        return files.map { file ->
+        return files.takeIf { it.isNotEmpty() }?.map { file ->
             val url = fileStorageHandler.uploadFile(file, imagePath)
             imageCommandService.save(Image.of(url, imageType))
             url
-        }
+        } ?: emptyList()
     }
-
 
     fun deleteFile(imagePath: String) {
         imagePath.takeIf { it.isNotBlank() }?.let { path ->
