@@ -15,20 +15,16 @@ data class ImageResponse(
     val data: List<String>
 ) {
     companion object {
-        fun of(data: List<String>) = run {
-            ImageResponse(
-                status = HttpStatus.OK.value(),
-                message = "success",
-                data = data
-            )
-        }
+        fun of(data: List<String>) = ImageResponse(
+            status = HttpStatus.OK.value(),
+            message = "success",
+            data = data
+        )
 
-        fun success() = run {
-            ImageResponse(
-                status = HttpStatus.NO_CONTENT.value(),
-                message = "success",
-                data = emptyList()
-            )
-        }
+        fun success() = ImageResponse(
+            status = HttpStatus.NO_CONTENT.value(),
+            message = "success",
+            data = emptyList()
+        )
     }
 }
