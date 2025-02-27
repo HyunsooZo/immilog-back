@@ -12,11 +12,9 @@ data class Image(
     val status: ImageStatus
 ) {
     companion object {
-        fun of(path: String, imageType: ImageType): Image = run {
-            if (path.isBlank()) {
-                throw ImageException(ImageErrorCode.INVALID_IMAGE_PATH)
-            }
-            Image(null, path, imageType, ImageStatus.NORMAL)
+        fun of(path: String, imageType: ImageType): Image {
+            require(path.isNotBlank()) { throw ImageException(ImageErrorCode.INVALID_IMAGE_PATH) }
+            return Image(null, path, imageType, ImageStatus.NORMAL)
         }
     }
 
