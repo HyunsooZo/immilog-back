@@ -48,4 +48,32 @@ class ImageControllerTest {
         verify(imageService, times(1)).deleteFile(imagePath)
         assertThat(response.statusCode).isEqualTo(NO_CONTENT)
     }
+
+    @Test
+    @DisplayName("이미지 업로드 - 파일 없음")
+    fun uploadImage_noFiles() {
+        // given
+        val files: List<MultipartFile> = emptyList()
+        val imagePath = "imagePath"
+        `when`(imageService.saveFiles(files, imagePath, ImageType.POST)).thenReturn(emptyList())
+        // when
+        val response = imageController.uploadImage(files, imagePath, ImageType.POST)
+        // then
+        assertThat(response.statusCode).isEqualTo(OK)
+        val data: List<String> = response.body?.data ?: emptyList()
+        assertThat(data).isEmpty()
+    }
+
+    @Test
+    @DisplayName("이미지 삭제 - 경로 없음")
+    fun deleteImage_noPath() {
+        // given
+        val imagePath = ""
+        val param = ImageRequest("directory", imagePath)
+        // when
+        val response = imageController.deleteImage(param)
+        // then
+        verify(imageService, times(0)).deleteFile(imagePath)
+        assertThat(response.statusCode).isEqualTo(NO_CONTENT)
+    }
 }

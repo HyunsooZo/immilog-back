@@ -189,4 +189,206 @@ class JobBoardUpdateServiceTest {
         jobBoardUpdateService.deactivateJobBoard(1L, 1L);
         verify(jobBoardCommandService).save(any());
     }
+
+    @Test
+    @DisplayName("구인구직 업데이트 - 성공: 도메인 언어 및 애그리게이트 테스트")
+    void updateJobBoard_domainLanguageAndAggregate() {
+        LocalDateTime now = LocalDateTime.now();
+        JobBoardUpdateCommand command = new JobBoardUpdateCommand(
+                "New Title",
+                "New Content",
+                List.of("tag1", "tag2"),
+                List.of("att1", "att2"),
+                List.of("tag3"),
+                List.of("att3"),
+                now,
+                Experience.JUNIOR,
+                "1000"
+        );
+        JobBoardResult jobBoard = new JobBoardResult(
+                1L,
+                "Title",
+                "Content",
+                0L,
+                0L,
+                List.of("tag1", "tag3"),
+                List.of("att1", "att3"),
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null
+        );
+        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(jobBoard);
+
+        jobBoardUpdateService.updateJobBoard(1L, 1L, command);
+
+        ArgumentCaptor<JobBoard> jobBoardCaptor = ArgumentCaptor.forClass(JobBoard.class);
+        verify(jobBoardCommandService, times(1)).save(jobBoardCaptor.capture());
+        JobBoard updatedJobBoard = jobBoardCaptor.getValue();
+        assertThat(updatedJobBoard.getPostInfo().getTitle()).isEqualTo("New Title");
+        assertThat(updatedJobBoard.getPostInfo().getContent()).isEqualTo("New Content");
+        assertThat(updatedJobBoard.getCompany().getExperience()).isEqualTo(Experience.JUNIOR);
+        assertThat(updatedJobBoard.getCompany().getSalary()).isEqualTo("1000");
+    }
+
+    @Test
+    @DisplayName("구인구직 게시글 삭제 - 실패: 매니저 아닌 경우")
+    void deleteJobBoard_throwsExceptionIfUserIsNotOwner() {
+        JobBoardResult jobBoard = new JobBoardResult(
+                1L,
+                "Title",
+                "Content",
+                0L,
+                0L,
+                List.of("tag1", "tag3"),
+                List.of("att1", "att3"),
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                3L,
+                null,
+                null
+        );
+        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(jobBoard);
+
+        assertThatThrownBy(() -> jobBoardUpdateService.deactivateJobBoard(1L, 1L))
+                .isInstanceOf(PostException.class)
+                .hasMessage(NO_AUTHORITY.getMessage());
+    }
+
+    @Test
+    @DisplayName("구인구직 업데이트 - 성공: 새로운 테스트 추가")
+    void updateJobBoard_newTest() {
+        LocalDateTime now = LocalDateTime.now();
+        JobBoardUpdateCommand command = new JobBoardUpdateCommand(
+                "Updated Title",
+                "Updated Content",
+                List.of("tag1", "tag2"),
+                List.of("att1", "att2"),
+                List.of("tag3"),
+                List.of("att3"),
+                now,
+                Experience.SENIOR,
+                "2000"
+        );
+        JobBoardResult jobBoard = new JobBoardResult(
+                1L,
+                "Old Title",
+                "Old Content",
+                0L,
+                0L,
+                List.of("tag1", "tag3"),
+                List.of("att1", "att3"),
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null
+        );
+        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(jobBoard);
+
+        jobBoardUpdateService.updateJobBoard(1L, 1L, command);
+
+        ArgumentCaptor<JobBoard> jobBoardCaptor = ArgumentCaptor.forClass(JobBoard.class);
+        verify(jobBoardCommandService, times(1)).save(jobBoardCaptor.capture());
+        JobBoard updatedJobBoard = jobBoardCaptor.getValue();
+        assertThat(updatedJobBoard.getPostInfo().getTitle()).isEqualTo("Updated Title");
+        assertThat(updatedJobBoard.getPostInfo().getContent()).isEqualTo("Updated Content");
+        assertThat(updatedJobBoard.getCompany().getExperience()).isEqualTo(Experience.SENIOR);
+        assertThat(updatedJobBoard.getCompany().getSalary()).isEqualTo("2000");
+    }
+
+    @Test
+    @DisplayName("구인구직 업데이트 - 성공: 새로운 테스트 추가")
+    void updateJobBoard_newTest() {
+        LocalDateTime now = LocalDateTime.now();
+        JobBoardUpdateCommand command = new JobBoardUpdateCommand(
+                "Updated Title",
+                "Updated Content",
+                List.of("tag1", "tag2"),
+                List.of("att1", "att2"),
+                List.of("tag3"),
+                List.of("att3"),
+                now,
+                Experience.SENIOR,
+                "2000"
+        );
+        JobBoardResult jobBoard = new JobBoardResult(
+                1L,
+                "Old Title",
+                "Old Content",
+                0L,
+                0L,
+                List.of("tag1", "tag3"),
+                List.of("att1", "att3"),
+                List.of(),
+                List.of(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                1L,
+                null,
+                null
+        );
+        when(jobBoardQueryService.getJobBoardBySeq(anyLong())).thenReturn(jobBoard);
+
+        jobBoardUpdateService.updateJobBoard(1L, 1L, command);
+
+        ArgumentCaptor<JobBoard> jobBoardCaptor = ArgumentCaptor.forClass(JobBoard.class);
+        verify(jobBoardCommandService, times(1)).save(jobBoardCaptor.capture());
+        JobBoard updatedJobBoard = jobBoardCaptor.getValue();
+        assertThat(updatedJobBoard.getPostInfo().getTitle()).isEqualTo("Updated Title");
+        assertThat(updatedJobBoard.getPostInfo().getContent()).isEqualTo("Updated Content");
+        assertThat(updatedJobBoard.getCompany().getExperience()).isEqualTo(Experience.SENIOR);
+        assertThat(updatedJobBoard.getCompany().getSalary()).isEqualTo("2000");
+    }
 }
