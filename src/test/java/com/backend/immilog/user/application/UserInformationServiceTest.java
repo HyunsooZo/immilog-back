@@ -44,17 +44,6 @@ class UserInformationServiceTest {
     void updateInformation() {
         // given
         Long userSeq = 1L;
-        //
-//        public record User(
-//                Long seq,
-//                Auth auth,
-//                UserRole userRole,
-//                ReportData reportData,
-//                Profile profile,
-//                Location location,
-//                UserStatus userStatus,
-//                LocalDateTime updatedAt
-//        ) {
         User user = new User(
                 userSeq,
                 Auth.of("test@email.com", "password"),
@@ -358,6 +347,44 @@ class UserInformationServiceTest {
         );
 
         // then
+        verify(userCommandService, times(1)).save(any());
+    }
+
+    @Test
+    @DisplayName("사용자 정보 업데이트 - 프로필 이미지가 변경되지 않을 때")
+    void updateInformation_profileImageNotChanged() {
+        // given
+        Long userSeq = 1L;
+        User user = new User(
+                userSeq,
+                Auth.of("test@emial.com", "password"),
+                ROLE_USER,
+                null,
+                Profile.of("testNickName", "image", Country.SOUTH_KOREA),
+                Location.of(Country.MALAYSIA, "KL"),
+                UserStatus.PENDING,
+                null
+        );
+        UserInfoUpdateRequest param = new UserInfoUpdateRequest(
+                "testNickName",
+                "image",
+                Country.SOUTH_KOREA,
+                Country.MALAYSIA,
+                37.123456,
+                126.123456,
+                UserStatus.ACTIVE
+        );
+        when(userQueryService.getUserById(userSeq)).thenReturn(user);
+
+        // when
+        userInformationService.updateInformation(
+                userSeq,
+                CompletableFuture.completedFuture(Pair.of("South Korea", "Seoul")),
+                param.toCommand()
+        );
+
+        // then
+        verify(imageService, times(0)).deleteFile(any());
         verify(userCommandService, times(1)).save(any());
     }
 }

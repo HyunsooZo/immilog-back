@@ -51,14 +51,7 @@ public class UserController {
     public ResponseEntity<UserGeneralResponse> signUp(
             @Valid @RequestBody UserSignUpRequest request
     ) {
-        final Pair<Long, String> userSeqAndName = userSignUpService.signUp(request.toCommand());
-        final String email = request.email();
-        final String userName = userSeqAndName.getSecond();
-        final Long userSeq = userSeqAndName.getFirst();
-        final String url = String.format(API_LINK, userSeq);
-        final String mailForm = String.format(HTML_SIGN_UP_CONTENT, userName, url);
-        emailService.sendHtmlEmail(email, EMAIL_SIGN_UP_SUBJECT, mailForm);
-
+        userSignUpService.signUp(request.toCommand());
         return ResponseEntity.status(CREATED).build();
     }
 
