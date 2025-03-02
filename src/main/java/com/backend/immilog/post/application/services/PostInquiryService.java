@@ -38,7 +38,7 @@ public class PostInquiryService {
             Categories category,
             Integer page
     ) {
-        Pageable pageable = PageRequest.of(Objects.requireNonNullElse(page, 0), 10);
+        final Pageable pageable = PageRequest.of(Objects.requireNonNullElse(page, 0), 10);
         return postQueryService.getPosts(
                 country,
                 sortingMethod,
@@ -50,8 +50,8 @@ public class PostInquiryService {
 
     @Transactional(readOnly = true)
     public PostResult getPostDetail(Long postSeq) {
-        PostResult post = postQueryService.getPostDetail(postSeq);
-        List<CommentResult> comments = commentQueryService.getComments(postSeq);
+        final PostResult post = postQueryService.getPostDetail(postSeq);
+        final List<CommentResult> comments = commentQueryService.getComments(postSeq);
         post.addComments(comments);
         return post;
     }
@@ -60,8 +60,8 @@ public class PostInquiryService {
             String keyword,
             Integer page
     ) {
-        PageRequest pageRequest = PageRequest.of(page, 10);
-        Page<PostResult> posts = postQueryService.getPostsByKeyword(keyword, pageRequest);
+        final Pageable pageable = PageRequest.of(page, 10);
+        final Page<PostResult> posts = postQueryService.getPostsByKeyword(keyword, pageable);
         posts.getContent().forEach(post -> post.addKeywords(keyword));
         return posts;
     }
@@ -70,7 +70,7 @@ public class PostInquiryService {
             Long userSeq,
             Integer page
     ) {
-        Pageable pageable = PageRequest.of(Objects.requireNonNullElse(page, 0), 10);
+        final Pageable pageable = PageRequest.of(Objects.requireNonNullElse(page, 0), 10);
         return postQueryService.getPostsByUserSeq(userSeq, pageable);
     }
 

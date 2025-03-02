@@ -31,7 +31,7 @@ class InteractionCreationServiceTest {
         PostType post = PostType.POST;
         InteractionType interaction = InteractionType.LIKE;
         InteractionUser interactionUser = mock(InteractionUser.class);
-        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(any(), any(), any(), any())).thenReturn(Optional.of(interactionUser));
+        when(interactionUserQueryService.getInteraction(any(), any(), any(), any())).thenReturn(Optional.of(interactionUser));
         // when
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);
         // then
@@ -46,7 +46,7 @@ class InteractionCreationServiceTest {
         Long postSeq = 1L;
         PostType post = PostType.POST;
         InteractionType interaction = InteractionType.LIKE;
-        when(interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(any(), any(), any(), any())).thenReturn(Optional.empty());
+        when(interactionUserQueryService.getInteraction(any(), any(), any(), any())).thenReturn(Optional.empty());
         // when
         interactionCreationService.createInteraction(userSeq, postSeq, post, interaction);
         // then

@@ -15,7 +15,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -33,12 +33,12 @@ public class CommentJdbcRepository {
             UserInfoResult user
     ) {
         try {
-        String prefix = commentSeq == rs.getLong("c.seq") ? "c" : "cc";
-            String content = rs.getString(prefix + ".content");
-            int likeCount = rs.getInt(prefix + ".like_count");
-            int replyCount = rs.getInt(prefix + ".reply_count");
-            PostStatus status = PostStatus.valueOf(rs.getString(prefix + ".status"));
-            LocalDateTime localDateTime = rs.getTimestamp(prefix + ".created_at").toLocalDateTime();
+            final String prefix = commentSeq == rs.getLong("c.seq") ? "c" : "cc";
+            final String content = rs.getString(prefix + ".content");
+            final int likeCount = rs.getInt(prefix + ".like_count");
+            final int replyCount = rs.getInt(prefix + ".reply_count");
+            final PostStatus status = PostStatus.valueOf(rs.getString(prefix + ".status"));
+            final LocalDateTime localDateTime = rs.getTimestamp(prefix + ".created_at").toLocalDateTime();
             return new CommentResult(
                     commentSeq,
                     user,
@@ -49,7 +49,7 @@ public class CommentJdbcRepository {
                     replyCount,
                     new ArrayList<>(),
                     status,
-                    localDateTime
+                    localDateTime.toString()
             );
         } catch (SQLException e) {
             throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
@@ -86,7 +86,7 @@ public class CommentJdbcRepository {
                 LEFT JOIN user u ON c.user_seq = u.seq
                 LEFT JOIN comment cc ON cc.post_seq = ?
                                     AND cc.parent_seq = c.seq
-                                AND cc.reference_type = 'COMMENT'
+                                    AND cc.reference_type = 'COMMENT'
                 LEFT JOIN user cu ON cc.user_seq = cu.seq
                 WHERE c.post_seq = ?
                     AND c.parent_seq IS NULL
@@ -104,7 +104,7 @@ public class CommentJdbcRepository {
     }
 
     private List<CommentResult> mapParentCommentWithChildren(ResultSet rs) {
-        Map<Long, CommentResult> commentMap = new HashMap<>();
+        Map<Long, CommentResult> commentMap = new LinkedHashMap<>();
         try {
             do {
                 Long commentSeq = rs.getLong("c.seq");

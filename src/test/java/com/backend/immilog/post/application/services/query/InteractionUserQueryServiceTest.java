@@ -36,7 +36,7 @@ class InteractionUserQueryServiceTest {
         when(interactionUserRepository.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(postSeq, userSeq, postType, interactionType))
                 .thenReturn(Optional.of(expectedInteractionUser));
 
-        Optional<InteractionUser> actualInteractionUser = interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(postSeq, userSeq, postType, interactionType);
+        Optional<InteractionUser> actualInteractionUser = interactionUserQueryService.getInteraction(postSeq, userSeq, postType, interactionType);
 
         assertThat(actualInteractionUser).isPresent();
         assertThat(actualInteractionUser.get()).isEqualTo(expectedInteractionUser);
@@ -52,7 +52,7 @@ class InteractionUserQueryServiceTest {
         when(interactionUserRepository.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(postSeq, userSeq, postType, interactionType))
                 .thenReturn(Optional.empty());
 
-        Optional<InteractionUser> actualInteractionUser = interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(postSeq, userSeq, postType, interactionType);
+        Optional<InteractionUser> actualInteractionUser = interactionUserQueryService.getInteraction(postSeq, userSeq, postType, interactionType);
 
         assertThat(actualInteractionUser).isEmpty();
     }

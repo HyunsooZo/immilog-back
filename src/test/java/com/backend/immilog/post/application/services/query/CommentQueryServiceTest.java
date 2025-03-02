@@ -15,7 +15,8 @@ import static org.mockito.Mockito.when;
 class CommentQueryServiceTest {
 
     private final CommentRepository commentRepository = mock(CommentRepository.class);
-    private final CommentQueryService commentQueryService = new CommentQueryService(commentRepository);
+    private final InteractionUserQueryService interactionUserQueryService = mock(InteractionUserQueryService.class);
+    private final CommentQueryService commentQueryService = new CommentQueryService(commentRepository, interactionUserQueryService);
 
     @Test
     @DisplayName("getComments 메서드가 댓글을 성공적으로 반환")

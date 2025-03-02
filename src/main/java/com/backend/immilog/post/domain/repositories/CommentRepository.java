@@ -9,4 +9,6 @@ public interface CommentRepository {
     List<CommentResult> getComments(Long postSeq);
 
     void save(Comment comment);
+
+    Comment findById(Long commentSeq);
 }

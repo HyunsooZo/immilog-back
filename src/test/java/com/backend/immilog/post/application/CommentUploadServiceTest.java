@@ -4,13 +4,11 @@ import com.backend.immilog.post.application.services.CommentUploadService;
 import com.backend.immilog.post.application.services.command.CommentCommandService;
 import com.backend.immilog.post.application.services.command.PostCommandService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
-import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.presentation.request.CommentUploadRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.Optional;
 
 import static com.backend.immilog.post.exception.PostErrorCode.INVALID_REFERENCE_TYPE;
 import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;

@@ -3,6 +3,8 @@ package com.backend.immilog.post.infrastructure.repositories;
 import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
+import com.backend.immilog.post.exception.PostErrorCode;
+import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.infrastructure.jdbc.CommentJdbcRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.comment.CommentEntity;
 import com.backend.immilog.post.infrastructure.jpa.repository.CommentJpaRepository;
@@ -34,6 +36,13 @@ public class CommentRepositoryImpl implements CommentRepository {
     @Override
     public void save(Comment comment) {
         commentJpaRepository.save(CommentEntity.from(comment));
+    }
+
+    @Override
+    public Comment findById(Long commentSeq) {
+        return commentJpaRepository.findById(commentSeq)
+                .map(CommentEntity::toDomain)
+                .orElseThrow(()-> new PostException(PostErrorCode.COMMENT_NOT_FOUND));
     }
 }
 

@@ -5,7 +5,6 @@ import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.model.user.User;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +19,7 @@ public record CommentResult(
         int replyCount,
         List<Long> likeUsers,
         PostStatus status,
-        LocalDateTime createdAt
+        String createdAt
 ) {
     public static CommentResult of(
             Comment comment,
@@ -36,7 +35,7 @@ public record CommentResult(
                 comment.replyCount(),
                 comment.likeUsers(),
                 comment.status(),
-                comment.createdAt()
+                comment.createdAt().toString()
         );
     }
 
@@ -61,5 +60,35 @@ public record CommentResult(
 
     public void addChildComment(CommentResult childComment) {
         this.replies.add(childComment);
+    }
+
+    public CommentResult updateLikeCount(Integer likeCount) {
+        return new CommentResult(
+                seq,
+                user,
+                content,
+                replies,
+                likeCount,
+                downVotes,
+                replyCount,
+                likeUsers,
+                status,
+                createdAt
+        );
+    }
+
+    public CommentResult updateLikeUsers(List<Long> likeUsers) {
+        return new CommentResult(
+                seq,
+                user,
+                content,
+                replies,
+                upVotes,
+                downVotes,
+                replyCount,
+                likeUsers,
+                status,
+                createdAt
+        );
     }
 }

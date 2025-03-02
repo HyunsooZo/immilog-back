@@ -55,7 +55,7 @@ public record Post(
         );
     }
 
-    public Post updateCommentCount() {
+    public Post increaseCommentCount() {
         return new Post(
                 this.seq,
                 this.postUserInfo,

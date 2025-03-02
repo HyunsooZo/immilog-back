@@ -34,10 +34,10 @@ public class CommentUploadService {
             String referenceType,
             String content
     ) {
-        Post post = postQueryService.getPostById(postSeq);
-        Post deletedPost = post.updateCommentCount();
-        ReferenceType reference = ReferenceType.getByString(referenceType);
-        Comment comment = Comment.of(userId, postSeq, content, reference);
+        final Post post = postQueryService.getPostById(postSeq);
+        final Post deletedPost = post.increaseCommentCount();
+        final ReferenceType reference = ReferenceType.getByString(referenceType);
+        final Comment comment = Comment.of(userId, postSeq, content, reference);
         postCommandService.save(deletedPost);
         commentCommandService.save(comment);
     }

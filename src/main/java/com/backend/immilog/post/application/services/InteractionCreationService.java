@@ -6,7 +6,6 @@ import com.backend.immilog.post.domain.enums.InteractionType;
 import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ public class InteractionCreationService {
         this.interactionUserQueryService = interactionUserQueryService;
     }
 
-    @Async
     @Transactional
     public void createInteraction(
             Long userSeq,
@@ -32,22 +30,11 @@ public class InteractionCreationService {
             PostType postType,
             InteractionType interactionType
     ) {
-        interactionUserQueryService.getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
-                        postSeq,
-                        userSeq,
-                        postType,
-                        interactionType
-                )
+        interactionUserQueryService
+                .getInteraction(postSeq, userSeq, postType, interactionType)
                 .ifPresentOrElse(
                         interactionUserCommandService::delete,
-                        () -> interactionUserCommandService.save(
-                                InteractionUser.of(
-                                        postSeq,
-                                        postType,
-                                        interactionType,
-                                        userSeq
-                                )
-                        )
+                        () -> interactionUserCommandService.save(InteractionUser.of(postSeq, postType, interactionType, userSeq))
                 );
     }
 }

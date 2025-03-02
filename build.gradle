@@ -73,6 +73,8 @@ dependencies {
     // Kotlin dependencies: 버전 없이 지정하면 플러그인 버전과 맞춰줌
     implementation "org.jetbrains.kotlin:kotlin-reflect"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 def generatedDir = "$buildDir/main/generated"

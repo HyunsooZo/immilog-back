@@ -7,7 +7,8 @@ import java.util.Arrays;
 
 public enum PostType {
     POST("posts"),
-    JOB_BOARD("jobboards");
+    JOB_BOARD("jobboards"),
+    COMMENT("comments");
 
     private final String postType;
 

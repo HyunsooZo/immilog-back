@@ -80,10 +80,10 @@ public class PostQueryService {
     @Transactional(readOnly = true)
     public Page<PostResult> getPostsByKeyword(
             String keyword,
-            PageRequest pageRequest
+            Pageable pageable
     ) {
-        Page<Post> posts = postRepository.getPostsByKeyword(keyword, pageRequest);
-        List<Long> postSeqList = this.getSeqList(posts);
+        Page<Post> posts = postRepository.getPostsByKeyword(keyword, pageable);
+        List<Long> postSeqList = getSeqList(posts);
         Page<PostResult> postResults = posts.map(Post::toResult);
         postResults.getContent().forEach(post -> post.addKeywords(keyword));
         return this.assemblePostResult(postSeqList, postResults);
@@ -103,7 +103,7 @@ public class PostQueryService {
     ) {
         Page<Post> posts = postRepository.getPostsByUserSeq(userSeq, pageable);
         Page<PostResult> postResults = posts.map(Post::toResult);
-        return this.assemblePostResult(this.getSeqList(posts), postResults);
+        return this.assemblePostResult(getSeqList(posts), postResults);
     }
 
     public List<PostResult> getPostsFromRedis(String key) {
