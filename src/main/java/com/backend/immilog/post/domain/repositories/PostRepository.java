@@ -1,11 +1,14 @@
 package com.backend.immilog.post.domain.repositories;
 
 import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 public interface PostRepository {
 
@@ -33,4 +36,5 @@ public interface PostRepository {
 
     Post save(Post postEntity);
 
+    List<Post> getPostsByPostSeqList(List<Long> postSeqList);
 }

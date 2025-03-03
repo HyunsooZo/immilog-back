@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -43,5 +42,12 @@ public class InteractionUserQueryService {
                 resultSeqList,
                 postType
         );
+    }
+
+    public List<InteractionUser> getBookmarkInteractions(
+            Long userSeq,
+            PostType postType
+    ) {
+        return interactionUserRepository.getInteractions(userSeq, postType, InteractionType.BOOKMARK);
     }
 }

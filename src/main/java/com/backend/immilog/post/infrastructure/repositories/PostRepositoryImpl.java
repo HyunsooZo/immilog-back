@@ -14,6 +14,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 import static com.backend.immilog.post.exception.PostErrorCode.POST_NOT_FOUND;
 
 @Repository
@@ -81,5 +83,12 @@ public class PostRepositoryImpl implements PostRepository {
     @Override
     public Post save(Post post) {
         return postJpaRepository.save(PostEntity.from(post)).toDomain();
+    }
+
+    @Override
+    public List<Post> getPostsByPostSeqList(List<Long> postSeqList) {
+        return postJpaRepository.findAllBySeqIn(postSeqList).stream()
+                .map(PostEntity::toDomain)
+                .toList();
     }
 }

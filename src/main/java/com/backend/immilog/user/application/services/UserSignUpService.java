@@ -47,10 +47,10 @@ public class UserSignUpService {
     }
 
     public Pair<String, Boolean> verifyEmail(Long userSeq) {
-        User user = userQueryService.getUserById(userSeq);
-        String resultString = "이메일 인증이 완료되었습니다.";
-        UserStatus currentUserStatus = user.userStatus();
-        return getVerificationResult(currentUserStatus, user, resultString);
+        final User user = userQueryService.getUserById(userSeq);
+        final boolean isKoreanUser = user.country().equals(Country.SOUTH_KOREA);
+        final UserStatus currentUserStatus = user.userStatus();
+        return this.getVerificationResult(currentUserStatus, user, isKoreanUser);
     }
 
     private User createUser(UserSignUpCommand command) {
@@ -74,20 +74,29 @@ public class UserSignUpService {
     private Pair<String, Boolean> getVerificationResult(
             UserStatus userStatus,
             User user,
-            String resultString
+            Boolean isKoreanUser
     ) {
         boolean isLoginAvailable = true;
+        String resultString = "";
         switch (userStatus) {
-            case ACTIVE -> resultString = "이미 인증된 사용자입니다.";
+            case ACTIVE -> {
+                log.info("User is already verified.");
+                resultString = isKoreanUser ? "이미 인증된 사용자입니다." : "User is already verified.";
+            }
             case PENDING -> {
-                user.updateStatus(ACTIVE);
-                userCommandService.save(user);
+                log.info("User is pending verification.");
+                resultString = isKoreanUser ? "이메일 인증이 완료되었습니다." : "Email verification is complete.";
+                User updatedUser = user.updateStatus(ACTIVE);
+                userCommandService.save(updatedUser);
             }
             case BLOCKED -> {
-                resultString = "차단된 사용자입니다.";
+                log.info("User is blocked.");
+                resultString = isKoreanUser ? "차단된 사용자입니다." : "Blocked user.";
                 isLoginAvailable = false;
             }
-            default -> resultString = "이메일 인증이 필요한 사용자가 아닙니다.";
+            default -> {
+                resultString = isKoreanUser ? "이메일 인증이 필요한 사용자가 아닙니다." : "User does not need email verification.";
+            }
         }
         return Pair.of(resultString, isLoginAvailable);
     }

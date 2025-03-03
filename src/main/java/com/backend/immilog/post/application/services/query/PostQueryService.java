@@ -122,6 +122,10 @@ public class PostQueryService {
         return List.of();
     }
 
+    public List<PostResult> getPostsByPostSeqList(List<Long> postSeqList) {
+        return postRepository.getPostsByPostSeqList(postSeqList).stream().map(Post::toResult).toList();
+    }
+
     private static List<Long> getSeqList(Page<Post> posts) {
         return posts.stream().map(Post::seq).toList();
     }
@@ -161,6 +165,4 @@ public class PostQueryService {
             return postResult;
         });
     }
-
-
 }

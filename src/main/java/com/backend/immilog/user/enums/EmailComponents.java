@@ -1,9 +1,11 @@
 package com.backend.immilog.user.enums;
 
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 public class EmailComponents {
     public static final String
             EMAIL_SIGN_UP_SUBJECT = "Immilog 회원가입 인증 메일",
-            API_LINK = "https://api.ko-meet-back.com/api/v1/users/%d/verification",
+            API_LINK = ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + "/api/v1/users/%d/verification",
             PASSWORD_RESET_SUBJECT = "Immilog 비밀번호가 초기화 되었습니다.",
             PASSWORD_RESET_CONTENT = "아래 임시 비밀번호를 통해 로그인 후 비밀번호를 변경해주세요.\n 임시비밀번호 : %s",
             HTML_SIGN_UP_CONTENT =

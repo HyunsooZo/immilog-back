@@ -65,4 +65,17 @@ public class InteractionUserRepositoryImpl implements InteractionUserRepository 
     ) {
         return interactionUserJdbcRepository.findAllByPostSeqList(postSeqList, postType);
     }
+
+    @Override
+    public List<InteractionUser> getInteractions(
+            Long userSeq,
+            PostType postType,
+            InteractionType interactionType
+    ) {
+        return interactionUserJpaRepository.findByUserSeqAndPostTypeAndInteractionType(
+                userSeq,
+                postType,
+                interactionType
+        );
+    }
 }

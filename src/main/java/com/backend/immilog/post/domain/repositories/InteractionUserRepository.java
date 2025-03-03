@@ -31,4 +31,10 @@ public interface InteractionUserRepository {
             List<Long> postSeqList,
             PostType postType
     );
+
+    List<InteractionUser> getInteractions(
+            Long userSeq,
+            PostType postType,
+            InteractionType interactionType
+    );
 }

@@ -1,6 +1,7 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Badge;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.PostStatus;

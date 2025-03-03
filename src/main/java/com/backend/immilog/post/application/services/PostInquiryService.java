@@ -4,9 +4,12 @@ import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.query.CommentQueryService;
+import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -22,13 +25,16 @@ import java.util.Objects;
 public class PostInquiryService {
     private final PostQueryService postQueryService;
     private final CommentQueryService commentQueryService;
+    private final InteractionUserQueryService interactionUserQueryService;
 
     public PostInquiryService(
             PostQueryService postQueryService,
-            CommentQueryService commentQueryService
+            CommentQueryService commentQueryService,
+            InteractionUserQueryService interactionUserQueryService
     ) {
         this.postQueryService = postQueryService;
         this.commentQueryService = commentQueryService;
+        this.interactionUserQueryService = interactionUserQueryService;
     }
 
     public Page<PostResult> getPosts(
@@ -80,5 +86,14 @@ public class PostInquiryService {
 
     public List<PostResult> getHotPosts() {
         return postQueryService.getPostsFromRedis("hot_posts");
+    }
+
+    public List<PostResult> getBookmarkedPosts(
+            Long userSeq,
+            PostType postType
+    ) {
+        final List<InteractionUser> bookmarks = interactionUserQueryService.getBookmarkInteractions(userSeq, postType);
+        final List<Long> postSeqList = bookmarks.stream().map(InteractionUser::postSeq).toList();
+        return postQueryService.getPostsByPostSeqList(postSeqList);
     }
 }

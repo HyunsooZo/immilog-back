@@ -43,7 +43,7 @@ public enum Country {
     }
 
     private boolean isKoreanNameMatch(String countryKoreanName) {
-        return Arrays.stream(Country.values()).anyMatch(country -> country.koreanName().equals(countryKoreanName));
+        return this.koreanName().equals(countryKoreanName);
     }
 
     public String koreanName() {return this.countryKoreanName;}

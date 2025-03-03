@@ -34,7 +34,7 @@ public class LocationController {
         Pair<String, String> country = locationService.getCountry(latitude, longitude).join();
         return ResponseEntity.status(OK).body(
                 new UserLocationResponse(
-                        Country.getCountryByKoreanName(country.getFirst()).koreanName(),
+                        Country.getCountryByKoreanName(country.getFirst()).name(),
                         country.getSecond()
                 )
         );
