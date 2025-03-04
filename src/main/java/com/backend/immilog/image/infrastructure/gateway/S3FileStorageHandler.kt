@@ -6,12 +6,14 @@ import com.backend.immilog.global.exception.CommonErrorCode
 import com.backend.immilog.global.exception.CustomException
 import com.backend.immilog.notification.application.service.DiscordSendingService
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.Profile
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import java.io.IOException
 import java.util.*
 
 @Service
+@Profile("disable")
 class S3FileStorageHandler(
     private val amazonS3: AmazonS3,
     private val discordSendingService: DiscordSendingService,

@@ -29,19 +29,8 @@ public record Post(
             Categories category,
             String isPublic
     ) {
-        PostInfo postInfo = PostInfo.of(
-                title,
-                content,
-                user.country(),
-                user.region()
-        );
-
-        PostUserInfo postUserInfo = new PostUserInfo(
-                user.seq(),
-                user.imageUrl(),
-                user.nickname()
-        );
-
+        final PostInfo postInfo = PostInfo.of(title, content, user.country(), user.region());
+        final PostUserInfo postUserInfo = new PostUserInfo(user.seq(), user.nickname(), user.imageUrl());
         return new Post(
                 null,
                 postUserInfo,
@@ -240,22 +229,24 @@ public record Post(
     }
 
     public static Post from(PostResult postResult) {
+        final PostUserInfo userInfo = new PostUserInfo(
+                postResult.getUserSeq(),
+                postResult.getUserNickName(),
+                postResult.getUserProfileUrl()
+        );
+        final PostInfo postInfo = new PostInfo(
+                postResult.getTitle(),
+                postResult.getContent(),
+                postResult.getViewCount(),
+                postResult.getLikeCount(),
+                postResult.getRegion(),
+                postResult.getStatus(),
+                Country.valueOf(postResult.getCountry())
+        );
         return new Post(
                 postResult.getSeq(),
-                new PostUserInfo(
-                        postResult.getUserSeq(),
-                        postResult.getUserProfileUrl(),
-                        postResult.getUserNickName()
-                ),
-                new PostInfo(
-                        postResult.getTitle(),
-                        postResult.getContent(),
-                        postResult.getViewCount(),
-                        postResult.getLikeCount(),
-                        postResult.getRegion(),
-                        postResult.getStatus(),
-                        Country.valueOf(postResult.getCountry())
-                ),
+                userInfo,
+                postInfo,
                 postResult.getCategory(),
                 postResult.getIsPublic(),
                 null,

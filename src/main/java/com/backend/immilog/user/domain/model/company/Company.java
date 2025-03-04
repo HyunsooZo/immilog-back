@@ -8,7 +8,7 @@ public record Company(
         Manager manager,
         CompanyData companyData
 ) {
-    public static Company withNew() {
+    public static Company empty() {
         return new Company(null, Manager.empty(), CompanyData.empty());
     }
 

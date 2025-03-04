@@ -17,7 +17,7 @@ public class CompanyQueryService {
     public Company getByCompanyManagerUserSeq(Long userSeq) {
         return companyRepository
                 .getByCompanyManagerUserSeq(userSeq)
-                .orElse(null);
+                .orElse(Company.empty());
     }
 
 

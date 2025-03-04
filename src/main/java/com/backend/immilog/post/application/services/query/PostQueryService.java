@@ -123,7 +123,8 @@ public class PostQueryService {
     }
 
     public List<PostResult> getPostsByPostSeqList(List<Long> postSeqList) {
-        return postRepository.getPostsByPostSeqList(postSeqList).stream().map(Post::toResult).toList();
+        List<PostResult> postResults = postRepository.getPostsByPostSeqList(postSeqList).stream().map(Post::toResult).toList();
+        return this.assemblePostResult(postSeqList, new PageImpl<>(postResults)).toList();
     }
 
     private static List<Long> getSeqList(Page<Post> posts) {

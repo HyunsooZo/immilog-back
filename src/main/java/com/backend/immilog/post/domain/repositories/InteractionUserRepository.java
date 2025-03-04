@@ -8,17 +8,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface InteractionUserRepository {
-    List<InteractionUser> getByPostSeq(
-            Long postSeq
-    );
+    List<InteractionUser> getByPostSeq(Long postSeq);
 
-    void delete(
-            InteractionUser interactionUser
-    );
+    void delete(InteractionUser interactionUser);
 
-    void save(
-            InteractionUser likeUser
-    );
+    void save(InteractionUser likeUser);
 
     Optional<InteractionUser> getByPostSeqAndUserSeqAndPostTypeAndInteractionType(
             Long postSeq,

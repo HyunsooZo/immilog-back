@@ -16,7 +16,7 @@ public class CompanyInquiryService {
     }
 
     public CompanyResult getCompany(Long userSeq) {
-        Company company = companyQueryService.getByCompanyManagerUserSeq(userSeq);
+        final Company company = companyQueryService.getByCompanyManagerUserSeq(userSeq);
         return Optional.of(CompanyResult.from(company)).orElse(CompanyResult.empty());
     }
 }

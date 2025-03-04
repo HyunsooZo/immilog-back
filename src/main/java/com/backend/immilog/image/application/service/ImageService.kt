@@ -7,6 +7,7 @@ import com.backend.immilog.image.domain.model.Image
 import com.backend.immilog.image.infrastructure.gateway.FileStorageHandler
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder
 
 @Service
 class ImageService(
@@ -23,7 +24,7 @@ class ImageService(
         return files.takeIf { it.isNotEmpty() }?.map { file ->
             val url = fileStorageHandler.uploadFile(file, imagePath)
             imageCommandService.save(Image.of(url, imageType))
-            url
+            ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + url
         } ?: emptyList()
     }
 

@@ -44,23 +44,19 @@ public class PostUploadService {
             Long userSeq,
             PostUploadCommand postUploadCommand
     ) {
-        User user = userQueryService.getUserById(userSeq);
-        Post newPost = createPost(postUploadCommand, user);
-        Post savedPost = postCommandService.save(newPost);
-        Long postSeq = savedPost.seq();
-        insertAllPostResources(postUploadCommand, postSeq);
+        final User user = userQueryService.getUserById(userSeq);
+        final Post newPost = createPost(postUploadCommand, user);
+        final Post savedPost = postCommandService.save(newPost);
+        this.insertAllPostResources(postUploadCommand, savedPost.seq());
     }
 
     private void insertAllPostResources(
-            PostUploadCommand postUploadCommand,
+            PostUploadCommand command,
             Long postSeq
     ) {
-        List<PostResource> postResourceList = this.getPostResourceList(
-                postUploadCommand,
-                postSeq
-        );
+        final List<PostResource> resourceList = this.getPostResourceList(command, postSeq);
         bulkInsertRepository.saveAll(
-                postResourceList,
+                resourceList,
                 """
                         INSERT INTO post_resource (
                             post_seq,

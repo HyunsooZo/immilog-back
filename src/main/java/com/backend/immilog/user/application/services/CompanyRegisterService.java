@@ -40,7 +40,7 @@ public class CompanyRegisterService {
             Long userSeq,
             CompanyRegisterCommand command
     ) {
-        return Company.withNew()
+        return Company.empty()
                 .manager(
                         command.country(),
                         command.region(),

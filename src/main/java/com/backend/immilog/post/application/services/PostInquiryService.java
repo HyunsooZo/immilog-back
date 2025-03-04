@@ -62,6 +62,17 @@ public class PostInquiryService {
         return post;
     }
 
+    @Transactional(readOnly = true)
+    public List<PostResult> getBookmarkedPosts(
+            Long userSeq,
+            PostType postType
+    ) {
+        final List<InteractionUser> bookmarks = interactionUserQueryService.getBookmarkInteractions(userSeq, postType);
+        final List<Long> postSeqList = bookmarks.stream().map(InteractionUser::postSeq).toList();
+        return postQueryService.getPostsByPostSeqList(postSeqList);
+    }
+
+
     public Page<PostResult> searchKeyword(
             String keyword,
             Integer page
@@ -88,12 +99,4 @@ public class PostInquiryService {
         return postQueryService.getPostsFromRedis("hot_posts");
     }
 
-    public List<PostResult> getBookmarkedPosts(
-            Long userSeq,
-            PostType postType
-    ) {
-        final List<InteractionUser> bookmarks = interactionUserQueryService.getBookmarkInteractions(userSeq, postType);
-        final List<Long> postSeqList = bookmarks.stream().map(InteractionUser::postSeq).toList();
-        return postQueryService.getPostsByPostSeqList(postSeqList);
-    }
 }

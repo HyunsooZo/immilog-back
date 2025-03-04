@@ -46,7 +46,7 @@ public class CompanyController {
     public ResponseEntity<UserCompanyResponse> getCompany(
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq
     ) {
-        CompanyResult result = companyInquiryService.getCompany(userSeq);
+        final CompanyResult result = companyInquiryService.getCompany(userSeq);
         return ResponseEntity.status(OK).body(result.toResponse());
     }
 }

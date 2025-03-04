@@ -129,6 +129,16 @@ public class PostController {
         return ResponseEntity.status(OK).body(PostPageResponse.of(posts));
     }
 
+    @GetMapping("/bookmarks")
+    @Operation(summary = "북마크한 게시물 조회", description = "북마크한 게시물을 조회합니다.")
+    public ResponseEntity<PostListResponse> getBookmarkedPosts(
+            @Parameter(description = "사용자 고유번호") @RequestParam(name = "userSeq") Long userSeq,
+            @Parameter(description = "포스팅 타입")  @RequestParam(name = "postType") PostType postType
+    ) {
+        final List<PostResult> posts = postInquiryService.getBookmarkedPosts(userSeq, postType);
+        return ResponseEntity.status(OK).body(PostListResponse.of(posts));
+    }
+
     @GetMapping("/hot")
     @Operation(summary = "인기 게시물 조회", description = "인기 게시물을 조회합니다.")
     public ResponseEntity<PostListResponse> getHotPosts() {
@@ -140,16 +150,6 @@ public class PostController {
     @Operation(summary = "가장 많이 조회된 게시물 조회", description = "가장 많이 조회된 게시물을 조회합니다.")
     public ResponseEntity<PostListResponse> getMostViewedPosts() {
         List<PostResult> posts = postInquiryService.getMostViewedPosts();
-        return ResponseEntity.status(OK).body(PostListResponse.of(posts));
-    }
-
-    @GetMapping("/bookmarks")
-    @Operation(summary = "북마크한 게시물 조회", description = "북마크한 게시물을 조회합니다.")
-    public ResponseEntity<PostListResponse> getBookmarkedPosts(
-            @Parameter(description = "사용자 고유번호") @RequestParam(name = "userSeq") Long userSeq,
-            @Parameter(description = "포스팅 타입")  @RequestParam(name = "postType") PostType postType
-    ) {
-        final List<PostResult> posts = postInquiryService.getBookmarkedPosts(userSeq, postType);
         return ResponseEntity.status(OK).body(PostListResponse.of(posts));
     }
 }
