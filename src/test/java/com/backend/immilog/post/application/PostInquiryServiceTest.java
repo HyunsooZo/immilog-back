@@ -4,6 +4,7 @@ import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.PostInquiryService;
 import com.backend.immilog.post.application.services.query.CommentQueryService;
+import com.backend.immilog.post.application.services.query.InteractionUserQueryService;
 import com.backend.immilog.post.application.services.query.PostQueryService;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.PostStatus;
@@ -27,9 +28,11 @@ import static org.mockito.Mockito.when;
 class PostInquiryServiceTest {
     private final PostQueryService postQueryService = mock(PostQueryService.class);
     private final CommentQueryService commentQueryService = mock(CommentQueryService.class);
+    private final InteractionUserQueryService interactionUserQueryService = mock(InteractionUserQueryService.class);
     private final PostInquiryService postInquiryService = new PostInquiryService(
             postQueryService,
-            commentQueryService
+            commentQueryService,
+            interactionUserQueryService
     );
 
     @Test

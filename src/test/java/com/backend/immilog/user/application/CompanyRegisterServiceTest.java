@@ -60,7 +60,7 @@ class CompanyRegisterServiceTest {
                 "지역",
                 "로고"
         );
-        Company company = Company.withNew()
+        Company company = Company.empty()
                 .manager(command.country(), command.region(), userSeq)
                 .companyData(command.industry(), command.name(), command.email(), command.phone(), command.address(), command.homepage(), command.logo());
         when(companyQueryService.getByCompanyManagerUserSeq(userSeq)).thenReturn(company);

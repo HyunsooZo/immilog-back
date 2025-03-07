@@ -1,20 +1,19 @@
 package com.backend.immilog.user.application;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.services.UserSignUpService;
 import com.backend.immilog.user.application.services.command.UserCommandService;
 import com.backend.immilog.user.application.services.query.UserQueryService;
 import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.Profile;
 import com.backend.immilog.user.domain.model.user.User;
 import com.backend.immilog.user.exception.UserException;
-import com.backend.immilog.user.presentation.request.UserSignInRequest;
 import com.backend.immilog.user.presentation.request.UserSignUpRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Pair;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import java.util.Optional;
 
 import static com.backend.immilog.user.exception.UserErrorCode.EXISTING_USER;
 import static com.backend.immilog.user.exception.UserErrorCode.USER_NOT_FOUND;
@@ -110,13 +109,14 @@ class UserSignUpServiceTest {
     void verifyEmail_success() {
         // given
         Long userSeq = 1L;
+        Location location = new Location(Country.SOUTH_KOREA, "Seoul");
         User user = new User(
                 1L,
                 null,
                 null,
                 null,
                 null,
-                null,
+                location,
                 UserStatus.PENDING,
                 null
         );
@@ -144,13 +144,14 @@ class UserSignUpServiceTest {
     void verifyEmail_fail_already_verified() {
         // given
         Long userSeq = 1L;
+        Location location = new Location(Country.SOUTH_KOREA, "Seoul");
         User user = new User(
                 1L,
                 null,
                 null,
                 null,
                 null,
-                null,
+                location, // location 추가
                 UserStatus.ACTIVE,
                 null
         );
@@ -167,13 +168,14 @@ class UserSignUpServiceTest {
     void verifyEmail_fail_blocked() {
         // given
         Long userSeq = 1L;
+        Location location = new Location(Country.SOUTH_KOREA, "Seoul");
         User user = new User(
                 1L,
                 null,
                 null,
                 null,
                 null,
-                null,
+                location,
                 UserStatus.BLOCKED,
                 null
         );
@@ -190,14 +192,14 @@ class UserSignUpServiceTest {
     void verifyEmail_fail_other_cases() {
         // given
         Long userSeq = 1L;
-
+        Location location = new Location(Country.SOUTH_KOREA, "Seoul");
         User user = new User(
                 1L,
                 null,
                 null,
                 null,
                 null,
-                null,
+                location,
                 UserStatus.REPORTED,
                 null
         );

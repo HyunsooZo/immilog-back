@@ -23,8 +23,12 @@ class ImageService(
     ): List<String> {
         return files.takeIf { it.isNotEmpty() }?.map { file ->
             val url = fileStorageHandler.uploadFile(file, imagePath)
-            imageCommandService.save(Image.of(url, imageType))
-            ServletUriComponentsBuilder.fromCurrentContextPath().build().toUriString() + url
+            val fullPath = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path(url)
+                .build()
+                .toUriString()
+            imageCommandService.save(Image.of(fullPath, imageType))
+            fullPath
         } ?: emptyList()
     }
 

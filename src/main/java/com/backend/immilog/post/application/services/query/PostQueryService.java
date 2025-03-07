@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,22 +30,22 @@ import java.util.stream.IntStream;
 @Slf4j
 @Service
 public class PostQueryService {
+    private final ObjectMapper objectMapper;
     private final PostRepository postRepository;
     private final DataRepository redisDataRepository;
-    private final ObjectMapper objectMapper;
     private final InteractionUserQueryService interactionUserQueryService;
     private final PostResourceQueryService postResourceQueryService;
 
     public PostQueryService(
+            ObjectMapper objectMapper,
             PostRepository postRepository,
             DataRepository redisDataRepository,
-            ObjectMapper objectMapper,
             InteractionUserQueryService interactionUserQueryService,
             PostResourceQueryService postResourceQueryService
     ) {
+        this.objectMapper = objectMapper;
         this.postRepository = postRepository;
         this.redisDataRepository = redisDataRepository;
-        this.objectMapper = objectMapper;
         this.interactionUserQueryService = interactionUserQueryService;
         this.postResourceQueryService = postResourceQueryService;
     }

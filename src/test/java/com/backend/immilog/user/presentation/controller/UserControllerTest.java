@@ -16,6 +16,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -44,28 +47,38 @@ class UserControllerTest {
     @Test
     @DisplayName("회원가입")
     void signUp() {
-        // given
-        UserSignUpRequest param = new UserSignUpRequest(
-                "test",
-                "test1234",
-                "email@email.com",
-                "SOUTH_KOREA",
-                "SOUTH_KOREA",
-                "Seoul",
-                "image"
-        );
-        when(userSignUpService.signUp(param.toCommand())).thenReturn(Pair.of(1L, "test"));
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setScheme("http");
+        request.setServerName("example.com");
+        request.setServerPort(80);
+        ServletRequestAttributes attributes = new ServletRequestAttributes(request);
+        RequestContextHolder.setRequestAttributes(attributes);
+        try {
+            // given
+            UserSignUpRequest param = new UserSignUpRequest(
+                    "test",
+                    "test1234",
+                    "email@email.com",
+                    "SOUTH_KOREA",
+                    "SOUTH_KOREA",
+                    "Seoul",
+                    "image"
+            );
+            when(userSignUpService.signUp(param.toCommand())).thenReturn(Pair.of(1L, "test"));
 
-        // when
-        ResponseEntity<UserGeneralResponse> response = userController.signUp(param);
+            // when
+            ResponseEntity<UserGeneralResponse> response = userController.signUp(param);
 
-        // then
-        verify(emailService, times(1)).sendHtmlEmail(
-                param.email(),
-                EmailComponents.EMAIL_SIGN_UP_SUBJECT,
-                String.format(EmailComponents.HTML_SIGN_UP_CONTENT, "test", String.format(EmailComponents.API_LINK, 1L))
-        );
-        assertThat(response.getStatusCode()).isEqualTo(CREATED);
+            // then
+            verify(emailService, times(1)).sendHtmlEmail(
+                    param.email(),
+                    EmailComponents.EMAIL_SIGN_UP_SUBJECT,
+                    String.format(EmailComponents.HTML_SIGN_UP_CONTENT, "test", String.format(EmailComponents.API_LINK, 1L))
+            );
+            assertThat(response.getStatusCode()).isEqualTo(CREATED);
+        } finally {
+            RequestContextHolder.resetRequestAttributes();
+        }
     }
 
     @Test

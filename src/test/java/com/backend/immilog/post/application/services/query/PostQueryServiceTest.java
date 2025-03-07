@@ -1,10 +1,10 @@
 package com.backend.immilog.post.application.services.query;
 
+import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Badge;
 import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.model.post.PostInfo;
@@ -40,9 +40,9 @@ class PostQueryServiceTest {
     private final InteractionUserQueryService InteractionUserQueryService = mock(InteractionUserQueryService.class);
     private final PostResourceQueryService PostResourceQueryService = mock(PostResourceQueryService.class);
     private final PostQueryService postQueryService = new PostQueryService(
+            objectMapper,
             postRepository,
             redisDataRepository,
-            objectMapper,
             InteractionUserQueryService,
             PostResourceQueryService
     );

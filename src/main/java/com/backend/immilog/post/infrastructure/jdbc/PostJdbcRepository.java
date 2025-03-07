@@ -1,7 +1,6 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.domain.enums.Badge;
 import com.backend.immilog.post.domain.enums.Categories;
 import com.backend.immilog.post.domain.enums.PostStatus;
@@ -42,28 +41,29 @@ public class PostJdbcRepository {
         List<String> conditions = new ArrayList<>();
         List<Object> params = new ArrayList<>();
 
-        conditions.add("is_public = ?");
+        conditions.add("p.is_public = ?");
         params.add(isPublic);
 
         if (category != Categories.ALL) {
-            conditions.add("category = ?");
+            conditions.add("p.category = ?");
             params.add(category.name());
         }
 
         if (country != Country.ALL) {
-            conditions.add("country = ?");
+            conditions.add("p.country = ?");
             params.add(country.name());
         }
 
-        String whereClause = "WHERE " + String.join(" AND ", conditions);
+        String whereClause = conditions.isEmpty() ? "" : "WHERE " + String.join(" AND ", conditions);
         String orderByClause = getOrderByClause(sortingMethod);
 
         String sql = String.format("""
-                    SELECT *
-                    FROM post
-                    %s
-                    %s
-                    LIMIT ? OFFSET ?
+                SELECT p.*, u.nickname, u.image_url
+                FROM post p
+                LEFT JOIN user u ON p.user_seq = u.seq
+                %s
+                %s
+                LIMIT ? OFFSET ?
                 """, whereClause, orderByClause);
 
         params.add(pageable.getPageSize());
@@ -75,9 +75,10 @@ public class PostJdbcRepository {
                 .list();
 
         String countSql = String.format("""
-                    SELECT COUNT(*)
-                    FROM post
-                    %s
+                SELECT COUNT(*)
+                FROM post p
+                LEFT JOIN user u ON p.user_seq = u.seq
+                %s
                 """, whereClause);
 
         int count = jdbcClient.sql(countSql)
@@ -95,10 +96,11 @@ public class PostJdbcRepository {
             Pageable pageable
     ) {
         String sql = """
-                SELECT *
-                FROM post
-                WHERE user_seq = ?
-                ORDER BY created_at DESC
+                SELECT p.*, u.nickname, u.image_url
+                FROM post p
+                LEFT JOIN user u ON p.user_seq = u.seq
+                WHERE p.user_seq = ?
+                ORDER BY p.created_at DESC
                 LIMIT ? OFFSET ?
                 """;
 
@@ -111,8 +113,9 @@ public class PostJdbcRepository {
 
         int count = jdbcClient.sql("""
                         SELECT COUNT(*)
-                        FROM post
-                        WHERE user_seq = ?
+                        FROM post p
+                        LEFT JOIN user u ON p.user_seq = u.seq
+                        WHERE p.user_seq = ?
                         """)
                 .param(userSeq)
                 .query(Integer.class)
@@ -128,10 +131,10 @@ public class PostJdbcRepository {
             Pageable pageable
     ) {
         String sql = """
-                SELECT *
-                FROM post
-                WHERE content LIKE ?
-                OR title LIKE ?
+                SELECT p.*, u.nickname, u.image_url
+                FROM post p
+                LEFT JOIN user u ON p.user_seq = u.seq
+                WHERE p.content LIKE ? OR p.title LIKE ?
                 LIMIT ? OFFSET ?
                 """;
 
@@ -143,12 +146,14 @@ public class PostJdbcRepository {
                 .query(POST_ENTITY_ROW_MAPPER)
                 .list();
 
-        int count = jdbcClient.sql("""
-                        SELECT COUNT(*)
-                        FROM post
-                        WHERE content LIKE ?
-                        OR title LIKE ?
-                        """)
+        String countSql = """
+                SELECT COUNT(*)
+                FROM post p
+                LEFT JOIN user u ON p.user_seq = u.seq
+                WHERE p.content LIKE ? OR p.title LIKE ?
+                """;
+
+        int count = jdbcClient.sql(countSql)
                 .param("%" + keyword + "%")
                 .param("%" + keyword + "%")
                 .query(Integer.class)
@@ -161,9 +166,10 @@ public class PostJdbcRepository {
 
     public Optional<Post> getSinglePost(Long postSeq) {
         String sql = """
-                SELECT *
-                FROM post
-                WHERE seq = ?
+                SELECT p.*, u.nickname, u.image_url
+                FROM post p
+                LEFT JOIN user u ON p.user_seq = u.seq
+                WHERE p.seq = ?
                 """;
 
         return jdbcClient.sql(sql)
@@ -178,13 +184,14 @@ public class PostJdbcRepository {
             LocalDateTime to,
             SortingMethods sortingMethods
     ) {
-        String sql = """
-                SELECT *
-                FROM post
-                WHERE created_at BETWEEN ? AND ?
-                """ + getOrderByClause(sortingMethods) + """
+        String sql = String.format("""
+                SELECT p.*, u.nickname, u.image_url
+                FROM post p
+                LEFT JOIN user u ON p.user_seq = u.seq
+                WHERE p.created_at BETWEEN ? AND ?
+                %s
                 LIMIT 10
-                """;
+                """, getOrderByClause(sortingMethods));
 
         List<PostEntity> postEntities = jdbcClient.sql(sql)
                 .param(from)
@@ -195,52 +202,36 @@ public class PostJdbcRepository {
         return postEntities.stream().map(PostEntity::toDomain).toList();
     }
 
-    private String getOrderByClause(SortingMethods sortingMethod) {
-        String column = switch (sortingMethod) {
-            case CREATED_DATE -> "created_at";
-            case COMMENT_COUNT -> "comment_count";
-            case LIKE_COUNT -> "like_count";
-            case VIEW_COUNT -> "view_count";
-        };
-        return "ORDER BY " + column + " DESC ";
-    }
+    private static final RowMapper<PostEntity> POST_ENTITY_ROW_MAPPER = (rs, rowNum) -> {
+        Long seq = rs.getLong("seq");
 
-    private static final RowMapper<PostEntity> POST_ENTITY_ROW_MAPPER = new RowMapper<>() {
-        @Override
-        public PostEntity mapRow(
-                ResultSet rs,
-                int rowNum
-        ) throws SQLException {
-            Long seq = rs.getLong("seq");
+        PostUserInfoValue postUserInfo = new PostUserInfoValue(
+                rs.getLong("user_seq"),
+                rs.getString("nickname"),
+                rs.getString("image_url")
+        );
 
-            PostUserInfoValue postUserInfo = new PostUserInfoValue(
-                    rs.getLong("user_seq"),
-                    rs.getString("nickname"),
-                    rs.getString("profile_image")
-            );
+        PostInfoValue postInfo = new PostInfoValue(
+                rs.getString("title"),
+                rs.getString("content"),
+                getNullableLong(rs, "view_count"),
+                getNullableLong(rs, "like_count"),
+                rs.getString("region"),
+                getEnum(rs, "status", PostStatus.class),
+                getEnum(rs, "country", Country.class)
+        );
 
-            PostInfoValue postInfo = new PostInfoValue(
-                    rs.getString("title"),
-                    rs.getString("content"),
-                    getNullableLong(rs, "view_count"),
-                    getNullableLong(rs, "like_count"),
-                    rs.getString("region"),
-                    getEnum(rs, "status", PostStatus.class),
-                    getEnum(rs, "country", Country.class)
-            );
-
-            return new PostEntity(
-                    seq,
-                    postUserInfo.toDomain(),
-                    postInfo.toDomain(),
-                    getEnum(rs, "category", Categories.class),
-                    rs.getString("is_public"),
-                    getEnum(rs, "badge", Badge.class),
-                    getNullableLong(rs, "comment_count"),
-                    getNullableTimestamp(rs, "created_at"),
-                    getNullableTimestamp(rs, "updated_at")
-            );
-        }
+        return new PostEntity(
+                seq,
+                postUserInfo.toDomain(),
+                postInfo.toDomain(),
+                getEnum(rs, "category", Categories.class),
+                rs.getString("is_public"),
+                getEnum(rs, "badge", Badge.class),
+                getNullableLong(rs, "comment_count"),
+                getNullableTimestamp(rs, "created_at"),
+                getNullableTimestamp(rs, "updated_at")
+        );
     };
 
     private static Long getNullableLong(
@@ -265,5 +256,15 @@ public class PostJdbcRepository {
             String columnName
     ) throws SQLException {
         return rs.getTimestamp(columnName) != null ? rs.getTimestamp(columnName).toLocalDateTime() : null;
+    }
+
+    private String getOrderByClause(SortingMethods sortingMethod) {
+        String column = switch (sortingMethod) {
+            case CREATED_DATE -> "p.created_at";
+            case COMMENT_COUNT -> "p.comment_count";
+            case LIKE_COUNT -> "p.like_count";
+            case VIEW_COUNT -> "p.view_count";
+        };
+        return "ORDER BY " + column + " DESC ";
     }
 }
