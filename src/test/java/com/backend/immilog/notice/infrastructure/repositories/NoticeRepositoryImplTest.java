@@ -1,13 +1,13 @@
 package com.backend.immilog.notice.infrastructure.repositories;
 
-import com.backend.immilog.notice.application.result.NoticeResult;
+import com.backend.immilog.notice.application.dto.NoticeResult;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.NoticeDetail;
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
-import com.backend.immilog.notice.domain.model.enums.NoticeType;
+import com.backend.immilog.notice.domain.model.NoticeStatus;
+import com.backend.immilog.notice.domain.model.NoticeType;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
-import com.backend.immilog.notice.infrastructure.jpa.NoticeEntity;
+import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaEntity;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -44,10 +44,10 @@ class NoticeRepositoryImplTest {
                 NoticeDetail.of("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL),
                 LocalDateTime.now()
         );
-        NoticeEntity noticeEntity = NoticeEntity.from(notice);
-        when(noticeJpaRepository.save(any(NoticeEntity.class))).thenReturn(noticeEntity);
+        NoticeJpaEntity noticeJpaEntity = NoticeJpaEntity.from(notice);
+        when(noticeJpaRepository.save(any(NoticeJpaEntity.class))).thenReturn(noticeJpaEntity);
         noticeRepository.save(notice);
-        verify(noticeJpaRepository, times(1)).save(any(NoticeEntity.class));
+        verify(noticeJpaRepository, times(1)).save(any(NoticeJpaEntity.class));
     }
 
     @Test
@@ -78,8 +78,8 @@ class NoticeRepositoryImplTest {
                 NoticeDetail.of("title", "content", NoticeType.NOTICE, NoticeStatus.NORMAL),
                 LocalDateTime.now()
         );
-        NoticeEntity noticeEntity = NoticeEntity.from(notice);
-        when(noticeJpaRepository.findBySeqAndStatusIsNot(noticeSeq,NoticeStatus.DELETED)).thenReturn(Optional.of(noticeEntity));
+        NoticeJpaEntity noticeJpaEntity = NoticeJpaEntity.from(notice);
+        when(noticeJpaRepository.findBySeqAndStatusIsNot(noticeSeq,NoticeStatus.DELETED)).thenReturn(Optional.of(noticeJpaEntity));
 
         Optional<Notice> result = noticeRepository.findBySeq(noticeSeq);
 

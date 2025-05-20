@@ -1,15 +1,15 @@
 package com.backend.immilog.notice.application;
 
-import com.backend.immilog.notice.application.result.NoticeResult;
-import com.backend.immilog.notice.application.services.NoticeInquiryService;
-import com.backend.immilog.notice.application.services.query.NoticeQueryService;
+import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.notice.application.dto.NoticeResult;
+import com.backend.immilog.notice.application.services.NoticeQueryService;
+import com.backend.immilog.notice.application.usecase.NoticeInquireUseCase;
+import com.backend.immilog.notice.application.usecase.impl.NoticeInquirer;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.notice.domain.model.NoticeDetail;
-import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
-import com.backend.immilog.notice.domain.model.enums.NoticeType;
+import com.backend.immilog.notice.domain.model.NoticeStatus;
+import com.backend.immilog.notice.domain.model.NoticeType;
 import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +20,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -30,10 +29,7 @@ import static org.mockito.Mockito.when;
 class NoticeInquiryServiceTest {
     private final NoticeQueryService noticeQueryService = mock(NoticeQueryService.class);
     private final UserQueryService userQueryService = mock(UserQueryService.class);
-    private final NoticeInquiryService noticeInquiryService = new NoticeInquiryService(
-            noticeQueryService,
-            userQueryService
-    );
+    private final NoticeInquireUseCase noticeInquiryService = new NoticeInquirer(noticeQueryService, userQueryService);
 
     @Test
     @DisplayName("공지사항 조회 - 성공")

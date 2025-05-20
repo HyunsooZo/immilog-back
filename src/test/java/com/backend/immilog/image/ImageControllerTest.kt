@@ -1,24 +1,21 @@
 package com.backend.immilog.image
 
-import com.backend.immilog.image.application.service.ImageService
-import com.backend.immilog.image.domain.enums.ImageType
-import com.backend.immilog.image.presentation.controller.ImageController
-import com.backend.immilog.image.presentation.payload.ImageRequest
-import com.backend.immilog.image.presentation.payload.ImageResponse
+import com.backend.immilog.image.application.ImageUploader
+import com.backend.immilog.image.domain.ImageType
+import com.backend.immilog.image.presentation.ImageController
+import com.backend.immilog.image.presentation.ImageRequest
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
-import org.mockito.ArgumentMatchers.eq
 import org.mockito.Mockito.*
 import org.springframework.http.HttpStatus.NO_CONTENT
 import org.springframework.http.HttpStatus.OK
-import org.springframework.http.ResponseEntity
 import org.springframework.web.multipart.MultipartFile
 
 @DisplayName("이미지 컨트롤러 테스트")
 class ImageControllerTest {
-    private val imageService: ImageService = mock(ImageService::class.java)
-    private val imageController = ImageController(imageService)
+    private val imageUploader: ImageUploader = mock(ImageUploader::class.java)
+    private val imageController = ImageController(imageUploader)
 
     @Test
     @DisplayName("이미지 업로드")
@@ -27,7 +24,7 @@ class ImageControllerTest {
         val files: List<MultipartFile> = listOf(mock(MultipartFile::class.java))
         val imagePath = "imagePath"
         val imageDTO: List<String> = listOf("imageUrl")
-        `when`(imageService.saveFiles(files, imagePath, ImageType.POST)).thenReturn(imageDTO)
+        `when`(imageUploader.saveFiles(files, imagePath, ImageType.POST)).thenReturn(imageDTO)
         // when
         val response = imageController.uploadImage(files, imagePath, ImageType.POST)
         // then
@@ -45,7 +42,7 @@ class ImageControllerTest {
         // when
         val response = imageController.deleteImage(param)
         // then
-        verify(imageService, times(1)).deleteFile(imagePath)
+        verify(imageUploader, times(1)).deleteFile(imagePath)
         assertThat(response.statusCode).isEqualTo(NO_CONTENT)
     }
 }

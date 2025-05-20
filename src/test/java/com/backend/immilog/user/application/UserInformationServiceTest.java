@@ -1,7 +1,7 @@
 package com.backend.immilog.user.application;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.image.application.service.ImageService;
+import com.backend.immilog.image.application.ImageUploader;
 import com.backend.immilog.user.application.command.UserPasswordChangeCommand;
 import com.backend.immilog.user.application.services.UserInformationService;
 import com.backend.immilog.user.application.services.command.UserCommandService;
@@ -31,12 +31,12 @@ class UserInformationServiceTest {
     private final UserQueryService userQueryService = mock(UserQueryService.class);
     private final UserCommandService userCommandService = mock(UserCommandService.class);
     private final PasswordEncoder passwordEncoder = mock(PasswordEncoder.class);
-    private final ImageService imageService = mock(ImageService.class);
+    private final ImageUploader imageUploader = mock(ImageUploader.class);
     private final UserInformationService userInformationService = new UserInformationService(
             userQueryService,
             userCommandService,
             passwordEncoder,
-            imageService
+            imageUploader
     );
 
     @Test
@@ -305,7 +305,7 @@ class UserInformationServiceTest {
         );
 
         // then
-        verify(imageService).deleteFile("oldImage");
+        verify(imageUploader).deleteFile("oldImage");
         verify(userCommandService).save(any());
     }
 

@@ -1,12 +1,12 @@
 package com.backend.immilog.notice.infrastructure.repositories;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.application.result.NoticeResult;
+import com.backend.immilog.notice.application.dto.NoticeResult;
 import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
+import com.backend.immilog.notice.domain.model.NoticeStatus;
 import com.backend.immilog.notice.domain.repositories.NoticeRepository;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
-import com.backend.immilog.notice.infrastructure.jpa.NoticeEntity;
+import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaEntity;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -45,14 +45,14 @@ public class NoticeRepositoryImpl implements NoticeRepository {
 
     @Override
     public void save(Notice notice) {
-        noticeJpaRepository.save(NoticeEntity.from(notice));
+        noticeJpaRepository.save(NoticeJpaEntity.from(notice));
     }
 
     @Override
     public Optional<Notice> findBySeq(Long noticeSeq) {
         return noticeJpaRepository
                 .findBySeqAndStatusIsNot(noticeSeq, NoticeStatus.DELETED)
-                .map(NoticeEntity::toDomain);
+                .map(NoticeJpaEntity::toDomain);
     }
 
     @Override

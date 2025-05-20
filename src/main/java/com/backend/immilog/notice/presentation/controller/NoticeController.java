@@ -1,9 +1,9 @@
 package com.backend.immilog.notice.presentation.controller;
 
-import com.backend.immilog.notice.application.result.NoticeResult;
-import com.backend.immilog.notice.application.services.NoticeCreateService;
-import com.backend.immilog.notice.application.services.NoticeInquiryService;
-import com.backend.immilog.notice.application.services.NoticeModifyService;
+import com.backend.immilog.notice.application.dto.NoticeResult;
+import com.backend.immilog.notice.application.usecase.NoticeCreateUseCase;
+import com.backend.immilog.notice.application.usecase.NoticeInquireUseCase;
+import com.backend.immilog.notice.application.services.NoticeModifyUseCase;
 import com.backend.immilog.notice.presentation.request.NoticeModifyRequest;
 import com.backend.immilog.notice.presentation.request.NoticeRegisterRequest;
 import com.backend.immilog.notice.presentation.response.NoticeDetailResponse;
@@ -22,18 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/notices")
 @RestController
 public class NoticeController {
-    private final NoticeCreateService noticeRegisterService;
-    private final NoticeInquiryService noticeInquiryService;
-    private final NoticeModifyService noticeModifyService;
+    private final NoticeCreateUseCase noticeRegisterService;
+    private final NoticeInquireUseCase noticeInquireUseCase;
+    private final NoticeModifyUseCase noticeModifyUseCase;
 
     public NoticeController(
-            NoticeCreateService noticeRegisterService,
-            NoticeInquiryService noticeInquiryService,
-            NoticeModifyService noticeModifyService
+            NoticeCreateUseCase noticeRegisterService,
+            NoticeInquireUseCase noticeInquireUseCase,
+            NoticeModifyUseCase noticeModifyUseCase
     ) {
         this.noticeRegisterService = noticeRegisterService;
-        this.noticeInquiryService = noticeInquiryService;
-        this.noticeModifyService = noticeModifyService;
+        this.noticeInquireUseCase = noticeInquireUseCase;
+        this.noticeModifyUseCase = noticeModifyUseCase;
     }
 
     @PostMapping
@@ -42,7 +42,7 @@ public class NoticeController {
             @RequestHeader(HttpHeaders.AUTHORIZATION) String token,
             @RequestBody NoticeRegisterRequest noticeRegisterRequest
     ) {
-        noticeRegisterService.registerNotice(token, noticeRegisterRequest.toCommand());
+        noticeRegisterService.createNotice(token, noticeRegisterRequest.toCommand());
         return ResponseEntity.status(HttpStatus.CREATED).body(NoticeRegistrationResponse.success());
     }
 
@@ -52,7 +52,7 @@ public class NoticeController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Parameter(description = "페이지 번호") @RequestParam("page") Integer page
     ) {
-        Page<NoticeResult> notices = noticeInquiryService.getNotices(userSeq, page);
+        Page<NoticeResult> notices = noticeInquireUseCase.getNotices(userSeq, page);
         return ResponseEntity.status(HttpStatus.OK).body(NoticeListResponse.of(notices));
     }
 
@@ -61,7 +61,7 @@ public class NoticeController {
     public ResponseEntity<NoticeDetailResponse> getNoticeDetail(
             @Parameter(description = "공지사항 고유번호") @PathVariable("noticeSeq") Long noticeSeq
     ) {
-        NoticeResult notice = noticeInquiryService.getNoticeDetail(noticeSeq);
+        NoticeResult notice = noticeInquireUseCase.getNoticeDetail(noticeSeq);
         return ResponseEntity.status(HttpStatus.OK).body(notice.toResponse());
     }
 
@@ -70,7 +70,7 @@ public class NoticeController {
     public ResponseEntity<NoticeRegistrationResponse> isNoticeExist(
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq
     ) {
-        Boolean unreadNoticeExist = noticeInquiryService.isUnreadNoticeExist(userSeq);
+        Boolean unreadNoticeExist = noticeInquireUseCase.isUnreadNoticeExist(userSeq);
         return ResponseEntity.status(HttpStatus.OK).body(NoticeRegistrationResponse.of(unreadNoticeExist));
     }
 
@@ -81,7 +81,7 @@ public class NoticeController {
             @Parameter(description = "공지사항 고유번호") @PathVariable("noticeSeq") Long noticeSeq,
             @Parameter(description = "공지사항 수정바디") @RequestBody NoticeModifyRequest param
     ) {
-        noticeModifyService.modifyNotice(token, noticeSeq, param.toCommand());
+        noticeModifyUseCase.modifyNotice(token, noticeSeq, param.toCommand());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
@@ -91,7 +91,7 @@ public class NoticeController {
             @Parameter(description = "공지사항 고유번호") @PathVariable("noticeSeq") Long noticeSeq,
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq
     ) {
-        noticeModifyService.readNotice(userSeq, noticeSeq);
+        noticeModifyUseCase.readNotice(userSeq, noticeSeq);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

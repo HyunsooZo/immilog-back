@@ -1,6 +1,6 @@
 package com.backend.immilog.notice.infrastructure.jdbc;
 
-import com.backend.immilog.notice.application.result.NoticeResult;
+import com.backend.immilog.notice.application.dto.NoticeResult;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;

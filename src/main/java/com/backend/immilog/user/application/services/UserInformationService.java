@@ -1,6 +1,6 @@
 package com.backend.immilog.user.application.services;
 
-import com.backend.immilog.image.application.service.ImageService;
+import com.backend.immilog.image.application.ImageUploader;
 import com.backend.immilog.user.application.command.UserInfoUpdateCommand;
 import com.backend.immilog.user.application.command.UserPasswordChangeCommand;
 import com.backend.immilog.user.application.services.command.UserCommandService;
@@ -23,18 +23,18 @@ public class UserInformationService {
     private final UserQueryService userQueryService;
     private final UserCommandService userCommandService;
     private final PasswordEncoder passwordEncoder;
-    private final ImageService imageService;
+    private final ImageUploader imageUploader;
 
     public UserInformationService(
             UserQueryService userQueryService,
             UserCommandService userCommandService,
             PasswordEncoder passwordEncoder,
-            ImageService imageService
+            ImageUploader imageUploader
     ) {
         this.userQueryService = userQueryService;
         this.userCommandService = userCommandService;
         this.passwordEncoder = passwordEncoder;
-        this.imageService = imageService;
+        this.imageUploader = imageUploader;
     }
 
     public void updateInformation(
@@ -112,7 +112,7 @@ public class UserInformationService {
             String newProfileImage
     ) {
         if (previousProfileImage != null && !previousProfileImage.equals(newProfileImage)) {
-            imageService.deleteFile(previousProfileImage);
+            imageUploader.deleteFile(previousProfileImage);
         }
     }
 }

@@ -1,8 +1,5 @@
 package com.backend.immilog.notice.domain.model;
 
-import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
-import com.backend.immilog.notice.domain.model.enums.NoticeType;
-
 public record NoticeDetail(
         String title,
         String content,

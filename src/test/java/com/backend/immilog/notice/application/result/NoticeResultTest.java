@@ -1,9 +1,10 @@
 package com.backend.immilog.notice.application.result;
 
+import com.backend.immilog.notice.application.dto.NoticeResult;
 import com.backend.immilog.notice.domain.model.Notice;
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
-import com.backend.immilog.notice.domain.model.enums.NoticeType;
+import com.backend.immilog.notice.domain.model.NoticeStatus;
+import com.backend.immilog.notice.domain.model.NoticeType;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

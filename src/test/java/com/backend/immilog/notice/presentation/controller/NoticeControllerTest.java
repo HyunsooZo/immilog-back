@@ -2,12 +2,12 @@ package com.backend.immilog.notice.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.notice.application.result.NoticeResult;
-import com.backend.immilog.notice.application.services.NoticeCreateService;
-import com.backend.immilog.notice.application.services.NoticeInquiryService;
-import com.backend.immilog.notice.application.services.NoticeModifyService;
-import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
-import com.backend.immilog.notice.domain.model.enums.NoticeType;
+import com.backend.immilog.notice.application.dto.NoticeResult;
+import com.backend.immilog.notice.application.usecase.NoticeCreateUseCase;
+import com.backend.immilog.notice.application.usecase.NoticeInquireUseCase;
+import com.backend.immilog.notice.application.services.NoticeModifyUseCase;
+import com.backend.immilog.notice.domain.model.NoticeStatus;
+import com.backend.immilog.notice.domain.model.NoticeType;
 import com.backend.immilog.notice.presentation.request.NoticeModifyRequest;
 import com.backend.immilog.notice.presentation.request.NoticeRegisterRequest;
 import com.backend.immilog.notice.presentation.response.NoticeDetailResponse;
@@ -27,14 +27,14 @@ import static org.mockito.Mockito.mock;
 
 @DisplayName("공지사항 컨트롤러 테스트")
 class NoticeControllerTest {
-    private final NoticeCreateService noticeRegisterService = mock(NoticeCreateService.class);
-    private final NoticeInquiryService noticeInquiryService = mock(NoticeInquiryService.class);
-    private final NoticeModifyService noticeModifyService = mock(NoticeModifyService.class);
+    private final NoticeCreateUseCase noticeCreateUseCase = mock(NoticeCreateUseCase.class);
+    private final NoticeInquireUseCase noticeInquireUseCase = mock(NoticeInquireUseCase.class);
+    private final NoticeModifyUseCase noticeModifyUseCase = mock(NoticeModifyUseCase.class);
 
     private final NoticeController noticeController = new NoticeController(
-            noticeRegisterService,
-            noticeInquiryService,
-            noticeModifyService
+            noticeCreateUseCase,
+            noticeInquireUseCase,
+            noticeModifyUseCase
     );
 
     @Test
@@ -54,7 +54,7 @@ class NoticeControllerTest {
         // when
         ResponseEntity<NoticeRegistrationResponse> response = noticeController.registerNotice(token, param);
         // then
-        verify(noticeRegisterService).registerNotice(token, param.toCommand());
+        verify(noticeCreateUseCase).createNotice(token, param.toCommand());
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
 
     }
@@ -69,13 +69,13 @@ class NoticeControllerTest {
         when(request.getAttribute("userSeq")).thenReturn(userSeq);
         Page<NoticeResult> results = mock(Page.class);
         when(results.isEmpty()).thenReturn(false);
-        when(noticeInquiryService.getNotices(userSeq, page)).thenReturn(results);
+        when(noticeInquireUseCase.getNotices(userSeq, page)).thenReturn(results);
 
         // when
         ResponseEntity<NoticeListResponse> response = noticeController.getNotices(userSeq,page);
 
         // then
-        verify(noticeInquiryService).getNotices(userSeq, page);
+        verify(noticeInquireUseCase).getNotices(userSeq, page);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -84,13 +84,13 @@ class NoticeControllerTest {
     void getNoticeDetail_success() {
         // given
         Long noticeSeq = 1L;
-        when(noticeInquiryService.getNoticeDetail(noticeSeq)).thenReturn(mock(NoticeResult.class));
+        when(noticeInquireUseCase.getNoticeDetail(noticeSeq)).thenReturn(mock(NoticeResult.class));
 
         // when
         ResponseEntity<NoticeDetailResponse> response = noticeController.getNoticeDetail(noticeSeq);
 
         // then
-        verify(noticeInquiryService).getNoticeDetail(noticeSeq);
+        verify(noticeInquireUseCase).getNoticeDetail(noticeSeq);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -101,13 +101,13 @@ class NoticeControllerTest {
         Long userSeq = 1L;
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getAttribute("userSeq")).thenReturn(userSeq);
-        when(noticeInquiryService.isUnreadNoticeExist(userSeq)).thenReturn(true);
+        when(noticeInquireUseCase.isUnreadNoticeExist(userSeq)).thenReturn(true);
 
         // when
         ResponseEntity<NoticeRegistrationResponse> response = noticeController.isNoticeExist(userSeq);
 
         // then
-        verify(noticeInquiryService).isUnreadNoticeExist(userSeq);
+        verify(noticeInquireUseCase).isUnreadNoticeExist(userSeq);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -130,7 +130,7 @@ class NoticeControllerTest {
         ResponseEntity<Void> response = noticeController.modifyNotice(token, noticeSeq, param);
 
         // then
-        verify(noticeModifyService).modifyNotice(token, noticeSeq, param.toCommand());
+        verify(noticeModifyUseCase).modifyNotice(token, noticeSeq, param.toCommand());
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 }

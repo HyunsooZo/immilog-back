@@ -1,8 +1,8 @@
 package com.backend.immilog.notice.presentation.request;
 
-import com.backend.immilog.notice.application.command.NoticeModifyCommand;
-import com.backend.immilog.notice.domain.model.enums.NoticeStatus;
-import com.backend.immilog.notice.domain.model.enums.NoticeType;
+import com.backend.immilog.notice.application.dto.NoticeModifyCommand;
+import com.backend.immilog.notice.domain.model.NoticeStatus;
+import com.backend.immilog.notice.domain.model.NoticeType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record NoticeModifyRequest(
