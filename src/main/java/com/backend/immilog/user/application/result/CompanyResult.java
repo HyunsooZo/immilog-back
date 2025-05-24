@@ -1,11 +1,11 @@
 package com.backend.immilog.user.application.result;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.user.domain.enums.Industry;
 import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.model.company.CompanyData;
+import com.backend.immilog.user.domain.model.company.Industry;
 import com.backend.immilog.user.domain.model.company.Manager;
-import com.backend.immilog.user.presentation.response.UserCompanyResponse;
+import com.backend.immilog.user.presentation.payload.CompanyPayload;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.http.HttpStatus;
 
@@ -74,15 +74,15 @@ public record CompanyResult(
         );
     }
 
-    public UserCompanyResponse toResponse() {
+    public CompanyPayload.UserCompanyResponse toResponse() {
         if (this.seq() == null) {
-            return new UserCompanyResponse(
+            return new CompanyPayload.UserCompanyResponse(
                     HttpStatus.NO_CONTENT.value(),
                     "회사 정보가 비어있습니다.",
                     null
             );
         } else {
-            return new UserCompanyResponse(
+            return new CompanyPayload.UserCompanyResponse(
                     HttpStatus.OK.value(),
                     "success",
                     this

@@ -1,7 +1,5 @@
 package com.backend.immilog.user.domain.model.report;
 
-import com.backend.immilog.user.domain.enums.ReportReason;
-
 import java.time.LocalDateTime;
 
 public record Report(

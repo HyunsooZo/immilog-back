@@ -2,8 +2,8 @@ package com.backend.immilog.user.application.result;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.domain.model.user.User;
+import com.backend.immilog.user.domain.model.user.UserStatus;
 
 import java.sql.Date;
 

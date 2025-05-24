@@ -2,7 +2,6 @@ package com.backend.immilog.user.domain.model.user;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.user.domain.enums.UserStatus;
 import com.backend.immilog.user.exception.UserErrorCode;
 import com.backend.immilog.user.exception.UserException;
 
@@ -10,28 +9,46 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record User(
-        Long seq,
-        Auth auth,
-        UserRole userRole,
-        ReportData reportData,
-        Profile profile,
-        Location location,
-        UserStatus userStatus,
-        LocalDateTime updatedAt
-) {
+public class User {
+    private final Long seq;
+    private Auth auth;
+    private final UserRole userRole;
+    private ReportData reportData;
+    private Profile profile;
+    private Location location;
+    private UserStatus userStatus;
+    private LocalDateTime updatedAt;
+
+    public User(
+            Long seq,
+            Auth auth,
+            UserRole userRole,
+            ReportData reportData,
+            Profile profile,
+            Location location,
+            UserStatus userStatus,
+            LocalDateTime updatedAt
+    ) {
+        this.seq = seq;
+        this.auth = auth;
+        this.userRole = userRole;
+        this.reportData = reportData;
+        this.profile = profile;
+        this.location = location;
+        this.userStatus = userStatus;
+        this.updatedAt = updatedAt;
+    }
 
     public static User of(
             Auth auth,
             Location location,
             Profile profile
     ) {
-        ReportData reportData = new ReportData(0L, null);
         return new User(
                 null,
                 auth,
                 UserRole.ROLE_USER,
-                reportData,
+                new ReportData(0L, null),
                 profile,
                 location,
                 UserStatus.PENDING,
@@ -43,133 +60,71 @@ public record User(
         if (encodedPassword == null || encodedPassword.trim().isEmpty()) {
             return this;
         }
-        Auth newAuth = Auth.of(this.auth.email(), encodedPassword);
-        return new User(
-                this.seq,
-                newAuth,
-                this.userRole,
-                this.reportData,
-                this.profile,
-                this.location,
-                this.userStatus,
-                LocalDateTime.now()
-        );
+        this.auth = Auth.of(this.auth.email(), encodedPassword);
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public User updateStatus(UserStatus userStatus) {
         if (userStatus == null || userStatus.equals(this.userStatus)) {
             return this;
         }
-        return new User(
-                this.seq,
-                this.auth,
-                this.userRole,
-                this.reportData,
-                this.profile,
-                this.location,
-                userStatus,
-                LocalDateTime.now()
-        );
+        this.userStatus = userStatus;
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public User updateNickname(String nickname) {
         if (nickname == null || nickname.trim().isEmpty() || nickname.equals(this.profile.nickname())) {
             return this;
         }
-        Profile newProfile = Profile.of(nickname, this.profile.imageUrl(), this.profile.interestCountry());
-        return new User(
-                this.seq,
-                this.auth,
-                this.userRole,
-                this.reportData,
-                newProfile,
-                this.location,
-                this.userStatus,
-                LocalDateTime.now()
-        );
+        this.profile = Profile.of(nickname, this.profile.imageUrl(), this.profile.interestCountry());
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public User updateInterestCountry(Country interestCountry) {
         if (interestCountry == null || interestCountry.equals(this.profile.interestCountry())) {
             return this;
         }
-        Profile newProfile = Profile.of(this.profile.nickname(), this.profile.imageUrl(), interestCountry);
-        return new User(
-                this.seq,
-                this.auth,
-                this.userRole,
-                this.reportData,
-                newProfile,
-                this.location,
-                this.userStatus,
-                LocalDateTime.now()
-        );
+        this.profile = Profile.of(this.profile.nickname(), this.profile.imageUrl(), interestCountry);
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public User updateImageUrl(String imageUrl) {
         if (imageUrl.equals(this.profile.imageUrl())) {
             return this;
         }
-        Profile newProfile = Profile.of(this.profile.nickname(), imageUrl, this.profile.interestCountry());
-        return new User(
-                this.seq,
-                this.auth,
-                this.userRole,
-                this.reportData,
-                newProfile,
-                this.location,
-                this.userStatus,
-                LocalDateTime.now()
-        );
+        this.profile = Profile.of(this.profile.nickname(), imageUrl, this.profile.interestCountry());
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public User updateRegion(String region) {
         if (region == null || region.trim().isEmpty() || region.equals(this.location.region())) {
             return this;
         }
-        return new User(
-                this.seq,
-                this.auth,
-                this.userRole,
-                this.reportData,
-                this.profile,
-                Location.of(this.location.country(), region),
-                this.userStatus,
-                LocalDateTime.now()
-        );
+        this.location = Location.of(this.location.country(), region);
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public User updateCountry(Country country) {
         if (country == null || country.equals(this.location.country())) {
             return this;
         }
-        Location newLocation = Location.of(country, this.location.region());
-        return new User(
-                this.seq,
-                this.auth,
-                this.userRole,
-                this.reportData,
-                this.profile,
-                newLocation,
-                this.userStatus,
-                LocalDateTime.now()
-        );
+        this.location = Location.of(country, this.location.region());
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
 
     public User increaseReportedCount() {
-        Long newCount = this.reportData.reportedCount() + 1;
-        ReportData newReport = ReportData.of(newCount, Date.valueOf(LocalDate.now()));
-        return new User(
-                this.seq,
-                this.auth,
-                this.userRole,
-                newReport,
-                this.profile,
-                this.location,
-                this.userStatus,
-                this.updatedAt
-        );
+        var newCount = this.reportData.reportedCount() + 1;
+        this.reportData = ReportData.of(newCount, Date.valueOf(LocalDate.now()));
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public void validateAdmin() {
@@ -201,5 +156,21 @@ public record User(
     public String email() {return this.auth.email();}
 
     public String password() {return this.auth.password();}
+
+    public Long seq() {return seq;}
+
+    public Auth auth() {return auth;}
+
+    public UserRole userRole() {return userRole;}
+
+    public ReportData reportData() {return reportData;}
+
+    public Profile profile() {return profile;}
+
+    public Location location() {return location;}
+
+    public UserStatus userStatus() {return userStatus;}
+
+    public LocalDateTime updatedAt() {return updatedAt;}
 
 }

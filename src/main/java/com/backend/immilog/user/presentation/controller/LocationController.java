@@ -1,8 +1,8 @@
 package com.backend.immilog.user.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.user.application.services.LocationService;
-import com.backend.immilog.user.presentation.response.UserLocationResponse;
+import com.backend.immilog.user.application.usecase.impl.LocationFetchingService;
+import com.backend.immilog.user.presentation.payload.UserLoacationPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,21 +19,21 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/locations")
 @RestController
 public class LocationController {
-    private final LocationService locationService;
+    private final LocationFetchingService locationFetchingService;
 
-    public LocationController(LocationService locationService) {
-        this.locationService = locationService;
+    public LocationController(LocationFetchingService locationFetchingService) {
+        this.locationFetchingService = locationFetchingService;
     }
 
     @GetMapping
     @Operation(summary = "위치 정보", description = "위치 정보를 가져옵니다.")
-    public ResponseEntity<UserLocationResponse> getLocation(
+    public ResponseEntity<UserLoacationPayload.UserLocationResponse> getLocation(
             @Parameter(description = "위도") @RequestParam("latitude") Double latitude,
             @Parameter(description = "경도") @RequestParam("longitude") Double longitude
     ) {
-        Pair<String, String> country = locationService.getCountry(latitude, longitude).join();
+        Pair<String, String> country = locationFetchingService.getCountry(latitude, longitude).join();
         return ResponseEntity.status(OK).body(
-                new UserLocationResponse(
+                new UserLoacationPayload.UserLocationResponse(
                         Country.getCountryByKoreanName(country.getFirst()).name(),
                         country.getSecond()
                 )

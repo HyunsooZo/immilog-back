@@ -1,7 +1,5 @@
 package com.backend.immilog.user.domain.model.company;
 
-import com.backend.immilog.user.domain.enums.Industry;
-
 public record CompanyData(
         Industry industry,
         String name,
@@ -20,15 +18,7 @@ public record CompanyData(
             String homepage,
             String logo
     ) {
-        return new CompanyData(
-                industry,
-                name,
-                email,
-                phone,
-                address,
-                homepage,
-                logo
-        );
+        return new CompanyData(industry, name, email, phone, address, homepage, logo);
     }
 
     public static CompanyData empty() {

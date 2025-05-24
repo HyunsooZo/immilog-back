@@ -2,8 +2,8 @@ package com.backend.immilog.user.infrastructure.repositories;
 
 import com.backend.immilog.user.domain.model.company.Company;
 import com.backend.immilog.user.domain.repositories.CompanyRepository;
-import com.backend.immilog.user.infrastructure.jpa.entity.company.CompanyEntity;
-import com.backend.immilog.user.infrastructure.jpa.repositories.CompanyJpaRepository;
+import com.backend.immilog.user.infrastructure.jpa.CompanyJpaEntity;
+import com.backend.immilog.user.infrastructure.jpa.CompanyJpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -20,11 +20,11 @@ public class CompanyRepositoryImpl implements CompanyRepository {
     public Optional<Company> getByCompanyManagerUserSeq(Long userSeq) {
         return companyJpaRepository
                 .findByManager_CompanyManagerUserSeq(userSeq)
-                .map(CompanyEntity::toDomain);
+                .map(CompanyJpaEntity::toDomain);
     }
 
     @Override
     public void save(Company company) {
-        companyJpaRepository.save(CompanyEntity.from(company));
+        companyJpaRepository.save(CompanyJpaEntity.from(company));
     }
 }

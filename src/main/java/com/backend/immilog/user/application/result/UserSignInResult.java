@@ -1,7 +1,7 @@
 package com.backend.immilog.user.application.result;
 
 import com.backend.immilog.user.domain.model.user.User;
-import com.backend.immilog.user.presentation.response.UserSignInResponse;
+import com.backend.immilog.user.presentation.payload.UserSignInPayload;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record UserSignInResult(
@@ -38,8 +38,8 @@ public record UserSignInResult(
         );
     }
 
-    public UserSignInResponse toResponse() {
-        return new UserSignInResponse(
+    public UserSignInPayload.UserSignInResponse toResponse() {
+        return new UserSignInPayload.UserSignInResponse(
                 200,
                 "success",
                 this

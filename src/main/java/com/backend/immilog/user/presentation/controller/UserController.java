@@ -1,22 +1,18 @@
 package com.backend.immilog.user.presentation.controller;
 
-import com.backend.immilog.user.application.result.UserSignInResult;
-import com.backend.immilog.user.application.services.*;
-import com.backend.immilog.user.presentation.request.*;
-import com.backend.immilog.user.presentation.response.UserGeneralResponse;
-import com.backend.immilog.user.presentation.response.UserNicknameResponse;
-import com.backend.immilog.user.presentation.response.UserSignInResponse;
+import com.backend.immilog.user.application.usecase.impl.*;
+import com.backend.immilog.user.presentation.payload.UserGeneralResponse;
+import com.backend.immilog.user.presentation.payload.UserInformationPayload;
+import com.backend.immilog.user.presentation.payload.UserSignInPayload;
+import com.backend.immilog.user.presentation.payload.UserSignUpPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.concurrent.CompletableFuture;
-
-import static com.backend.immilog.user.enums.EmailComponents.*;
+import static com.backend.immilog.user.presentation.controller.EmailComponents.*;
 import static org.springframework.http.HttpStatus.*;
 
 @Tag(name = "User API", description = "사용자 관련 API")
@@ -25,50 +21,50 @@ import static org.springframework.http.HttpStatus.*;
 public class UserController {
     private final UserSignUpService userSignUpService;
     private final UserSignInService userSignInService;
-    private final UserInformationService userInformationService;
+    private final UserUpdateService userUpdateService;
     private final UserReportService userReportService;
-    private final LocationService locationService;
-    private final EmailService emailService;
+    private final LocationFetchingService locationFetchingService;
+    private final EmailSendingService emailSendingService;
 
     public UserController(
             UserSignUpService userSignUpService,
             UserSignInService userSignInService,
-            UserInformationService userInformationService,
+            UserUpdateService userUpdateService,
             UserReportService userReportService,
-            LocationService locationService,
-            EmailService emailService
+            LocationFetchingService locationFetchingService,
+            EmailSendingService emailSendingService
     ) {
         this.userSignUpService = userSignUpService;
         this.userSignInService = userSignInService;
-        this.userInformationService = userInformationService;
+        this.userUpdateService = userUpdateService;
         this.userReportService = userReportService;
-        this.locationService = locationService;
-        this.emailService = emailService;
+        this.locationFetchingService = locationFetchingService;
+        this.emailSendingService = emailSendingService;
     }
 
     @PostMapping
     @Operation(summary = "사용자 회원가입", description = "사용자 회원가입 진행")
     public ResponseEntity<UserGeneralResponse> signUp(
-            @Valid @RequestBody UserSignUpRequest request
+            @Valid @RequestBody UserSignUpPayload.UserSignUpRequest request
     ) {
-        final Pair<Long, String> userSeqAndName = userSignUpService.signUp(request.toCommand());
-        final String email = request.email();
-        final String userName = userSeqAndName.getSecond();
-        final Long userSeq = userSeqAndName.getFirst();
-        final String url = String.format(API_LINK, userSeq);
-        final String mailForm = String.format(HTML_SIGN_UP_CONTENT, userName, url);
-        emailService.sendHtmlEmail(email, EMAIL_SIGN_UP_SUBJECT, mailForm);
+        final var userSeqAndName = userSignUpService.signUp(request.toCommand());
+        final var email = request.email();
+        final var userName = userSeqAndName.getSecond();
+        final var userSeq = userSeqAndName.getFirst();
+        final var url = String.format(API_LINK, userSeq);
+        final var mailForm = String.format(HTML_SIGN_UP_CONTENT, userName, url);
+        emailSendingService.sendHtmlEmail(email, EMAIL_SIGN_UP_SUBJECT, mailForm);
 
         return ResponseEntity.status(CREATED).build();
     }
 
     @PostMapping("/sign-in")
     @Operation(summary = "사용자 로그인", description = "사용자 로그인 진행")
-    public ResponseEntity<UserSignInResponse> signIn(
-            @Valid @RequestBody UserSignInRequest request
+    public ResponseEntity<UserSignInPayload.UserSignInResponse> signIn(
+            @Valid @RequestBody UserSignInPayload.UserSignInRequest request
     ) {
-        CompletableFuture<Pair<String, String>> country = locationService.getCountry(request.latitude(), request.longitude());
-        final UserSignInResult userSignInResult = userSignInService.signIn(request.toCommand(), country);
+        var country = locationFetchingService.getCountry(request.latitude(), request.longitude());
+        final var userSignInResult = userSignInService.signIn(request.toCommand(), country);
         return ResponseEntity.status(OK).body(userSignInResult.toResponse());
     }
 
@@ -76,10 +72,10 @@ public class UserController {
     @Operation(summary = "사용자 정보 수정", description = "사용자 정보 수정 진행")
     public ResponseEntity<UserGeneralResponse> updateInformation(
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
-            @RequestBody UserInfoUpdateRequest request
+            @RequestBody UserInformationPayload.UserInfoUpdateRequest request
     ) {
-        CompletableFuture<Pair<String, String>> country = locationService.getCountry(request.latitude(), request.longitude());
-        userInformationService.updateInformation(userSeq, country, request.toCommand());
+        var country = locationFetchingService.getCountry(request.latitude(), request.longitude());
+        userUpdateService.updateInformation(userSeq, country, request.toCommand());
         return ResponseEntity.status(OK).body(UserGeneralResponse.success());
     }
 
@@ -87,19 +83,19 @@ public class UserController {
     @Operation(summary = "비밀번호 변경", description = "비밀번호 변경 진행")
     public ResponseEntity<Void> changePassword(
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
-            @RequestBody UserPasswordChangeRequest request
+            @RequestBody UserInformationPayload.UserPasswordChangeRequest request
     ) {
-        userInformationService.changePassword(userSeq, request.toCommand());
+        userUpdateService.changePassword(userSeq, request.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
     @GetMapping("/nicknames")
     @Operation(summary = "닉네임 중복 체크", description = "닉네임 중복 체크 진행")
-    public ResponseEntity<UserNicknameResponse> checkNickname(
+    public ResponseEntity<UserInformationPayload.UserNicknameResponse> checkNickname(
             @Parameter(description = "닉네임") @RequestParam("nickname") String nickname
     ) {
-        Boolean isNicknameAvailable = userSignUpService.isNicknameAvailable(nickname);
-        return ResponseEntity.status(OK).body(new UserNicknameResponse(isNicknameAvailable));
+        var isNicknameAvailable = userSignUpService.isNicknameAvailable(nickname);
+        return ResponseEntity.status(OK).body(new UserInformationPayload.UserNicknameResponse(isNicknameAvailable));
     }
 
     @PatchMapping("/{userSeq}/targets/{targetSeq}/{status}")
@@ -109,7 +105,7 @@ public class UserController {
             @Parameter(description = "대상 사용자 고유번호") @PathVariable("targetSeq") Long targetSeq,
             @Parameter(description = "상태") @PathVariable("status") String status
     ) {
-        userInformationService.blockOrUnblockUser(targetSeq, userSeq, status);
+        userUpdateService.blockOrUnblockUser(targetSeq, userSeq, status);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -118,7 +114,7 @@ public class UserController {
     public ResponseEntity<Void> reportUser(
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Parameter(description = "대상 사용자 고유번호") @PathVariable("targetSeq") Long targetSeq,
-            @Valid @RequestBody UserReportRequest request
+            @Valid @RequestBody UserInformationPayload.UserReportRequest request
     ) {
         userReportService.reportUser(targetSeq, userSeq, request.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
