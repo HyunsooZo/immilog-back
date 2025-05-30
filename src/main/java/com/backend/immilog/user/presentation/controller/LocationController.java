@@ -6,7 +6,6 @@ import com.backend.immilog.user.presentation.payload.UserLoacationPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,11 +30,11 @@ public class LocationController {
             @Parameter(description = "위도") @RequestParam("latitude") Double latitude,
             @Parameter(description = "경도") @RequestParam("longitude") Double longitude
     ) {
-        Pair<String, String> country = locationFetchingService.getCountry(latitude, longitude).join();
+        var locationResult = locationFetchingService.getCountry(latitude, longitude).join();
         return ResponseEntity.status(OK).body(
                 new UserLoacationPayload.UserLocationResponse(
-                        Country.getCountryByKoreanName(country.getFirst()).name(),
-                        country.getSecond()
+                        Country.getCountryByKoreanName(locationResult.country()).name(),
+                        locationResult.city()
                 )
         );
     }

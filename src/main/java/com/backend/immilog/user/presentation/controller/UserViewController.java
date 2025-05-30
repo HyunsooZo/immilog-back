@@ -4,7 +4,6 @@ import com.backend.immilog.user.application.usecase.impl.UserSignUpService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,9 +26,9 @@ public class UserViewController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             Model model
     ) {
-        final Pair<String, Boolean> result = userSignUpService.verifyEmail(userSeq);
-        model.addAttribute("message", result.getFirst());
-        model.addAttribute("isLoginAvailable", result.getSecond());
+        final var result = userSignUpService.verifyEmail(userSeq);
+        model.addAttribute("message", result.message());
+        model.addAttribute("isLoginAvailable", result.isLoginAvailable());
         return "verification-result";
     }
 }

@@ -48,12 +48,9 @@ public class UserController {
             @Valid @RequestBody UserSignUpPayload.UserSignUpRequest request
     ) {
         final var userSeqAndName = userSignUpService.signUp(request.toCommand());
-        final var email = request.email();
-        final var userName = userSeqAndName.getSecond();
-        final var userSeq = userSeqAndName.getFirst();
-        final var url = String.format(API_LINK, userSeq);
-        final var mailForm = String.format(HTML_SIGN_UP_CONTENT, userName, url);
-        emailSendingService.sendHtmlEmail(email, EMAIL_SIGN_UP_SUBJECT, mailForm);
+        final var url = String.format(API_LINK, userSeqAndName.userSeq());
+        final var mailForm = String.format(HTML_SIGN_UP_CONTENT, userSeqAndName.nickName(), url);
+        emailSendingService.sendHtmlEmail(request.email(), EMAIL_SIGN_UP_SUBJECT, mailForm);
 
         return ResponseEntity.status(CREATED).build();
     }

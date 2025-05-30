@@ -27,7 +27,7 @@ public class EmailSendingService implements EmailSendUseCase {
             String subject,
             String htmlBody
     ) {
-        MimeMessage message = javaMailSender.createMimeMessage();
+        var message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = null;
         try {
             helper = new MimeMessageHelper(message, true, "UTF-8");

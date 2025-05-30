@@ -17,7 +17,7 @@ public class Company {
         this.companyData = companyData;
     }
 
-    public static Company empty() {
+    public static Company builder() {
         return new Company(null, Manager.empty(), CompanyData.empty());
     }
 
@@ -43,15 +43,7 @@ public class Company {
             String homepage,
             String logo
     ) {
-        this.companyData = CompanyData.of(
-                industry,
-                name,
-                email,
-                phone,
-                address,
-                homepage,
-                logo
-        );
+        this.companyData = CompanyData.of(industry, name, email, phone, address, homepage, logo);
         return this;
     }
 

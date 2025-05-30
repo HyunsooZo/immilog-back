@@ -5,23 +5,26 @@ import com.backend.immilog.user.application.services.CompanyCommandService;
 import com.backend.immilog.user.application.services.CompanyQueryService;
 import com.backend.immilog.user.application.usecase.CompanyRegisterUseCase;
 import com.backend.immilog.user.domain.model.company.Company;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Objects;
 
 @Service
 public class CompanyCreateService implements CompanyRegisterUseCase {
-    private final CompanyQueryService companyQueryService;
     private final CompanyCommandService companyCommandService;
+    private final CompanyQueryService companyQueryService;
+    private final CompanyMapper companyMapper;
 
     public CompanyCreateService(
+            CompanyCommandService companyCommandService,
             CompanyQueryService companyQueryService,
-            CompanyCommandService companyCommandService
+            CompanyMapper companyMapper
     ) {
-        this.companyQueryService = companyQueryService;
         this.companyCommandService = companyCommandService;
+        this.companyQueryService = companyQueryService;
+        this.companyMapper = companyMapper;
     }
 
     @Transactional
@@ -30,61 +33,46 @@ public class CompanyCreateService implements CompanyRegisterUseCase {
             Long userSeq,
             CompanyRegisterCommand command
     ) {
-        AtomicBoolean isExistingCompany = new AtomicBoolean(false);
-        validateExistingCompany(userSeq, command, isExistingCompany);
-        if (!isExistingCompany.get()) {
-            Company newCompany = createCompany(userSeq, command);
-            companyCommandService.save(newCompany);
+        var company = companyQueryService.getByCompanyManagerUserSeq(userSeq);
+        company = Objects.isNull(company.seq()) ?
+                companyMapper.updateCompany(company, command) :
+                companyMapper.toNewCompany(userSeq, command);
+        companyCommandService.save(company);
+    }
+
+    @Component
+    public static class CompanyMapper {
+        public Company toNewCompany(
+                Long userSeq,
+                CompanyRegisterCommand cmd
+        ) {
+            return Company.builder()
+                    .manager(cmd.country(), cmd.region(), userSeq)
+                    .companyData(
+                            cmd.industry(),
+                            cmd.name(),
+                            cmd.email(),
+                            cmd.phone(),
+                            cmd.address(),
+                            cmd.homepage(),
+                            cmd.logo()
+                    );
+        }
+
+        public Company updateCompany(
+                Company existing,
+                CompanyRegisterCommand cmd
+        ) {
+            return existing.updateAddress(cmd.address())
+                    .updateCountry(cmd.country())
+                    .updateEmail(cmd.email())
+                    .updateHomepage(cmd.homepage())
+                    .updateLogo(cmd.logo())
+                    .updatePhone(cmd.phone())
+                    .updateName(cmd.name())
+                    .updateRegion(cmd.region())
+                    .updateIndustry(cmd.industry());
         }
     }
 
-    private static Company createCompany(
-            Long userSeq,
-            CompanyRegisterCommand command
-    ) {
-        return Company.empty()
-                .manager(
-                        command.country(),
-                        command.region(),
-                        userSeq
-                )
-                .companyData(
-                        command.industry(),
-                        command.name(),
-                        command.email(),
-                        command.phone(),
-                        command.address(),
-                        command.homepage(),
-                        command.logo()
-                );
-    }
-
-    private void validateExistingCompany(
-            Long userSeq,
-            CompanyRegisterCommand command,
-            AtomicBoolean isExistingCompany
-    ) {
-        Optional.ofNullable(companyQueryService.getByCompanyManagerUserSeq(userSeq))
-                .ifPresent(company -> {
-                    updateCompany(company, command);
-                    isExistingCompany.set(true);
-                });
-    }
-
-    private void updateCompany(
-            Company company,
-            CompanyRegisterCommand request
-    ) {
-        Company updatedCompany = company.updateAddress(request.address())
-                .updateCountry(request.country())
-                .updateEmail(request.email())
-                .updateHomepage(request.homepage())
-                .updateLogo(request.logo())
-                .updatePhone(request.phone())
-                .updateName(request.name())
-                .updateRegion(request.region())
-                .updateIndustry(request.industry());
-
-        companyCommandService.save(updatedCompany);
-    }
 }

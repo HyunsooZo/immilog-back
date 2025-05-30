@@ -18,7 +18,7 @@ public class CompanyFetchService implements CompanyInquireUseCase {
 
     @Override
     public CompanyResult getCompany(Long userSeq) {
-        final Company company = companyQueryService.getByCompanyManagerUserSeq(userSeq);
+        final var company = companyQueryService.getByCompanyManagerUserSeq(userSeq);
         return Optional.of(CompanyResult.from(company)).orElse(CompanyResult.empty());
     }
 }

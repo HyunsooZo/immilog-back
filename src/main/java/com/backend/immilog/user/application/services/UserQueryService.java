@@ -7,6 +7,8 @@ import com.backend.immilog.user.exception.UserException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.backend.immilog.user.exception.UserErrorCode.EXISTING_USER;
+
 @Service
 public class UserQueryService {
     private final UserRepository userRepository;
@@ -21,7 +23,7 @@ public class UserQueryService {
                 .orElseThrow(() -> new UserException(UserErrorCode.USER_NOT_FOUND));
     }
     @Transactional(readOnly = true)
-    public Boolean isUserAlreadyExist(String email) {
+    public Boolean isUserExist(String email) {
         return userRepository.getByEmail(email).isPresent();
     }
 

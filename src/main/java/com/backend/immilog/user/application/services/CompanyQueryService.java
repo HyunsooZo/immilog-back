@@ -15,10 +15,6 @@ public class CompanyQueryService {
 
     @Transactional(readOnly = true)
     public Company getByCompanyManagerUserSeq(Long userSeq) {
-        return companyRepository
-                .getByCompanyManagerUserSeq(userSeq)
-                .orElse(Company.empty());
+        return companyRepository.getByCompanyManagerUserSeq(userSeq).orElse(Company.builder());
     }
-
-
 }
