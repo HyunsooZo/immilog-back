@@ -1,7 +1,7 @@
 package com.backend.immilog.user.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.user.application.usecase.impl.LocationFetchingService;
+import com.backend.immilog.user.application.usecase.LocationFetchUseCase;
 import com.backend.immilog.user.presentation.payload.UserLoacationPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -18,10 +18,10 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/locations")
 @RestController
 public class LocationController {
-    private final LocationFetchingService locationFetchingService;
+    private final LocationFetchUseCase.LocationFetcher locationFetcher;
 
-    public LocationController(LocationFetchingService locationFetchingService) {
-        this.locationFetchingService = locationFetchingService;
+    public LocationController(LocationFetchUseCase.LocationFetcher locationFetcher) {
+        this.locationFetcher = locationFetcher;
     }
 
     @GetMapping
@@ -30,7 +30,7 @@ public class LocationController {
             @Parameter(description = "위도") @RequestParam("latitude") Double latitude,
             @Parameter(description = "경도") @RequestParam("longitude") Double longitude
     ) {
-        var locationResult = locationFetchingService.getCountry(latitude, longitude).join();
+        var locationResult = locationFetcher.getCountry(latitude, longitude).join();
         return ResponseEntity.status(OK).body(
                 new UserLoacationPayload.UserLocationResponse(
                         Country.getCountryByKoreanName(locationResult.country()).name(),

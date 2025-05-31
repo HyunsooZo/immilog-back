@@ -2,8 +2,11 @@ package com.backend.immilog.post.application.services.query;
 
 import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.post.domain.enums.Industry;
+import com.backend.immilog.post.application.services.InteractionUserQueryService;
+import com.backend.immilog.post.application.services.JobBoardQueryService;
+import com.backend.immilog.post.application.services.PostResourceQueryService;
+import com.backend.immilog.post.domain.model.post.Experience;
+import com.backend.immilog.post.domain.model.post.Industry;
 import com.backend.immilog.post.domain.model.post.JobBoard;
 import com.backend.immilog.post.domain.repositories.JobBoardRepository;
 import com.backend.immilog.post.exception.PostErrorCode;

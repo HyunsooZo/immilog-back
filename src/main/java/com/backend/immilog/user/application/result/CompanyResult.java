@@ -58,7 +58,7 @@ public record CompanyResult(
         );
     }
 
-    public static CompanyResult empty() {
+    public static CompanyResult createEmpty() {
         return new CompanyResult(
                 null,
                 null,

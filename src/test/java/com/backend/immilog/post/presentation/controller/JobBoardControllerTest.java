@@ -2,15 +2,15 @@ package com.backend.immilog.post.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.application.services.JobBoardInquiryService;
-import com.backend.immilog.post.application.services.JobBoardUpdateService;
-import com.backend.immilog.post.application.services.JobBoardUploadService;
-import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.application.usecase.JobBoardFetchUseCase;
+import com.backend.immilog.post.application.usecase.JobBoardUpdateUseCase;
+import com.backend.immilog.post.application.usecase.JobBoardUploadUseCase;
+import com.backend.immilog.post.domain.model.post.Experience;
+import com.backend.immilog.post.domain.model.post.PostStatus;
 import com.backend.immilog.post.presentation.request.JobBoardUpdateRequest;
 import com.backend.immilog.post.presentation.request.JobBoardUploadRequest;
 import com.backend.immilog.post.presentation.response.JobBoardPageResponse;
-import com.backend.immilog.user.domain.enums.Industry;
+import com.backend.immilog.user.domain.model.company.Industry;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.domain.PageImpl;
@@ -26,14 +26,14 @@ import static org.mockito.Mockito.when;
 
 @DisplayName("JobBoardController 테스트")
 class JobBoardControllerTest {
-    private final JobBoardUploadService jobBoardUploadService = mock(JobBoardUploadService.class);
-    private final JobBoardInquiryService jobBoardInquiryService = mock(JobBoardInquiryService.class);
-    private final JobBoardUpdateService jobBoardUpdateService = mock(JobBoardUpdateService.class);
+    private final JobBoardUploadUseCase jobBoardUploadUseCase = mock(JobBoardUploadUseCase.class);
+    private final JobBoardFetchUseCase jobBoardFetchUseCase = mock(JobBoardFetchUseCase.class);
+    private final JobBoardUpdateUseCase jobBoardUpdateUseCase = mock(JobBoardUpdateUseCase.class);
 
     private final JobBoardController jobBoardController = new JobBoardController(
-            jobBoardUploadService,
-            jobBoardInquiryService,
-            jobBoardUpdateService
+            jobBoardUploadUseCase,
+            jobBoardFetchUseCase,
+            jobBoardUpdateUseCase
     );
 
     @Test
@@ -99,7 +99,7 @@ class JobBoardControllerTest {
                 now
         );
 
-        when(jobBoardInquiryService.getJobBoards(country, sortingMethod, industry, experience, page)).thenReturn(new PageImpl<>(List.of(jobBoardResult)));
+        when(jobBoardFetchUseCase.getJobBoards(country, sortingMethod, industry, experience, page)).thenReturn(new PageImpl<>(List.of(jobBoardResult)));
         // when
         ResponseEntity<JobBoardPageResponse> result = jobBoardController.searchJobBoard(country, sortingMethod, industry, experience, page);
         // then

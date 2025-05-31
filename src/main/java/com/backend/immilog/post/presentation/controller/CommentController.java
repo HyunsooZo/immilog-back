@@ -1,6 +1,6 @@
 package com.backend.immilog.post.presentation.controller;
 
-import com.backend.immilog.post.application.services.CommentUploadService;
+import com.backend.immilog.post.application.usecase.CommentUploadUseCase;
 import com.backend.immilog.post.presentation.request.CommentUploadRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,10 +15,10 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequestMapping("/api/v1/comments")
 @RestController
 public class CommentController {
-    private final CommentUploadService commentUploadService;
+    private final CommentUploadUseCase commentUploadUseCase;
 
-    public CommentController(CommentUploadService commentUploadService) {
-        this.commentUploadService = commentUploadService;
+    public CommentController(CommentUploadUseCase commentUploadUseCase) {
+        this.commentUploadUseCase = commentUploadUseCase;
     }
 
     @PostMapping("/{referenceType}/{postSeq}/users/{userSeq}")
@@ -29,7 +29,7 @@ public class CommentController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Valid @RequestBody CommentUploadRequest request
     ) {
-        commentUploadService.uploadComment(userSeq, postSeq, referenceType, request.content());
+        commentUploadUseCase.uploadComment(userSeq, postSeq, referenceType, request.content());
         return ResponseEntity.status(CREATED).build();
     }
 }

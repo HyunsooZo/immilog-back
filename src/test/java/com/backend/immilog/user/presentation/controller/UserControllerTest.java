@@ -2,19 +2,19 @@ package com.backend.immilog.user.presentation.controller;
 
 
 import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.user.application.result.LocationResult;
+import com.backend.immilog.user.application.result.UserNickNameResult;
 import com.backend.immilog.user.application.result.UserSignInResult;
-import com.backend.immilog.user.application.services.*;
-import com.backend.immilog.user.domain.enums.ReportReason;
-import com.backend.immilog.user.domain.enums.UserStatus;
-import com.backend.immilog.user.enums.EmailComponents;
-import com.backend.immilog.user.presentation.request.*;
-import com.backend.immilog.user.presentation.response.UserGeneralResponse;
-import com.backend.immilog.user.presentation.response.UserNicknameResponse;
-import com.backend.immilog.user.presentation.response.UserSignInResponse;
+import com.backend.immilog.user.application.usecase.*;
+import com.backend.immilog.user.domain.model.report.ReportReason;
+import com.backend.immilog.user.domain.model.user.UserStatus;
+import com.backend.immilog.user.presentation.payload.UserGeneralResponse;
+import com.backend.immilog.user.presentation.payload.UserInformationPayload;
+import com.backend.immilog.user.presentation.payload.UserSignInPayload;
+import com.backend.immilog.user.presentation.payload.UserSignUpPayload;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.util.Pair;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -29,19 +29,19 @@ import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("사용자 컨트롤러 테스트")
 class UserControllerTest {
-    private final UserSignUpService userSignUpService = mock(UserSignUpService.class);
-    private final UserSignInService userSignInService = mock(UserSignInService.class);
-    private final LocationService locationService = mock(LocationService.class);
-    private final UserInformationService userInformationService = mock(UserInformationService.class);
-    private final UserReportService userReportService = mock(UserReportService.class);
-    private final EmailService emailService = mock(EmailService.class);
+    private final UserSignUpUseCase.UserSignUpProcessor userSignUpProcessor = mock(UserSignUpUseCase.UserSignUpProcessor.class);
+    private final UserSignInUseCase.UserLoginProcessor userLoginProcessor = mock(UserSignInUseCase.UserLoginProcessor.class);
+    private final LocationFetchUseCase.LocationFetcher locationFetcher = mock(LocationFetchUseCase.LocationFetcher.class);
+    private final UserUpdateUseCase.UserUpdater userUpdater = mock(UserUpdateUseCase.UserUpdater.class);
+    private final UserRepostUseCase.UserReporter userReporter = mock(UserRepostUseCase.UserReporter.class);
+    private final EmailSendUseCase.EmailSender emailSender = mock(EmailSendUseCase.EmailSender.class);
     private final UserController userController = new UserController(
-            userSignUpService,
-            userSignInService,
-            userInformationService,
-            userReportService,
-            locationService,
-            emailService
+            userSignUpProcessor,
+            userLoginProcessor,
+            userUpdater,
+            userReporter,
+            locationFetcher,
+            emailSender
     );
 
     @Test
@@ -55,7 +55,7 @@ class UserControllerTest {
         RequestContextHolder.setRequestAttributes(attributes);
         try {
             // given
-            UserSignUpRequest param = new UserSignUpRequest(
+            UserSignUpPayload.UserSignUpRequest param = new UserSignUpPayload.UserSignUpRequest(
                     "test",
                     "test1234",
                     "email@email.com",
@@ -64,13 +64,13 @@ class UserControllerTest {
                     "Seoul",
                     "image"
             );
-            when(userSignUpService.signUp(param.toCommand())).thenReturn(Pair.of(1L, "test"));
+            when(userSignUpProcessor.signUp(param.toCommand())).thenReturn(new UserNickNameResult(1L, "test"));
 
             // when
             ResponseEntity<UserGeneralResponse> response = userController.signUp(param);
 
             // then
-            verify(emailService, times(1)).sendHtmlEmail(
+            verify(emailSender, times(1)).sendHtmlEmail(
                     param.email(),
                     EmailComponents.EMAIL_SIGN_UP_SUBJECT,
                     String.format(EmailComponents.HTML_SIGN_UP_CONTENT, "test", String.format(EmailComponents.API_LINK, 1L))
@@ -85,11 +85,11 @@ class UserControllerTest {
     @DisplayName("로그인")
     void signIn() {
         // given
-        UserSignInRequest param = new UserSignInRequest("email", "password", 37.1234, 127.1234);
-        when(locationService.getCountry(param.latitude(), param.longitude())).thenReturn(CompletableFuture.completedFuture(Pair.of("대한민국", "서울")));
-        when(userSignInService.signIn(param.toCommand(), locationService.getCountry(param.latitude(), param.longitude()))).thenReturn(mock(UserSignInResult.class));
+        UserSignInPayload.UserSignInRequest param = new UserSignInPayload.UserSignInRequest("email", "password", 37.1234, 127.1234);
+        when(locationFetcher.getCountry(param.latitude(), param.longitude())).thenReturn(CompletableFuture.completedFuture(new LocationResult("대한민국", "서울")));
+        when(userLoginProcessor.signIn(param.toCommand(), locationFetcher.getCountry(param.latitude(), param.longitude()))).thenReturn(mock(UserSignInResult.class));
         // when
-        ResponseEntity<UserSignInResponse> response = userController.signIn(param);
+        ResponseEntity<UserSignInPayload.UserSignInResponse> response = userController.signIn(param);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
@@ -100,8 +100,8 @@ class UserControllerTest {
     void updateInformation() {
         // given
         HttpServletRequest request = mock(HttpServletRequest.class);
-        UserInfoUpdateRequest param =
-                new UserInfoUpdateRequest(
+        UserInformationPayload.UserInfoUpdateRequest param =
+                new UserInformationPayload.UserInfoUpdateRequest(
                         "newNickName",
                         "newImage",
                         Country.JAPAN,
@@ -112,13 +112,13 @@ class UserControllerTest {
                 );
 
         Long userSeq = 1L;
-        when(locationService.getCountry(param.latitude(), param.longitude())).thenReturn(CompletableFuture.completedFuture(Pair.of("Japan", "Tokyo")));
+        when(locationFetcher.getCountry(param.latitude(), param.longitude())).thenReturn(CompletableFuture.completedFuture(new LocationResult("Japan", "Tokyo")));
         // when
         ResponseEntity<UserGeneralResponse> response = userController.updateInformation(userSeq, param);
 
         // then
         assertThat(response.getStatusCode()).isEqualTo(OK);
-        verify(userInformationService, times(1)).updateInformation(1L, locationService.getCountry(param.latitude(), param.longitude()), param.toCommand());
+        verify(userUpdater, times(1)).updateInformation(1L, locationFetcher.getCountry(param.latitude(), param.longitude()), param.toCommand());
     }
 
     @Test
@@ -126,7 +126,7 @@ class UserControllerTest {
     void resetPassword() {
         // given
         Long userSeq = 1L;
-        UserPasswordChangeRequest param = new UserPasswordChangeRequest(
+        UserInformationPayload.UserPasswordChangeRequest param = new UserInformationPayload.UserPasswordChangeRequest(
                 "existingPassword",
                 "newPassword"
         );
@@ -134,7 +134,7 @@ class UserControllerTest {
         ResponseEntity<Void> response = userController.changePassword(userSeq, param);
 
         // then
-        verify(userInformationService, times(1))
+        verify(userUpdater, times(1))
                 .changePassword(1L, param.toCommand());
         assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
     }
@@ -144,13 +144,13 @@ class UserControllerTest {
     void checkNickname() {
         // given
         String nickname = "test";
-        when(userSignUpService.isNicknameAvailable(nickname)).thenReturn(true);
+        when(userSignUpProcessor.isNicknameAvailable(nickname)).thenReturn(true);
 
         // when
-        ResponseEntity<UserNicknameResponse> response = userController.checkNickname(nickname);
+        ResponseEntity<UserInformationPayload.UserNicknameResponse> response = userController.checkNickname(nickname);
 
         // then
-        UserNicknameResponse body = Objects.requireNonNull(response.getBody());
+        UserInformationPayload.UserNicknameResponse body = Objects.requireNonNull(response.getBody());
         assertThat(body.data()).isEqualTo(true);
     }
 
@@ -178,7 +178,7 @@ class UserControllerTest {
         // given
         Long targetUserSeq = 2L;
         Long userSeq = 1L;
-        UserReportRequest param = new UserReportRequest(
+        UserInformationPayload.UserReportRequest param = new UserInformationPayload.UserReportRequest(
                 ReportReason.FRAUD,
                 "test"
         );
@@ -186,6 +186,6 @@ class UserControllerTest {
         ResponseEntity<Void> response = userController.reportUser(userSeq, targetUserSeq, param);
         // then
         assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
-        verify(userReportService, times(1)).reportUser(targetUserSeq, userSeq, param.toCommand());
+        verify(userReporter, times(1)).reportUser(targetUserSeq, userSeq, param.toCommand());
     }
 }

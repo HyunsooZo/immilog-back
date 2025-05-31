@@ -1,7 +1,7 @@
 package com.backend.immilog.user.presentation.controller;
 
-import com.backend.immilog.user.application.usecase.impl.CompanyFetchService;
-import com.backend.immilog.user.application.usecase.impl.CompanyCreateService;
+import com.backend.immilog.user.application.usecase.CompanyCreateUseCase;
+import com.backend.immilog.user.application.usecase.CompanyFetchUseCase;
 import com.backend.immilog.user.presentation.payload.CompanyPayload;
 import com.backend.immilog.user.presentation.payload.UserGeneralResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,15 +17,15 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/companies")
 @RestController
 public class CompanyController {
-    private final CompanyCreateService companyCreateService;
-    private final CompanyFetchService companyFetchService;
+    private final CompanyCreateUseCase.CompanyCreator companyCreator;
+    private final CompanyFetchUseCase.CompanyFetcher companyFetcher;
 
     public CompanyController(
-            CompanyCreateService companyCreateService,
-            CompanyFetchService companyFetchService
+            CompanyCreateUseCase.CompanyCreator companyCreator,
+            CompanyFetchUseCase.CompanyFetcher companyFetcher
     ) {
-        this.companyCreateService = companyCreateService;
-        this.companyFetchService = companyFetchService;
+        this.companyCreator = companyCreator;
+        this.companyFetcher = companyFetcher;
     }
 
     @PostMapping("/users/{userSeq}")
@@ -34,7 +34,7 @@ public class CompanyController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @RequestBody CompanyPayload.CompanyRegisterRequest param
     ) {
-        companyCreateService.registerOrEditCompany(userSeq, param.toCommand());
+        companyCreator.registerOrEditCompany(userSeq, param.toCommand());
         return ResponseEntity.status(CREATED).build();
     }
 
@@ -43,7 +43,7 @@ public class CompanyController {
     public ResponseEntity<CompanyPayload.UserCompanyResponse> getCompany(
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq
     ) {
-        final var result = companyFetchService.getCompany(userSeq);
+        final var result = companyFetcher.getCompany(userSeq);
         return ResponseEntity.status(OK).body(result.toResponse());
     }
 }

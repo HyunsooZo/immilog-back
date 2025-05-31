@@ -3,13 +3,11 @@ package com.backend.immilog.user.presentation.controller;
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.user.application.command.CompanyRegisterCommand;
 import com.backend.immilog.user.application.result.CompanyResult;
-import com.backend.immilog.user.application.services.CompanyInquiryService;
-import com.backend.immilog.user.application.services.CompanyRegisterService;
-import com.backend.immilog.user.domain.enums.Industry;
-import com.backend.immilog.user.domain.model.company.Company;
-import com.backend.immilog.user.presentation.request.CompanyRegisterRequest;
-import com.backend.immilog.user.presentation.response.UserCompanyResponse;
-import com.backend.immilog.user.presentation.response.UserGeneralResponse;
+import com.backend.immilog.user.application.usecase.CompanyFetchUseCase;
+import com.backend.immilog.user.application.usecase.CompanyCreateUseCase;
+import com.backend.immilog.user.domain.model.company.Industry;
+import com.backend.immilog.user.presentation.payload.CompanyPayload;
+import com.backend.immilog.user.presentation.payload.UserGeneralResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +18,11 @@ import static org.mockito.Mockito.*;
 
 @DisplayName("CompanyController 테스트")
 class CompanyControllerTest {
-    private final CompanyRegisterService companyRegisterService = mock(CompanyRegisterService.class);
-    private final CompanyInquiryService companyInquiryService = mock(CompanyInquiryService.class);
+    private final CompanyCreateUseCase.CompanyCreator companyCreator = mock(CompanyCreateUseCase.CompanyCreator.class);
+    private final CompanyFetchUseCase.CompanyFetcher companyFetcher = mock(CompanyFetchUseCase.CompanyFetcher.class);
     private final CompanyController companyController = new CompanyController(
-            companyRegisterService,
-            companyInquiryService
+            companyCreator,
+            companyFetcher
     );
 
     @Test
@@ -33,7 +31,7 @@ class CompanyControllerTest {
         // given
         Long userSeq = 1L;
         String mail = "email@email.com";
-        CompanyRegisterRequest param = new CompanyRegisterRequest(
+        CompanyPayload.CompanyRegisterRequest param = new CompanyPayload.CompanyRegisterRequest(
                 Industry.IT,
                 "회사명",
                 mail,
@@ -48,7 +46,7 @@ class CompanyControllerTest {
         // when
         ResponseEntity<UserGeneralResponse> response = companyController.registerCompany(userSeq, param);
         // then
-        verify(companyRegisterService).registerOrEditCompany(anyLong(), any());
+        verify(companyCreator).registerOrEditCompany(anyLong(), any());
     }
 
     @Test
@@ -56,10 +54,10 @@ class CompanyControllerTest {
     void getCompany() {
         // given
         Long userSeq = 1L;
-        when(companyInquiryService.getCompany(userSeq)).thenReturn(CompanyResult.empty());
+        when(companyFetcher.getCompany(userSeq)).thenReturn(CompanyResult.createEmpty());
         // when
-        ResponseEntity<UserCompanyResponse> response = companyController.getCompany(userSeq);
+        ResponseEntity<CompanyPayload.UserCompanyResponse> response = companyController.getCompany(userSeq);
         // then
-        verify(companyInquiryService).getCompany(anyLong());
+        verify(companyFetcher).getCompany(anyLong());
     }
 }

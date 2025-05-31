@@ -1,6 +1,8 @@
 package com.backend.immilog.post.application.services.query;
 
 import com.backend.immilog.post.application.result.CommentResult;
+import com.backend.immilog.post.application.services.CommentQueryService;
+import com.backend.immilog.post.application.services.InteractionUserQueryService;
 import com.backend.immilog.post.domain.repositories.CommentRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

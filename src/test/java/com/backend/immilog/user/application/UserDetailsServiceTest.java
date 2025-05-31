@@ -1,15 +1,13 @@
 package com.backend.immilog.user.application;
 
 import com.backend.immilog.global.security.UserDetailsServiceImpl;
-import com.backend.immilog.user.application.services.query.UserQueryService;
+import com.backend.immilog.user.application.services.UserQueryService;
 import com.backend.immilog.user.domain.model.user.Auth;
 import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-
-import java.util.Optional;
 
 import static com.backend.immilog.global.enums.UserRole.ROLE_USER;
 import static org.assertj.core.api.Assertions.assertThat;

@@ -1,8 +1,8 @@
 package com.backend.immilog.post.infrastructure.repositories;
 
-import com.backend.immilog.post.domain.enums.InteractionType;
-import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.domain.model.interaction.InteractionType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.post.PostType;
 import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
 import com.backend.immilog.post.infrastructure.jdbc.InteractionUserJdbcRepository;
 import com.backend.immilog.post.infrastructure.jpa.entity.interaction.InteractionUserEntity;

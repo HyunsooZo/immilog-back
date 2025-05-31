@@ -32,7 +32,7 @@ class ImageController(
     @Operation(summary = "이미지 삭제", description = "이미지를 삭제합니다.")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteImage(@RequestBody imageRequest: ImageRequest): ResponseEntity<Unit> {
-        imageUploadUseCase.deleteFile(imageRequest.imagePath)
+        imageUploadUseCase.deleteFile(imageRequest.imagePath, "")
         return ResponseEntity.noContent().build()
     }
 

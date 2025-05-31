@@ -1,8 +1,8 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.model.post.PostInfo;
+import com.backend.immilog.post.domain.model.post.PostStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

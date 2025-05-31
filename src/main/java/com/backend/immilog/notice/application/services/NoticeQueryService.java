@@ -1,9 +1,9 @@
 package com.backend.immilog.notice.application.services;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.application.dto.NoticeResult;
-import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.repositories.NoticeRepository;
+import com.backend.immilog.notice.application.dto.NoticeModelResult;
+import com.backend.immilog.notice.domain.Notice;
+import com.backend.immilog.notice.domain.NoticeRepository;
 import com.backend.immilog.notice.exception.NoticeException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,7 +21,7 @@ public class NoticeQueryService {
     }
 
     @Transactional(readOnly = true)
-    public Page<NoticeResult> getNotices(
+    public Page<NoticeModelResult> getNotices(
             Long userSeq,
             Pageable pageable
     ) {

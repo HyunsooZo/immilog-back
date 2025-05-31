@@ -1,6 +1,6 @@
 package com.backend.immilog.global.security;
 
-import com.backend.immilog.user.application.services.query.UserQueryService;
+import com.backend.immilog.user.application.services.UserQueryService;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;

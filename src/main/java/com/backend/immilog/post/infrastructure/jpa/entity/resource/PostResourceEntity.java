@@ -1,8 +1,8 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.resource;
 
-import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.post.PostType;
 import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.domain.model.resource.ResourceType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;

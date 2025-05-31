@@ -1,11 +1,7 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.domain.enums.Badge;
-import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.PostStatus;
-import com.backend.immilog.post.domain.enums.SortingMethods;
-import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.post.*;
 import com.backend.immilog.post.infrastructure.jpa.entity.post.PostEntity;
 import com.backend.immilog.post.infrastructure.jpa.entity.post.PostInfoValue;
 import com.backend.immilog.post.infrastructure.jpa.entity.post.PostUserInfoValue;

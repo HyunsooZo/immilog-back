@@ -1,7 +1,7 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.comment;
 
-import com.backend.immilog.post.domain.enums.ReferenceType;
 import com.backend.immilog.post.domain.model.comment.CommentRelation;
+import com.backend.immilog.post.domain.model.comment.ReferenceType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

@@ -1,11 +1,11 @@
 package com.backend.immilog.post.application.result;
 
-import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.InteractionType;
-import com.backend.immilog.post.domain.enums.PostStatus;
-import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.domain.model.interaction.InteractionType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.post.Categories;
+import com.backend.immilog.post.domain.model.post.PostStatus;
 import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.domain.model.resource.ResourceType;
 import com.backend.immilog.post.presentation.response.PostSingleResponse;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Getter;

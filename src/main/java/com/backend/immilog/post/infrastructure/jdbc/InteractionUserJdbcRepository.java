@@ -1,7 +1,7 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
-import com.backend.immilog.post.domain.enums.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.post.PostType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 

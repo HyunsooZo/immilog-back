@@ -3,17 +3,17 @@ package com.backend.immilog.post.presentation.controller;
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.application.services.PostDeleteService;
-import com.backend.immilog.post.application.services.PostInquiryService;
-import com.backend.immilog.post.application.services.PostUpdateService;
-import com.backend.immilog.post.application.services.PostUploadService;
-import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.application.usecase.PostDeleteUseCase;
+import com.backend.immilog.post.application.usecase.PostFetchUseCase;
+import com.backend.immilog.post.application.usecase.PostUpdateUseCase;
+import com.backend.immilog.post.application.usecase.PostUploadUseCase;
+import com.backend.immilog.post.domain.model.post.Categories;
+import com.backend.immilog.post.domain.model.post.SortingMethods;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
 import com.backend.immilog.post.presentation.response.PostPageResponse;
 import com.backend.immilog.post.presentation.response.PostSingleResponse;
-import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.UserStatus;
 import com.backend.immilog.user.domain.model.user.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,15 +30,15 @@ import static org.springframework.http.HttpStatus.*;
 
 @DisplayName("PostController 테스트")
 class PostControllerTest {
-    private final PostUploadService postUploadService = mock(PostUploadService.class);
-    private final PostUpdateService postUpdateService = mock(PostUpdateService.class);
-    private final PostDeleteService postDeleteService = mock(PostDeleteService.class);
-    private final PostInquiryService postInquiryService = mock(PostInquiryService.class);
+    private final PostUploadUseCase postUploadUseCase = mock(PostUploadUseCase.class);
+    private final PostUpdateUseCase postUpdateUseCase = mock(PostUpdateUseCase.class);
+    private final PostDeleteUseCase postDeleteUseCase = mock(PostDeleteUseCase.class);
+    private final PostFetchUseCase postFetchUseCase = mock(PostFetchUseCase.class);
     private final PostController postController = new PostController(
-            postUploadService,
-            postUpdateService,
-            postDeleteService,
-            postInquiryService
+            postUploadUseCase,
+            postUpdateUseCase,
+            postDeleteUseCase,
+            postFetchUseCase
     );
 
     @Test
@@ -73,7 +73,7 @@ class PostControllerTest {
         );
 
         // then
-        verify(postUploadService).uploadPost(user.seq(), postUploadRequest.toCommand());
+        verify(postUploadUseCase).uploadPost(user.seq(), postUploadRequest.toCommand());
         assertThat(response.getStatusCode()).isEqualTo(ResponseEntity.status(CREATED).build().getStatusCode());
     }
 
@@ -110,7 +110,7 @@ class PostControllerTest {
         );
 
         // then
-        verify(postUpdateService).updatePost(1L, postSeq, postUpdateRequest.toCommand());
+        verify(postUpdateUseCase).updatePost(1L, postSeq, postUpdateRequest.toCommand());
         assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
     }
 
@@ -128,7 +128,7 @@ class PostControllerTest {
         );
 
         //then
-        verify(postDeleteService).deletePost(1L, postSeq);
+        verify(postDeleteUseCase).deletePost(1L, postSeq);
         assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
     }
 
@@ -142,7 +142,7 @@ class PostControllerTest {
         ResponseEntity<Void> response = postController.increaseViewCount(postSeq);
 
         // then
-        verify(postUpdateService).increaseViewCount(postSeq);
+        verify(postUpdateUseCase).increaseViewCount(postSeq);
         assertThat(response.getStatusCode()).isEqualTo(NO_CONTENT);
     }
 
@@ -204,7 +204,7 @@ class PostControllerTest {
                 null
         );
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
-        when(postInquiryService.getPosts(
+        when(postFetchUseCase.getPosts(
                 Country.SOUTH_KOREA,
                 sortingMethod,
                 isPublic,
@@ -257,7 +257,7 @@ class PostControllerTest {
                 "2021-08-01T:00:00:00",
                 null
         );
-        when(postInquiryService.getPostDetail(postSeq)).thenReturn(postResult);
+        when(postFetchUseCase.getPostDetail(postSeq)).thenReturn(postResult);
 
         // when
         ResponseEntity<PostSingleResponse> response = postController.getPost(postSeq);
@@ -299,7 +299,7 @@ class PostControllerTest {
                 null
         );
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
-        when(postInquiryService.searchKeyword(
+        when(postFetchUseCase.searchKeyword(
                 keyword,
                 page
         )).thenReturn(posts);
@@ -347,7 +347,7 @@ class PostControllerTest {
                 null
         );
         Page<PostResult> posts = new PageImpl<>(List.of(postResult));
-        when(postInquiryService.getUserPosts(
+        when(postFetchUseCase.getUserPosts(
                 userSeq,
                 page
         )).thenReturn(posts);

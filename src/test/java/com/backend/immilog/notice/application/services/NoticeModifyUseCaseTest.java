@@ -5,13 +5,13 @@ import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.notice.application.dto.NoticeModifyCommand;
 import com.backend.immilog.notice.application.usecase.NoticeModifyUseCase;
-import com.backend.immilog.notice.application.usecase.impl.NoticeModifier;
-import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.NoticeStatus;
-import com.backend.immilog.notice.domain.model.NoticeType;
+import com.backend.immilog.notice.domain.Notice;
+import com.backend.immilog.notice.domain.NoticeStatus;
+import com.backend.immilog.notice.domain.NoticeType;
+import com.backend.immilog.notice.domain.NoticeAuthPolicy;
 import com.backend.immilog.notice.exception.NoticeErrorCode;
 import com.backend.immilog.notice.exception.NoticeException;
-import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.UserStatus;
 import com.backend.immilog.user.domain.model.user.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,10 +28,11 @@ class NoticeModifyUseCaseTest {
     private final NoticeQueryService noticeQueryService = mock(NoticeQueryService.class);
     private final NoticeCommandService noticeCommandService = mock(NoticeCommandService.class);
     private final TokenProvider tokenProvider = mock(TokenProvider.class);
-    private final NoticeModifyUseCase noticeModifyUseCase = new NoticeModifier(
+    private final NoticeAuthPolicy noticeAuthPolicy = new NoticeAuthPolicy(tokenProvider);
+    private final NoticeModifyUseCase noticeModifyUseCase = new NoticeModifyUseCase.NoticeModifier(
             noticeQueryService,
             noticeCommandService,
-            tokenProvider
+            noticeAuthPolicy
     );
 
     @Test
@@ -74,6 +75,7 @@ class NoticeModifyUseCaseTest {
         Notice notice = mock(Notice.class);
         when(user.userRole()).thenReturn(UserRole.ROLE_ADMIN);
         when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(notice);
+        when(tokenProvider.getUserRoleFromToken(token)).thenReturn(UserRole.ROLE_USER);
         when(notice.status()).thenReturn(NoticeStatus.DELETED);
         assertThrows(NoticeException.class, () -> noticeModifyUseCase.modifyNotice(token, noticeSeq, command));
     }

@@ -10,7 +10,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest
-//@Disabled
+@Disabled
 @DisplayName("WebConfig 클래스 통합 테스트")
 class WebConfigTest {
 

@@ -1,8 +1,8 @@
 package com.backend.immilog.post.infrastructure.jdbc;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.post.domain.enums.Industry;
+import com.backend.immilog.post.domain.model.post.Experience;
+import com.backend.immilog.post.domain.model.post.Industry;
 import com.backend.immilog.post.infrastructure.jpa.entity.post.JobBoardEntity;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.simple.JdbcClient;

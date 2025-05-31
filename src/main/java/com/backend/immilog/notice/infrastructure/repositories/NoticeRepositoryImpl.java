@@ -1,10 +1,10 @@
 package com.backend.immilog.notice.infrastructure.repositories;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.application.dto.NoticeResult;
-import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.NoticeStatus;
-import com.backend.immilog.notice.domain.repositories.NoticeRepository;
+import com.backend.immilog.notice.application.dto.NoticeModelResult;
+import com.backend.immilog.notice.domain.Notice;
+import com.backend.immilog.notice.domain.NoticeRepository;
+import com.backend.immilog.notice.domain.NoticeStatus;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaEntity;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaRepository;
@@ -30,11 +30,11 @@ public class NoticeRepositoryImpl implements NoticeRepository {
     }
 
     @Override
-    public Page<NoticeResult> getNotices(
+    public Page<NoticeModelResult> getNotices(
             Long userSeq,
             Pageable pageable
     ) {
-        List<NoticeResult> result = noticeJdbcRepository.getNotices(
+        List<NoticeModelResult> result = noticeJdbcRepository.getNotices(
                 userSeq,
                 pageable.getPageSize(),
                 pageable.getOffset()

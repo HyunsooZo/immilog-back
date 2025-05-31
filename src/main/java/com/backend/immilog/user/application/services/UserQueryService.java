@@ -7,8 +7,6 @@ import com.backend.immilog.user.exception.UserException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.backend.immilog.user.exception.UserErrorCode.EXISTING_USER;
-
 @Service
 public class UserQueryService {
     private final UserRepository userRepository;

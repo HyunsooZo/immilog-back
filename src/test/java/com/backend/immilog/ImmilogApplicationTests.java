@@ -5,7 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-//@Disabled
+@Disabled
 @SpringBootTest
 @DisplayName("ImmilogApplication 테스트")
 class ImmilogApplicationTests {

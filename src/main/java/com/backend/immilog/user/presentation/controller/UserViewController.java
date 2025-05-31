@@ -1,6 +1,6 @@
 package com.backend.immilog.user.presentation.controller;
 
-import com.backend.immilog.user.application.usecase.impl.UserSignUpService;
+import com.backend.immilog.user.application.usecase.UserSignUpUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/api/v1/users")
 @Controller
 public class UserViewController {
-    private final UserSignUpService userSignUpService;
+    private final UserSignUpUseCase.UserSignUpProcessor userSignUpProcessor;
 
-    public UserViewController(UserSignUpService userSignUpService) {
-        this.userSignUpService = userSignUpService;
+    public UserViewController(UserSignUpUseCase.UserSignUpProcessor userSignUpProcessor) {
+        this.userSignUpProcessor = userSignUpProcessor;
     }
 
     @GetMapping("/{userSeq}/verification")
@@ -26,7 +26,7 @@ public class UserViewController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             Model model
     ) {
-        final var result = userSignUpService.verifyEmail(userSeq);
+        final var result = userSignUpProcessor.verifyEmail(userSeq);
         model.addAttribute("message", result.message());
         model.addAttribute("isLoginAvailable", result.isLoginAvailable());
         return "verification-result";

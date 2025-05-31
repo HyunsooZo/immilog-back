@@ -1,6 +1,7 @@
 package com.backend.immilog.notification.infrastructure.gateway.discord
 
-import com.backend.immilog.notification.application.command.DiscordCommand
+import com.backend.immilog.notification.application.DiscordCommand
+import com.backend.immilog.notification.infrastructure.DiscordGateway
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
@@ -8,19 +9,17 @@ import org.junit.jupiter.api.Test
 import org.mockito.ArgumentCaptor
 import org.mockito.Mockito.*
 import org.springframework.web.client.RestClient
-import java.lang.reflect.Field
 
 @DisplayName("DiscordGateway 클래스 테스트")
 class DiscordGatewayTest {
 
     private val restClient: RestClient = mock(RestClient::class.java)
-    private val discordGateway = DiscordGateway(restClient, "webHookUrl")
+    private val discordProperties: DiscordGateway.DiscordProperties = mock(DiscordGateway.DiscordProperties::class.java)
+    private val discordGateway = DiscordGateway(restClient, discordProperties)
 
     @BeforeEach
     fun setUp() {
-        val webHookUrlField: Field = DiscordGateway::class.java.getDeclaredField("webHookUrl")
-        webHookUrlField.isAccessible = true
-        webHookUrlField.set(discordGateway, "http://test-webhook-url")
+        `when`(discordProperties.webhookUrl).thenReturn("http://test-webhook-url")
     }
 
     @Test

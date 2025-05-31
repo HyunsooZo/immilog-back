@@ -3,11 +3,11 @@ package com.backend.immilog.post.infrastructure.jdbc;
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.post.application.result.CommentResult;
-import com.backend.immilog.post.domain.enums.PostStatus;
+import com.backend.immilog.post.domain.model.post.PostStatus;
 import com.backend.immilog.post.exception.PostErrorCode;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.user.application.result.UserInfoResult;
-import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.domain.model.user.UserStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 

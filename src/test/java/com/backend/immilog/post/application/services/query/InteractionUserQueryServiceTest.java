@@ -1,7 +1,8 @@
 package com.backend.immilog.post.application.services.query;
 
-import com.backend.immilog.post.domain.enums.InteractionType;
-import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.application.services.InteractionUserQueryService;
+import com.backend.immilog.post.domain.model.interaction.InteractionType;
+import com.backend.immilog.post.domain.model.post.PostType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
 import com.backend.immilog.post.domain.repositories.InteractionUserRepository;
 import org.junit.jupiter.api.DisplayName;

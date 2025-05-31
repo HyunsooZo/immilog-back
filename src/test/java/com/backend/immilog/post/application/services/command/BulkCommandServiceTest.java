@@ -1,5 +1,6 @@
 package com.backend.immilog.post.application.services.command;
 
+import com.backend.immilog.post.application.services.BulkCommandService;
 import com.backend.immilog.post.domain.repositories.BulkInsertRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

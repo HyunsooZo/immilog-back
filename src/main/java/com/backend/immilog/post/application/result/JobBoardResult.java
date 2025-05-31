@@ -1,9 +1,13 @@
 package com.backend.immilog.post.application.result;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.domain.enums.*;
+import com.backend.immilog.post.domain.model.interaction.InteractionType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.post.Experience;
+import com.backend.immilog.post.domain.model.post.Industry;
+import com.backend.immilog.post.domain.model.post.PostStatus;
 import com.backend.immilog.post.domain.model.resource.PostResource;
+import com.backend.immilog.post.domain.model.resource.ResourceType;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -167,7 +171,7 @@ public class JobBoardResult {
             List<Long> newLongList,
             List<Long> longFieldList
     ) {
-        if (newLongList != null && newLongList.isEmpty()) {
+        if (newLongList != null && !newLongList.isEmpty()) {
             longFieldList.addAll(newLongList);
         }
     }
@@ -176,7 +180,7 @@ public class JobBoardResult {
             List<String> newList,
             List<String> stringFieldList
     ) {
-        if (newList != null && newList.isEmpty()) {
+        if (newList != null && !newList.isEmpty()) {
             stringFieldList.addAll(newList);
         }
     }

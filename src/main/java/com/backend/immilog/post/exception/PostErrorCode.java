@@ -20,7 +20,8 @@ public enum PostErrorCode implements ErrorCode {
     INVALID_REFERENCE_TYPE(BAD_REQUEST, "유효하지 않은 참조 타입입니다."),
     INVALID_POST_TYPE(BAD_REQUEST, "유효하지 않은 게시물 타입입니다."),
     BADGE_NOT_FOUND(BAD_REQUEST, "뱃지 값이 비어있습니다."),
-    POST_ALREADY_DELETED(BAD_REQUEST, "이미 삭제된 게시물입니다.");
+    POST_ALREADY_DELETED(BAD_REQUEST, "이미 삭제된 게시물입니다."),
+    INVALID_PUBLIC_STATUS(BAD_REQUEST, "게시물의 공개 상태가 유효하지 않습니다.");
 
     private final HttpStatus status;
     private final String message;

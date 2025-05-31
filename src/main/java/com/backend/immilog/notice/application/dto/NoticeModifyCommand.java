@@ -1,7 +1,7 @@
 package com.backend.immilog.notice.application.dto;
 
-import com.backend.immilog.notice.domain.model.NoticeStatus;
-import com.backend.immilog.notice.domain.model.NoticeType;
+import com.backend.immilog.notice.domain.NoticeStatus;
+import com.backend.immilog.notice.domain.NoticeType;
 
 public record NoticeModifyCommand(
         String title,

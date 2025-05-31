@@ -1,7 +1,7 @@
 package com.backend.immilog.notice.application.services;
 
-import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.repositories.NoticeRepository;
+import com.backend.immilog.notice.domain.Notice;
+import com.backend.immilog.notice.domain.NoticeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

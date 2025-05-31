@@ -2,21 +2,34 @@ package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.post.domain.enums.Industry;
-import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.user.domain.model.company.Company;
 
 import java.time.LocalDateTime;
 
-public record JobBoard(
-        Long seq,
-        Long userSeq,
-        PostInfo postInfo,
-        JobBoardCompany jobBoardCompany,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
-) {
+public class JobBoard {
+    private final Long seq;
+    private final Long userSeq;
+    private PostInfo postInfo;
+    private final JobBoardCompany jobBoardCompany;
+    private final LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
+    public JobBoard(
+            Long seq,
+            Long userSeq,
+            PostInfo postInfo,
+            JobBoardCompany jobBoardCompany,
+            LocalDateTime createdAt,
+            LocalDateTime updatedAt
+    ) {
+        this.seq = seq;
+        this.userSeq = userSeq;
+        this.postInfo = postInfo;
+        this.jobBoardCompany = jobBoardCompany;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     public static JobBoard of(
             Long userSeq,
             Company company,
@@ -26,13 +39,13 @@ public record JobBoard(
             LocalDateTime deadline,
             String salary
     ) {
-        PostInfo postInfo = PostInfo.of(
+        var postInfo = PostInfo.of(
                 title,
                 content,
                 company.country(),
                 company.region()
         );
-        JobBoardCompany jobBoardCompany = JobBoardCompany.of(
+        var jobBoardCompany = JobBoardCompany.of(
                 company.seq(),
                 company.industry().toPostIndustry(),
                 experience,
@@ -45,21 +58,11 @@ public record JobBoard(
                 company.homepage(),
                 company.logo()
         );
-        return new JobBoard(
-                null,
-                userSeq,
-                postInfo,
-                jobBoardCompany,
-                LocalDateTime.now(),
-                null
-        );
+        return new JobBoard(null, userSeq, postInfo, jobBoardCompany, LocalDateTime.now(), null);
     }
 
     public JobBoard delete() {
-        return new JobBoard(
-                this.seq,
-                this.userSeq,
-                new PostInfo(
+        this.postInfo = new PostInfo(
                         this.postInfo.title(),
                         this.postInfo.content(),
                         this.postInfo.viewCount(),
@@ -67,11 +70,9 @@ public record JobBoard(
                         this.postInfo.region(),
                         PostStatus.DELETED,
                         this.postInfo.country()
-                ),
-                this.jobBoardCompany,
-                this.createdAt,
-                LocalDateTime.now()
         );
+        this.updatedAt = LocalDateTime.now();
+        return this;
     }
 
     public Long companySeq() {return this.jobBoardCompany.companySeq();}
@@ -166,4 +167,12 @@ public record JobBoard(
                 null
         );
     }
+
+    public Long seq() {return seq;}
+
+    public Long userSeq() {return userSeq;}
+
+    public LocalDateTime createdAt() {return createdAt;}
+
+    public LocalDateTime updatedAt() {return updatedAt;}
 }

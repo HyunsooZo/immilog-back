@@ -1,16 +1,14 @@
 package com.backend.immilog.post.presentation.controller;
 
-import com.backend.immilog.post.application.result.JobBoardResult;
-import com.backend.immilog.post.application.services.JobBoardInquiryService;
-import com.backend.immilog.post.application.services.JobBoardUpdateService;
-import com.backend.immilog.post.application.services.JobBoardUploadService;
+import com.backend.immilog.post.application.usecase.JobBoardFetchUseCase;
+import com.backend.immilog.post.application.usecase.JobBoardUpdateUseCase;
+import com.backend.immilog.post.application.usecase.JobBoardUploadUseCase;
 import com.backend.immilog.post.presentation.request.JobBoardUpdateRequest;
 import com.backend.immilog.post.presentation.request.JobBoardUploadRequest;
 import com.backend.immilog.post.presentation.response.JobBoardPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,18 +18,18 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/api/v1/job-boards")
 @RestController
 public class JobBoardController {
-    private final JobBoardUploadService jobBoardUploadService;
-    private final JobBoardInquiryService jobBoardInquiryService;
-    private final JobBoardUpdateService jobBoardUpdateService;
+    private final JobBoardUploadUseCase jobBoardUploadUseCase;
+    private final JobBoardFetchUseCase jobBoardFetchUseCase;
+    private final JobBoardUpdateUseCase jobBoardUpdateUseCase;
 
     public JobBoardController(
-            JobBoardUploadService jobBoardUploadService,
-            JobBoardInquiryService jobBoardInquiryService,
-            JobBoardUpdateService jobBoardUpdateService
+            JobBoardUploadUseCase jobBoardUploadUseCase,
+            JobBoardFetchUseCase jobBoardFetchUseCase,
+            JobBoardUpdateUseCase jobBoardUpdateUseCase
     ) {
-        this.jobBoardUploadService = jobBoardUploadService;
-        this.jobBoardInquiryService = jobBoardInquiryService;
-        this.jobBoardUpdateService = jobBoardUpdateService;
+        this.jobBoardUploadUseCase = jobBoardUploadUseCase;
+        this.jobBoardFetchUseCase = jobBoardFetchUseCase;
+        this.jobBoardUpdateUseCase = jobBoardUpdateUseCase;
     }
 
     @PostMapping("/users/{userSeq}")
@@ -40,7 +38,7 @@ public class JobBoardController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @RequestBody JobBoardUploadRequest jobBoardRequest
     ) {
-        jobBoardUploadService.uploadJobBoard(userSeq, jobBoardRequest.toCommand());
+        jobBoardUploadUseCase.uploadJobBoard(userSeq, jobBoardRequest.toCommand());
         return ResponseEntity.status(CREATED).build();
     }
 
@@ -53,7 +51,7 @@ public class JobBoardController {
             @Parameter(description = "경력") @RequestParam(required = false, name = "experience") String experience,
             @Parameter(description = "페이지") @RequestParam(required = false, name = "page") Integer page
     ) {
-        Page<JobBoardResult> jobBoards = jobBoardInquiryService.getJobBoards(country, sortingMethod, industry, experience, page);
+        var jobBoards = jobBoardFetchUseCase.getJobBoards(country, sortingMethod, industry, experience, page);
         return ResponseEntity.status(OK).body(JobBoardPageResponse.of(jobBoards));
     }
 
@@ -64,11 +62,7 @@ public class JobBoardController {
             @Parameter(description = "구인구직 고유번호") @PathVariable("jobBoardSeq") Long jobBoardSeq,
             @RequestBody JobBoardUpdateRequest jobBoardRequest
     ) {
-        jobBoardUpdateService.updateJobBoard(
-                userSeq,
-                jobBoardSeq,
-                jobBoardRequest.toCommand()
-        );
+        jobBoardUpdateUseCase.updateJobBoard(userSeq, jobBoardSeq, jobBoardRequest.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -78,7 +72,7 @@ public class JobBoardController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Parameter(description = "구인구직 고유번호") @PathVariable("jobBoardSeq") Long jobBoardSeq
     ) {
-        jobBoardUpdateService.deactivateJobBoard(userSeq, jobBoardSeq);
+        jobBoardUpdateUseCase.deactivateJobBoard(userSeq, jobBoardSeq);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 

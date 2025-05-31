@@ -4,10 +4,10 @@ import com.backend.immilog.global.enums.UserRole;
 import com.backend.immilog.global.security.TokenProvider;
 import com.backend.immilog.notice.application.services.NoticeCommandService;
 import com.backend.immilog.notice.application.usecase.NoticeCreateUseCase;
-import com.backend.immilog.notice.application.usecase.impl.NoticeCreator;
-import com.backend.immilog.notice.domain.model.NoticeType;
+import com.backend.immilog.notice.domain.NoticeType;
+import com.backend.immilog.notice.domain.NoticeAuthPolicy;
 import com.backend.immilog.notice.exception.NoticeException;
-import com.backend.immilog.notice.presentation.request.NoticeRegisterRequest;
+import com.backend.immilog.notice.presentation.NoticeRegisterRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,8 @@ import static org.mockito.Mockito.*;
 class NoticeCreatorTest {
     private final NoticeCommandService noticeCommandService = mock(NoticeCommandService.class);
     private final TokenProvider tokenProvider = mock(TokenProvider.class);
-    private final NoticeCreateUseCase noticeCreateUseCase = new NoticeCreator(noticeCommandService, tokenProvider);
+    private final NoticeAuthPolicy noticeAuthPolicy = new NoticeAuthPolicy(tokenProvider);
+    private final NoticeCreateUseCase noticeCreateUseCase = new NoticeCreateUseCase.NoticeCreator(noticeCommandService, noticeAuthPolicy);
 
     @Test
     @DisplayName("공지사항 등록 - 성공")

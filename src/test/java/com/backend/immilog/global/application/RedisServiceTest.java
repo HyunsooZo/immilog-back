@@ -1,8 +1,8 @@
 package com.backend.immilog.global.application;
 
 import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
-import com.backend.immilog.user.application.services.command.RefreshTokenCommandService;
-import com.backend.immilog.user.application.services.query.RefreshTokenQueryService;
+import com.backend.immilog.user.application.services.RefreshTokenCommandService;
+import com.backend.immilog.user.application.services.RefreshTokenQueryService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

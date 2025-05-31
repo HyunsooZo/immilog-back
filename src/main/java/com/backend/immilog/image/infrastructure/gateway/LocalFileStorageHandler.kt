@@ -2,7 +2,7 @@ package com.backend.immilog.image.infrastructure.gateway
 
 import com.backend.immilog.global.exception.CommonErrorCode
 import com.backend.immilog.global.exception.CustomException
-import com.backend.immilog.notification.application.service.DiscordSendingService
+import com.backend.immilog.notification.application.DiscordSendingService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile

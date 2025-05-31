@@ -1,10 +1,9 @@
 package com.backend.immilog.post.domain.repositories;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.domain.model.post.Categories;
 import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.post.SortingMethods;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

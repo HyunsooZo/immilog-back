@@ -21,7 +21,7 @@ public record CompanyData(
         return new CompanyData(industry, name, email, phone, address, homepage, logo);
     }
 
-    public static CompanyData empty() {
+    public static CompanyData createEmpty() {
         return new CompanyData(null, null, null, null, null, null, null);
     }
 }

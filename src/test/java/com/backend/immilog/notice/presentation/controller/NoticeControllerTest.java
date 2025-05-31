@@ -2,17 +2,13 @@ package com.backend.immilog.notice.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.enums.UserRole;
-import com.backend.immilog.notice.application.dto.NoticeResult;
+import com.backend.immilog.notice.application.dto.NoticeModelResult;
 import com.backend.immilog.notice.application.usecase.NoticeCreateUseCase;
-import com.backend.immilog.notice.application.usecase.NoticeInquireUseCase;
-import com.backend.immilog.notice.application.services.NoticeModifyUseCase;
-import com.backend.immilog.notice.domain.model.NoticeStatus;
-import com.backend.immilog.notice.domain.model.NoticeType;
-import com.backend.immilog.notice.presentation.request.NoticeModifyRequest;
-import com.backend.immilog.notice.presentation.request.NoticeRegisterRequest;
-import com.backend.immilog.notice.presentation.response.NoticeDetailResponse;
-import com.backend.immilog.notice.presentation.response.NoticeListResponse;
-import com.backend.immilog.notice.presentation.response.NoticeRegistrationResponse;
+import com.backend.immilog.notice.application.usecase.NoticeFetchUseCase;
+import com.backend.immilog.notice.application.usecase.NoticeModifyUseCase;
+import com.backend.immilog.notice.domain.NoticeStatus;
+import com.backend.immilog.notice.domain.NoticeType;
+import com.backend.immilog.notice.presentation.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,12 +24,12 @@ import static org.mockito.Mockito.mock;
 @DisplayName("공지사항 컨트롤러 테스트")
 class NoticeControllerTest {
     private final NoticeCreateUseCase noticeCreateUseCase = mock(NoticeCreateUseCase.class);
-    private final NoticeInquireUseCase noticeInquireUseCase = mock(NoticeInquireUseCase.class);
+    private final NoticeFetchUseCase noticeFetchUseCase = mock(NoticeFetchUseCase.class);
     private final NoticeModifyUseCase noticeModifyUseCase = mock(NoticeModifyUseCase.class);
 
     private final NoticeController noticeController = new NoticeController(
             noticeCreateUseCase,
-            noticeInquireUseCase,
+            noticeFetchUseCase,
             noticeModifyUseCase
     );
 
@@ -67,15 +63,15 @@ class NoticeControllerTest {
         Integer page = 0;
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getAttribute("userSeq")).thenReturn(userSeq);
-        Page<NoticeResult> results = mock(Page.class);
+        Page<NoticeModelResult> results = mock(Page.class);
         when(results.isEmpty()).thenReturn(false);
-        when(noticeInquireUseCase.getNotices(userSeq, page)).thenReturn(results);
+        when(noticeFetchUseCase.getNotices(userSeq, page)).thenReturn(results);
 
         // when
         ResponseEntity<NoticeListResponse> response = noticeController.getNotices(userSeq,page);
 
         // then
-        verify(noticeInquireUseCase).getNotices(userSeq, page);
+        verify(noticeFetchUseCase).getNotices(userSeq, page);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -84,13 +80,13 @@ class NoticeControllerTest {
     void getNoticeDetail_success() {
         // given
         Long noticeSeq = 1L;
-        when(noticeInquireUseCase.getNoticeDetail(noticeSeq)).thenReturn(mock(NoticeResult.class));
+        when(noticeFetchUseCase.getNoticeDetail(noticeSeq)).thenReturn(mock(NoticeModelResult.class));
 
         // when
         ResponseEntity<NoticeDetailResponse> response = noticeController.getNoticeDetail(noticeSeq);
 
         // then
-        verify(noticeInquireUseCase).getNoticeDetail(noticeSeq);
+        verify(noticeFetchUseCase).getNoticeDetail(noticeSeq);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 
@@ -101,13 +97,13 @@ class NoticeControllerTest {
         Long userSeq = 1L;
         HttpServletRequest request = mock(HttpServletRequest.class);
         when(request.getAttribute("userSeq")).thenReturn(userSeq);
-        when(noticeInquireUseCase.isUnreadNoticeExist(userSeq)).thenReturn(true);
+        when(noticeFetchUseCase.isUnreadNoticeExist(userSeq)).thenReturn(true);
 
         // when
         ResponseEntity<NoticeRegistrationResponse> response = noticeController.isNoticeExist(userSeq);
 
         // then
-        verify(noticeInquireUseCase).isUnreadNoticeExist(userSeq);
+        verify(noticeFetchUseCase).isUnreadNoticeExist(userSeq);
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
     }
 

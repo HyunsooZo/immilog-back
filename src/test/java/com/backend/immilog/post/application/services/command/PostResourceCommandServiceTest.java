@@ -1,7 +1,8 @@
 package com.backend.immilog.post.application.services.command;
 
-import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.domain.enums.ResourceType;
+import com.backend.immilog.post.application.services.PostResourceCommandService;
+import com.backend.immilog.post.domain.model.post.PostType;
+import com.backend.immilog.post.domain.model.resource.ResourceType;
 import com.backend.immilog.post.domain.repositories.PostResourceRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,22 +1,22 @@
 package com.backend.immilog.user.application;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.user.application.services.UserReportService;
-import com.backend.immilog.user.application.services.command.ReportCommandService;
-import com.backend.immilog.user.application.services.command.UserCommandService;
-import com.backend.immilog.user.application.services.query.ReportQueryService;
-import com.backend.immilog.user.application.services.query.UserQueryService;
-import com.backend.immilog.user.domain.enums.ReportReason;
-import com.backend.immilog.user.domain.enums.UserStatus;
+import com.backend.immilog.user.application.usecase.UserRepostUseCase;
+import com.backend.immilog.user.application.services.ReportCommandService;
+import com.backend.immilog.user.application.services.UserCommandService;
+import com.backend.immilog.user.application.services.ReportQueryService;
+import com.backend.immilog.user.application.services.UserQueryService;
+import com.backend.immilog.user.domain.model.report.ReportReason;
+import com.backend.immilog.user.domain.model.user.UserStatus;
 import com.backend.immilog.user.domain.model.user.*;
+import com.backend.immilog.user.domain.service.UserReportPolicy;
 import com.backend.immilog.user.exception.UserException;
-import com.backend.immilog.user.presentation.request.UserReportRequest;
+import com.backend.immilog.user.presentation.payload.UserInformationPayload;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static com.backend.immilog.global.enums.UserRole.ROLE_USER;
 import static com.backend.immilog.user.exception.UserErrorCode.ALREADY_REPORTED;
@@ -30,11 +30,12 @@ class UserReportDataServiceTest {
     private final UserCommandService userCommandService = mock(UserCommandService.class);
     private final ReportCommandService reportCommandService = mock(ReportCommandService.class);
     private final ReportQueryService reportQueryService = mock(ReportQueryService.class);
-    private final UserReportService userReportService = new UserReportService(
+    private final UserReportPolicy userReportPolicy = new UserReportPolicy(reportQueryService);
+    private final UserRepostUseCase.UserReporter userReporter = new UserRepostUseCase.UserReporter(
             userQueryService,
             userCommandService,
             reportCommandService,
-            reportQueryService
+            userReportPolicy
     );
 
     @Test
@@ -63,11 +64,11 @@ class UserReportDataServiceTest {
                 UserStatus.PENDING,
                 LocalDateTime.now()
         );
-        UserReportRequest reportUserRequest = new UserReportRequest(ReportReason.FRAUD, "test");
+        UserInformationPayload.UserReportRequest reportUserRequest = new UserInformationPayload.UserReportRequest(ReportReason.FRAUD, "test");
         when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(false);
         when(userQueryService.getUserById(targetUserSeq)).thenReturn(user);
         // when
-        userReportService.reportUser(targetUserSeq, reporterUserSeq, reportUserRequest.toCommand());
+        userReporter.reportUser(targetUserSeq, reporterUserSeq, reportUserRequest.toCommand());
 
         // then
         verify(reportCommandService, times(1)).save(any(com.backend.immilog.user.domain.model.report.Report.class));
@@ -79,10 +80,10 @@ class UserReportDataServiceTest {
         // given
         Long targetUserSeq = 1L;
         Long reporterUserSeq = 1L;
-        UserReportRequest reportUserRequest = mock(UserReportRequest.class);
+        UserInformationPayload.UserReportRequest reportUserRequest = mock(UserInformationPayload.UserReportRequest.class);
         when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(false);
         // when & then
-        assertThatThrownBy(() -> userReportService.reportUser(
+        assertThatThrownBy(() -> userReporter.reportUser(
                 targetUserSeq,
                 reporterUserSeq,
                 reportUserRequest.toCommand()
@@ -97,10 +98,10 @@ class UserReportDataServiceTest {
         // given
         Long targetUserSeq = 1L;
         Long reporterUserSeq = 2L;
-        UserReportRequest reportUserRequest =  mock(UserReportRequest.class);
+        UserInformationPayload.UserReportRequest reportUserRequest =  mock(UserInformationPayload.UserReportRequest.class);
         when(reportQueryService.existsByUserSeqNumbers(targetUserSeq, reporterUserSeq)).thenReturn(true);
         // when & then
-        assertThatThrownBy(() -> userReportService.reportUser(
+        assertThatThrownBy(() -> userReporter.reportUser(
                 targetUserSeq,
                 reporterUserSeq,
                 reportUserRequest.toCommand()

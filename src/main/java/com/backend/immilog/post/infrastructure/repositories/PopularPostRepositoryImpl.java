@@ -2,8 +2,8 @@ package com.backend.immilog.post.infrastructure.repositories;
 
 import com.backend.immilog.global.infrastructure.persistence.repository.RedisDataRepository;
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.enums.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.post.SortingMethods;
 import com.backend.immilog.post.domain.repositories.PopularPostRepository;
 import com.backend.immilog.post.infrastructure.jdbc.PostJdbcRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -34,8 +34,8 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             List<PostResult> posts,
             Integer expiration
     ) throws JsonProcessingException {
-        String json = objectMapper.writeValueAsString(posts);
-        String MOST_VIEWED_POSTS_KEY = "most_viewed_posts";
+        var json = objectMapper.writeValueAsString(posts);
+        var MOST_VIEWED_POSTS_KEY = "most_viewed_posts";
         redisDataRepository.save(MOST_VIEWED_POSTS_KEY, json, expiration);
     }
 
@@ -44,8 +44,8 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             List<PostResult> popularPosts,
             int expiration
     ) throws JsonProcessingException {
-        String json = objectMapper.writeValueAsString(popularPosts);
-        String HOT_POSTS_KEY = "hot_posts";
+        var json = objectMapper.writeValueAsString(popularPosts);
+        var HOT_POSTS_KEY = "hot_posts";
         redisDataRepository.save(HOT_POSTS_KEY, json, expiration);
     }
 
@@ -54,11 +54,7 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             LocalDateTime from,
             LocalDateTime to
     ) {
-        List<Post> posts = postJdbcRepository.getPopularPosts(
-                from,
-                to,
-                SortingMethods.VIEW_COUNT
-        );
+        var posts = postJdbcRepository.getPopularPosts(from, to, SortingMethods.VIEW_COUNT);
         return posts.stream().map(Post::toResult).toList();
     }
 
@@ -67,11 +63,7 @@ public class PopularPostRepositoryImpl implements PopularPostRepository {
             LocalDateTime from,
             LocalDateTime to
     ) {
-        List<Post> posts = postJdbcRepository.getPopularPosts(
-                from,
-                to,
-                SortingMethods.COMMENT_COUNT
-        );
+        var posts = postJdbcRepository.getPopularPosts(from, to, SortingMethods.COMMENT_COUNT);
         return posts.stream().map(Post::toResult).toList();
     }
 }

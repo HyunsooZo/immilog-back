@@ -3,9 +3,12 @@ package com.backend.immilog.post.application.services.query;
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.enums.Badge;
-import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.application.services.InteractionUserQueryService;
+import com.backend.immilog.post.application.services.PostQueryService;
+import com.backend.immilog.post.application.services.PostResourceQueryService;
+import com.backend.immilog.post.domain.model.post.Badge;
+import com.backend.immilog.post.domain.model.post.Categories;
+import com.backend.immilog.post.domain.model.post.SortingMethods;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.model.post.PostInfo;
 import com.backend.immilog.post.domain.model.post.PostUserInfo;
@@ -37,8 +40,8 @@ class PostQueryServiceTest {
     private final PostRepository postRepository = mock(PostRepositoryImpl.class);
     private final DataRepository redisDataRepository = mock(DataRepository.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
-    private final InteractionUserQueryService InteractionUserQueryService = mock(InteractionUserQueryService.class);
-    private final PostResourceQueryService PostResourceQueryService = mock(PostResourceQueryService.class);
+    private final com.backend.immilog.post.application.services.InteractionUserQueryService InteractionUserQueryService = mock(InteractionUserQueryService.class);
+    private final com.backend.immilog.post.application.services.PostResourceQueryService PostResourceQueryService = mock(PostResourceQueryService.class);
     private final PostQueryService postQueryService = new PostQueryService(
             objectMapper,
             postRepository,

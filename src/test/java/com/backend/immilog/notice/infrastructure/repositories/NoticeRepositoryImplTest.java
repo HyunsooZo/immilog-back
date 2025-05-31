@@ -1,11 +1,11 @@
 package com.backend.immilog.notice.infrastructure.repositories;
 
-import com.backend.immilog.notice.application.dto.NoticeResult;
-import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.NoticeDetail;
+import com.backend.immilog.notice.application.dto.NoticeModelResult;
+import com.backend.immilog.notice.domain.Notice;
+import com.backend.immilog.notice.domain.NoticeDetail;
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.domain.model.NoticeStatus;
-import com.backend.immilog.notice.domain.model.NoticeType;
+import com.backend.immilog.notice.domain.NoticeStatus;
+import com.backend.immilog.notice.domain.NoticeType;
 import com.backend.immilog.notice.infrastructure.jdbc.NoticeJdbcRepository;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaEntity;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaRepository;
@@ -58,7 +58,7 @@ class NoticeRepositoryImplTest {
         when(noticeJdbcRepository.getNotices(userSeq, pageable.getPageSize(), pageable.getOffset())).thenReturn(List.of());
         when(noticeJdbcRepository.getTotal(userSeq)).thenReturn(0L);
 
-        Page<NoticeResult> result = noticeRepository.getNotices(userSeq, pageable);
+        Page<NoticeModelResult> result = noticeRepository.getNotices(userSeq, pageable);
 
         assertThat(result).isNotNull();
         assertThat(result.getContent()).isEmpty();

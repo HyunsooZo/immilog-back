@@ -1,7 +1,8 @@
 package com.backend.immilog.notification.application.service
 
-import com.backend.immilog.notification.application.command.DiscordCommand
-import com.backend.immilog.notification.infrastructure.gateway.discord.DiscordGateway
+import com.backend.immilog.notification.application.DiscordSendingService
+import com.backend.immilog.notification.application.DiscordCommand
+import com.backend.immilog.notification.infrastructure.DiscordGateway
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.mockito.Mockito.*

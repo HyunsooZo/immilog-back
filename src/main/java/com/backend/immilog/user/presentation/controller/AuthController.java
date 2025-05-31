@@ -1,7 +1,7 @@
 package com.backend.immilog.user.presentation.controller;
 
-import com.backend.immilog.user.application.usecase.impl.LocationFetchingService;
-import com.backend.immilog.user.application.usecase.impl.UserSignInService;
+import com.backend.immilog.user.application.usecase.LocationFetchUseCase;
+import com.backend.immilog.user.application.usecase.UserSignInUseCase;
 import com.backend.immilog.user.presentation.payload.UserSignInPayload;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,15 +15,15 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/auth")
 @RestController
 public class AuthController {
-    private final LocationFetchingService locationFetchingService;
-    private final UserSignInService userSignInService;
+    private final LocationFetchUseCase.LocationFetcher locationFetcher;
+    private final UserSignInUseCase.UserLoginProcessor userLoginProcessor;
 
     public AuthController(
-            LocationFetchingService locationFetchingService,
-            UserSignInService userSignInService
+            LocationFetchUseCase.LocationFetcher locationFetcher,
+            UserSignInUseCase.UserLoginProcessor userLoginProcessor
     ) {
-        this.locationFetchingService = locationFetchingService;
-        this.userSignInService = userSignInService;
+        this.locationFetcher = locationFetcher;
+        this.userLoginProcessor = userLoginProcessor;
     }
 
     @GetMapping("/user/{userSeq}")
@@ -33,9 +33,9 @@ public class AuthController {
             @Parameter(description = "위도") @RequestParam("latitude") Double latitude,
             @Parameter(description = "경도") @RequestParam("longitude") Double longitude
     ) {
-        var countryFuture = locationFetchingService.getCountry(latitude, longitude);
-        var country = locationFetchingService.joinCompletableFutureLocation(countryFuture);
-        var userSignInResult = userSignInService.getUserSignInDTO(userSeq, country);
+        var countryFuture = locationFetcher.getCountry(latitude, longitude);
+        var country = locationFetcher.joinCompletableFutureLocation(countryFuture);
+        var userSignInResult = userLoginProcessor.getUserSignInDTO(userSeq, country);
         return ResponseEntity.status(OK).body(userSignInResult.toResponse());
     }
 

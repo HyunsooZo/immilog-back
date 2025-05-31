@@ -1,10 +1,10 @@
 package com.backend.immilog.notice.infrastructure.jpa.entities;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.NoticeDetail;
-import com.backend.immilog.notice.domain.model.NoticeStatus;
-import com.backend.immilog.notice.domain.model.NoticeType;
+import com.backend.immilog.notice.domain.Notice;
+import com.backend.immilog.notice.domain.NoticeDetail;
+import com.backend.immilog.notice.domain.NoticeStatus;
+import com.backend.immilog.notice.domain.NoticeType;
 import com.backend.immilog.notice.infrastructure.jpa.NoticeJpaEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

@@ -1,8 +1,5 @@
 package com.backend.immilog.post.domain.model.post;
 
-import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.post.domain.enums.Industry;
-
 import java.time.LocalDateTime;
 
 public record JobBoardCompany(

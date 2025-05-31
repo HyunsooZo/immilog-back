@@ -1,6 +1,6 @@
 package com.backend.immilog.user.presentation.controller;
 
-import com.backend.immilog.user.application.usecase.impl.*;
+import com.backend.immilog.user.application.usecase.*;
 import com.backend.immilog.user.presentation.payload.UserGeneralResponse;
 import com.backend.immilog.user.presentation.payload.UserInformationPayload;
 import com.backend.immilog.user.presentation.payload.UserSignInPayload;
@@ -19,27 +19,27 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/api/v1/users")
 @RestController
 public class UserController {
-    private final UserSignUpService userSignUpService;
-    private final UserSignInService userSignInService;
-    private final UserUpdateService userUpdateService;
-    private final UserReportService userReportService;
-    private final LocationFetchingService locationFetchingService;
-    private final EmailSendingService emailSendingService;
+    private final UserSignUpUseCase.UserSignUpProcessor userSignUpProcessor;
+    private final UserSignInUseCase.UserLoginProcessor userLoginProcessor;
+    private final UserUpdateUseCase.UserUpdater userUpdater;
+    private final UserRepostUseCase.UserReporter userReporter;
+    private final LocationFetchUseCase.LocationFetcher locationFetcher;
+    private final EmailSendUseCase.EmailSender emailSender;
 
     public UserController(
-            UserSignUpService userSignUpService,
-            UserSignInService userSignInService,
-            UserUpdateService userUpdateService,
-            UserReportService userReportService,
-            LocationFetchingService locationFetchingService,
-            EmailSendingService emailSendingService
+            UserSignUpUseCase.UserSignUpProcessor userSignUpProcessor,
+            UserSignInUseCase.UserLoginProcessor userLoginProcessor,
+            UserUpdateUseCase.UserUpdater userUpdater,
+            UserRepostUseCase.UserReporter userReporter,
+            LocationFetchUseCase.LocationFetcher locationFetcher,
+            EmailSendUseCase.EmailSender emailSender
     ) {
-        this.userSignUpService = userSignUpService;
-        this.userSignInService = userSignInService;
-        this.userUpdateService = userUpdateService;
-        this.userReportService = userReportService;
-        this.locationFetchingService = locationFetchingService;
-        this.emailSendingService = emailSendingService;
+        this.userSignUpProcessor = userSignUpProcessor;
+        this.userLoginProcessor = userLoginProcessor;
+        this.userUpdater = userUpdater;
+        this.userReporter = userReporter;
+        this.locationFetcher = locationFetcher;
+        this.emailSender = emailSender;
     }
 
     @PostMapping
@@ -47,10 +47,10 @@ public class UserController {
     public ResponseEntity<UserGeneralResponse> signUp(
             @Valid @RequestBody UserSignUpPayload.UserSignUpRequest request
     ) {
-        final var userSeqAndName = userSignUpService.signUp(request.toCommand());
+        final var userSeqAndName = userSignUpProcessor.signUp(request.toCommand());
         final var url = String.format(API_LINK, userSeqAndName.userSeq());
         final var mailForm = String.format(HTML_SIGN_UP_CONTENT, userSeqAndName.nickName(), url);
-        emailSendingService.sendHtmlEmail(request.email(), EMAIL_SIGN_UP_SUBJECT, mailForm);
+        emailSender.sendHtmlEmail(request.email(), EMAIL_SIGN_UP_SUBJECT, mailForm);
 
         return ResponseEntity.status(CREATED).build();
     }
@@ -60,8 +60,8 @@ public class UserController {
     public ResponseEntity<UserSignInPayload.UserSignInResponse> signIn(
             @Valid @RequestBody UserSignInPayload.UserSignInRequest request
     ) {
-        var country = locationFetchingService.getCountry(request.latitude(), request.longitude());
-        final var userSignInResult = userSignInService.signIn(request.toCommand(), country);
+        var country = locationFetcher.getCountry(request.latitude(), request.longitude());
+        final var userSignInResult = userLoginProcessor.signIn(request.toCommand(), country);
         return ResponseEntity.status(OK).body(userSignInResult.toResponse());
     }
 
@@ -71,8 +71,8 @@ public class UserController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @RequestBody UserInformationPayload.UserInfoUpdateRequest request
     ) {
-        var country = locationFetchingService.getCountry(request.latitude(), request.longitude());
-        userUpdateService.updateInformation(userSeq, country, request.toCommand());
+        var country = locationFetcher.getCountry(request.latitude(), request.longitude());
+        userUpdater.updateInformation(userSeq, country, request.toCommand());
         return ResponseEntity.status(OK).body(UserGeneralResponse.success());
     }
 
@@ -82,7 +82,7 @@ public class UserController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @RequestBody UserInformationPayload.UserPasswordChangeRequest request
     ) {
-        userUpdateService.changePassword(userSeq, request.toCommand());
+        userUpdater.changePassword(userSeq, request.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -91,7 +91,7 @@ public class UserController {
     public ResponseEntity<UserInformationPayload.UserNicknameResponse> checkNickname(
             @Parameter(description = "닉네임") @RequestParam("nickname") String nickname
     ) {
-        var isNicknameAvailable = userSignUpService.isNicknameAvailable(nickname);
+        var isNicknameAvailable = userSignUpProcessor.isNicknameAvailable(nickname);
         return ResponseEntity.status(OK).body(new UserInformationPayload.UserNicknameResponse(isNicknameAvailable));
     }
 
@@ -102,7 +102,7 @@ public class UserController {
             @Parameter(description = "대상 사용자 고유번호") @PathVariable("targetSeq") Long targetSeq,
             @Parameter(description = "상태") @PathVariable("status") String status
     ) {
-        userUpdateService.blockOrUnblockUser(targetSeq, userSeq, status);
+        userUpdater.blockOrUnblockUser(targetSeq, userSeq, status);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -113,7 +113,7 @@ public class UserController {
             @Parameter(description = "대상 사용자 고유번호") @PathVariable("targetSeq") Long targetSeq,
             @Valid @RequestBody UserInformationPayload.UserReportRequest request
     ) {
-        userReportService.reportUser(targetSeq, userSeq, request.toCommand());
+        userReporter.reportUser(targetSeq, userSeq, request.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
 

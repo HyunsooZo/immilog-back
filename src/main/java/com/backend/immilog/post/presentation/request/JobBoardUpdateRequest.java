@@ -1,7 +1,7 @@
 package com.backend.immilog.post.presentation.request;
 
 import com.backend.immilog.post.application.command.JobBoardUpdateCommand;
-import com.backend.immilog.post.domain.enums.Experience;
+import com.backend.immilog.post.domain.model.post.Experience;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;

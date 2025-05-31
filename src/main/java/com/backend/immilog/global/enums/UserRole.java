@@ -29,4 +29,8 @@ public enum UserRole {
         this.roleName = roleName;
         this.authorities = authorities;
     }
+
+    public boolean isAdmin() {
+        return this.equals(UserRole.ROLE_ADMIN);
+    }
 }

@@ -1,7 +1,7 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.post;
 
-import com.backend.immilog.post.domain.enums.Experience;
-import com.backend.immilog.post.domain.enums.Industry;
+import com.backend.immilog.post.domain.model.post.Experience;
+import com.backend.immilog.post.domain.model.post.Industry;
 import com.backend.immilog.post.domain.model.post.JobBoardCompany;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

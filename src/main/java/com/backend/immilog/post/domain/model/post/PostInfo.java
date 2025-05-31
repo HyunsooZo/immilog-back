@@ -1,7 +1,6 @@
 package com.backend.immilog.post.domain.model.post;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.domain.enums.PostStatus;
 
 public record PostInfo(
         String title,

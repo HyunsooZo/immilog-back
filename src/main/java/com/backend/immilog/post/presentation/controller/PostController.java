@@ -2,13 +2,13 @@ package com.backend.immilog.post.presentation.controller;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.application.services.PostDeleteService;
-import com.backend.immilog.post.application.services.PostInquiryService;
-import com.backend.immilog.post.application.services.PostUpdateService;
-import com.backend.immilog.post.application.services.PostUploadService;
-import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.PostType;
-import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.application.usecase.PostDeleteUseCase;
+import com.backend.immilog.post.application.usecase.PostFetchUseCase;
+import com.backend.immilog.post.application.usecase.PostUpdateUseCase;
+import com.backend.immilog.post.application.usecase.PostUploadUseCase;
+import com.backend.immilog.post.domain.model.post.Categories;
+import com.backend.immilog.post.domain.model.post.PostType;
+import com.backend.immilog.post.domain.model.post.SortingMethods;
 import com.backend.immilog.post.presentation.request.PostUpdateRequest;
 import com.backend.immilog.post.presentation.request.PostUploadRequest;
 import com.backend.immilog.post.presentation.response.PostListResponse;
@@ -30,21 +30,21 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/api/v1/posts")
 @RestController
 public class PostController {
-    private final PostUploadService postUploadService;
-    private final PostUpdateService postUpdateService;
-    private final PostDeleteService postDeleteService;
-    private final PostInquiryService postInquiryService;
+    private final PostUploadUseCase postUploadUseCase;
+    private final PostUpdateUseCase postUpdateUseCase;
+    private final PostDeleteUseCase postDeleteUseCase;
+    private final PostFetchUseCase postFetchUseCase;
 
     public PostController(
-            PostUploadService postUploadService,
-            PostUpdateService postUpdateService,
-            PostDeleteService postDeleteService,
-            PostInquiryService postInquiryService
+            PostUploadUseCase postUploadUseCase,
+            PostUpdateUseCase postUpdateUseCase,
+            PostDeleteUseCase postDeleteUseCase,
+            PostFetchUseCase postFetchUseCase
     ) {
-        this.postUploadService = postUploadService;
-        this.postUpdateService = postUpdateService;
-        this.postDeleteService = postDeleteService;
-        this.postInquiryService = postInquiryService;
+        this.postUploadUseCase = postUploadUseCase;
+        this.postUpdateUseCase = postUpdateUseCase;
+        this.postDeleteUseCase = postDeleteUseCase;
+        this.postFetchUseCase = postFetchUseCase;
     }
 
     @PostMapping("/users/{userSeq}")
@@ -53,7 +53,7 @@ public class PostController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Valid @RequestBody PostUploadRequest postUploadRequest
     ) {
-        postUploadService.uploadPost(userSeq, postUploadRequest.toCommand());
+        postUploadUseCase.uploadPost(userSeq, postUploadRequest.toCommand());
         return ResponseEntity.status(CREATED).build();
     }
 
@@ -64,7 +64,7 @@ public class PostController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Valid @RequestBody PostUpdateRequest postUpdateRequest
     ) {
-        postUpdateService.updatePost(userSeq, postSeq, postUpdateRequest.toCommand());
+        postUpdateUseCase.updatePost(userSeq, postSeq, postUpdateRequest.toCommand());
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -74,7 +74,7 @@ public class PostController {
             @Parameter(description = "게시물 고유번호") @PathVariable("postSeq") Long postSeq,
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq
     ) {
-        postDeleteService.deletePost(userSeq, postSeq);
+        postDeleteUseCase.deletePost(userSeq, postSeq);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -83,7 +83,7 @@ public class PostController {
     public ResponseEntity<Void> increaseViewCount(
             @Parameter(description = "게시물 고유번호") @PathVariable("postSeq") Long postSeq
     ) {
-        postUpdateService.increaseViewCount(postSeq);
+        postUpdateUseCase.increaseViewCount(postSeq);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 
@@ -96,7 +96,7 @@ public class PostController {
             @Parameter(description = "카테고리") @RequestParam(required = false, name = "category") Categories category,
             @Parameter(description = "페이지") @RequestParam(required = false, name = "page") Integer page
     ) {
-        Page<PostResult> posts = postInquiryService.getPosts(country, sortingMethod, isPublic, category, page);
+        Page<PostResult> posts = postFetchUseCase.getPosts(country, sortingMethod, isPublic, category, page);
         return ResponseEntity.status(OK).body(PostPageResponse.of(posts));
     }
 
@@ -105,7 +105,7 @@ public class PostController {
     public ResponseEntity<PostSingleResponse> getPost(
             @Parameter(description = "게시물 고유번호") @PathVariable("postSeq") Long postSeq
     ) {
-        PostResult post = postInquiryService.getPostDetail(postSeq);
+        PostResult post = postFetchUseCase.getPostDetail(postSeq);
         return ResponseEntity.status(OK).body(post.toResponse());
     }
 
@@ -115,7 +115,7 @@ public class PostController {
             @Parameter(description = "검색어") @RequestParam(name = "keyword") String keyword,
             @Parameter(description = "페이지") @RequestParam(name = "page") Integer page
     ) {
-        Page<PostResult> posts = postInquiryService.searchKeyword(keyword, page);
+        Page<PostResult> posts = postFetchUseCase.searchKeyword(keyword, page);
         return ResponseEntity.status(OK).body(PostPageResponse.of(posts));
     }
 
@@ -125,7 +125,7 @@ public class PostController {
             @Parameter(description = "사용자 고유번호") @PathVariable("userSeq") Long userSeq,
             @Parameter(description = "페이지") @PathVariable("page") Integer page
     ) {
-        Page<PostResult> posts = postInquiryService.getUserPosts(userSeq, page);
+        Page<PostResult> posts = postFetchUseCase.getUserPosts(userSeq, page);
         return ResponseEntity.status(OK).body(PostPageResponse.of(posts));
     }
 
@@ -135,21 +135,21 @@ public class PostController {
             @Parameter(description = "사용자 고유번호") @RequestParam(name = "userSeq") Long userSeq,
             @Parameter(description = "포스팅 타입")  @RequestParam(name = "postType") PostType postType
     ) {
-        final List<PostResult> posts = postInquiryService.getBookmarkedPosts(userSeq, postType);
+        final List<PostResult> posts = postFetchUseCase.getBookmarkedPosts(userSeq, postType);
         return ResponseEntity.status(OK).body(PostListResponse.of(posts));
     }
 
     @GetMapping("/hot")
     @Operation(summary = "인기 게시물 조회", description = "인기 게시물을 조회합니다.")
     public ResponseEntity<PostListResponse> getHotPosts() {
-        List<PostResult> posts = postInquiryService.getHotPosts();
+        List<PostResult> posts = postFetchUseCase.getHotPosts();
         return ResponseEntity.status(OK).body(PostListResponse.of(posts));
     }
 
     @GetMapping("/most-viewed")
     @Operation(summary = "가장 많이 조회된 게시물 조회", description = "가장 많이 조회된 게시물을 조회합니다.")
     public ResponseEntity<PostListResponse> getMostViewedPosts() {
-        List<PostResult> posts = postInquiryService.getMostViewedPosts();
+        List<PostResult> posts = postFetchUseCase.getMostViewedPosts();
         return ResponseEntity.status(OK).body(PostListResponse.of(posts));
     }
 }

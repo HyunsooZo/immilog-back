@@ -1,8 +1,8 @@
 package com.backend.immilog.post.infrastructure.jpa.entity.interaction;
 
-import com.backend.immilog.post.domain.enums.InteractionType;
-import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.domain.model.interaction.InteractionType;
 import com.backend.immilog.post.domain.model.interaction.InteractionUser;
+import com.backend.immilog.post.domain.model.post.PostType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;

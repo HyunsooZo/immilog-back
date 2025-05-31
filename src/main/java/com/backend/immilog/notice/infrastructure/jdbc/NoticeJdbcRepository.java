@@ -1,6 +1,6 @@
 package com.backend.immilog.notice.infrastructure.jdbc;
 
-import com.backend.immilog.notice.application.dto.NoticeResult;
+import com.backend.immilog.notice.application.dto.NoticeModelResult;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
@@ -15,7 +15,7 @@ public class NoticeJdbcRepository {
         this.jdbcClient = jdbcClient;
     }
 
-    public List<NoticeResult> getNotices(
+    public List<NoticeModelResult> getNotices(
             long userSeq,
             int pageSize,
             long offset
@@ -38,7 +38,7 @@ public class NoticeJdbcRepository {
                 .param(userSeq)
                 .param(pageSize)
                 .param(offset)
-                .query((rs, rowNum) -> NoticeResult.from(rs))
+                .query((rs, rowNum) -> NoticeModelResult.from(rs))
                 .list();
     }
 

@@ -1,9 +1,9 @@
 package com.backend.immilog.post.infrastructure.repositories;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.post.domain.enums.Categories;
-import com.backend.immilog.post.domain.enums.SortingMethods;
+import com.backend.immilog.post.domain.model.post.Categories;
 import com.backend.immilog.post.domain.model.post.Post;
+import com.backend.immilog.post.domain.model.post.SortingMethods;
 import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.backend.immilog.post.exception.PostErrorCode;
 import com.backend.immilog.post.exception.PostException;

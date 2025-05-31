@@ -1,7 +1,8 @@
 package com.backend.immilog.post.application.services.command;
 
-import com.backend.immilog.post.domain.enums.PostStatus;
-import com.backend.immilog.post.domain.enums.ReferenceType;
+import com.backend.immilog.post.application.services.CommentCommandService;
+import com.backend.immilog.post.domain.model.post.PostStatus;
+import com.backend.immilog.post.domain.model.comment.ReferenceType;
 import com.backend.immilog.post.domain.model.comment.Comment;
 import com.backend.immilog.post.domain.model.comment.CommentRelation;
 import com.backend.immilog.post.domain.repositories.CommentRepository;

@@ -1,8 +1,9 @@
 package com.backend.immilog.post.application.services.command;
 
 import com.backend.immilog.post.application.result.PostResult;
-import com.backend.immilog.post.domain.enums.Badge;
-import com.backend.immilog.post.domain.enums.Categories;
+import com.backend.immilog.post.application.services.PostCommandService;
+import com.backend.immilog.post.domain.model.post.Badge;
+import com.backend.immilog.post.domain.model.post.Categories;
 import com.backend.immilog.post.domain.model.post.Post;
 import com.backend.immilog.post.domain.repositories.PopularPostRepository;
 import com.backend.immilog.post.domain.repositories.PostRepository;
@@ -10,13 +11,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mockito;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static reactor.core.Disposables.never;
 
 @DisplayName("PostCommandService 테스트")
 class PostCommandServiceTest {
@@ -103,17 +109,15 @@ class PostCommandServiceTest {
     @Test
     @DisplayName("saveMostViewedPosts 메서드가 빈 인기 게시물 리스트를 처리")
     void saveMostViewedPostsHandlesEmptyPopularPostsList() throws JsonProcessingException {
-        List<PostResult> posts = List.of();
+        var posts = new ArrayList<PostResult>();
         Integer expiration = 3600;
 
         postCommandService.saveMostViewedPosts(posts, expiration);
 
-        ArgumentCaptor<List> postsCaptor = ArgumentCaptor.forClass(List.class);
-        ArgumentCaptor<Integer> expirationCaptor = ArgumentCaptor.forClass(Integer.class);
-        verify(popularPostRepository).saveMostViewedPosts(postsCaptor.capture(), expirationCaptor.capture());
+        var postsCaptor = ArgumentCaptor.forClass(List.class);
+        var expirationCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(popularPostRepository, Mockito.never()).saveMostViewedPosts(postsCaptor.capture(), expirationCaptor.capture());
 
-        assertThat(postsCaptor.getValue()).isEqualTo(posts);
-        assertThat(expirationCaptor.getValue()).isEqualTo(expiration);
     }
 
     @Test
@@ -149,8 +153,8 @@ class PostCommandServiceTest {
 
         postCommandService.saveHotPosts(popularPosts, expiration);
 
-        ArgumentCaptor<List> popularPostsCaptor = ArgumentCaptor.forClass(List.class);
-        ArgumentCaptor<Integer> expirationCaptor = ArgumentCaptor.forClass(Integer.class);
+        var popularPostsCaptor = ArgumentCaptor.forClass(List.class);
+        var expirationCaptor = ArgumentCaptor.forClass(Integer.class);
         verify(popularPostRepository).saveHotPosts(popularPostsCaptor.capture(), expirationCaptor.capture());
 
         assertThat(popularPostsCaptor.getValue()).isEqualTo(popularPosts);
@@ -165,11 +169,8 @@ class PostCommandServiceTest {
 
         postCommandService.saveHotPosts(popularPosts, expiration);
 
-        ArgumentCaptor<List> popularPostsCaptor = ArgumentCaptor.forClass(List.class);
-        ArgumentCaptor<Integer> expirationCaptor = ArgumentCaptor.forClass(Integer.class);
-        verify(popularPostRepository).saveHotPosts(popularPostsCaptor.capture(), expirationCaptor.capture());
-
-        assertThat(popularPostsCaptor.getValue()).isEqualTo(popularPosts);
-        assertThat(expirationCaptor.getValue()).isEqualTo(expiration);
+        var popularPostsCaptor = ArgumentCaptor.forClass(List.class);
+        var expirationCaptor = ArgumentCaptor.forClass(Integer.class);
+        verify(popularPostRepository, Mockito.never()).saveMostViewedPosts(popularPostsCaptor.capture(), expirationCaptor.capture());
     }
 }

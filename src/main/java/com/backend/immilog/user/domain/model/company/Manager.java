@@ -15,7 +15,7 @@ public record Manager(
         return new Manager(country, region, userSeq);
     }
 
-    public static Manager empty() {
+    public static Manager createEmpty() {
         return new Manager(null, null, null);
     }
 }

@@ -17,8 +17,8 @@ public class Company {
         this.companyData = companyData;
     }
 
-    public static Company builder() {
-        return new Company(null, Manager.empty(), CompanyData.empty());
+    public static Company createEmpty() {
+        return new Company(null, Manager.createEmpty(), CompanyData.createEmpty());
     }
 
     public Company seq(Long seq) {

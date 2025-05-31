@@ -1,15 +1,14 @@
 package com.backend.immilog.notice.application;
 
 import com.backend.immilog.global.enums.Country;
-import com.backend.immilog.notice.application.dto.NoticeResult;
+import com.backend.immilog.notice.application.dto.NoticeModelResult;
 import com.backend.immilog.notice.application.services.NoticeQueryService;
-import com.backend.immilog.notice.application.usecase.NoticeInquireUseCase;
-import com.backend.immilog.notice.application.usecase.impl.NoticeInquirer;
-import com.backend.immilog.notice.domain.model.Notice;
-import com.backend.immilog.notice.domain.model.NoticeDetail;
-import com.backend.immilog.notice.domain.model.NoticeStatus;
-import com.backend.immilog.notice.domain.model.NoticeType;
-import com.backend.immilog.user.application.services.query.UserQueryService;
+import com.backend.immilog.notice.application.usecase.NoticeFetchUseCase;
+import com.backend.immilog.notice.domain.Notice;
+import com.backend.immilog.notice.domain.NoticeDetail;
+import com.backend.immilog.notice.domain.NoticeStatus;
+import com.backend.immilog.notice.domain.NoticeType;
+import com.backend.immilog.user.application.services.UserQueryService;
 import com.backend.immilog.user.domain.model.user.Location;
 import com.backend.immilog.user.domain.model.user.User;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +28,7 @@ import static org.mockito.Mockito.when;
 class NoticeInquiryServiceTest {
     private final NoticeQueryService noticeQueryService = mock(NoticeQueryService.class);
     private final UserQueryService userQueryService = mock(UserQueryService.class);
-    private final NoticeInquireUseCase noticeInquiryService = new NoticeInquirer(noticeQueryService, userQueryService);
+    private final NoticeFetchUseCase noticeInquiryService = new NoticeFetchUseCase.NoticeFetcher(noticeQueryService, userQueryService);
 
     @Test
     @DisplayName("공지사항 조회 - 성공")
@@ -48,9 +47,9 @@ class NoticeInquiryServiceTest {
         );
 
         when(noticeQueryService.getNotices(userSeq, PageRequest.of(page, 10)))
-                .thenReturn(new PageImpl<>(List.of(NoticeResult.from(notice))));
+                .thenReturn(new PageImpl<>(List.of(NoticeModelResult.from(notice))));
         // when
-        Page<NoticeResult> notices = noticeInquiryService.getNotices(userSeq, page);
+        Page<NoticeModelResult> notices = noticeInquiryService.getNotices(userSeq, page);
 
         // then
         assertThat(notices.get().findFirst().get().content()).isEqualTo("content");
@@ -64,7 +63,7 @@ class NoticeInquiryServiceTest {
         int page = 0;
 
         // when
-        Page<NoticeResult> notices = noticeInquiryService.getNotices(userSeq, page);
+        Page<NoticeModelResult> notices = noticeInquiryService.getNotices(userSeq, page);
 
         // then
         assertThat(notices).isEmpty();
@@ -87,7 +86,7 @@ class NoticeInquiryServiceTest {
 
         when(noticeQueryService.getNoticeBySeq(noticeSeq)).thenReturn(notice);
         // when
-        NoticeResult noticeDTO = noticeInquiryService.getNoticeDetail(noticeSeq);
+        NoticeModelResult noticeDTO = noticeInquiryService.getNoticeDetail(noticeSeq);
 
         // then
         assertThat(noticeDTO.content()).isEqualTo("content");

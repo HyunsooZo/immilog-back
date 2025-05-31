@@ -1,8 +1,8 @@
 package com.backend.immilog.post.presentation.controller;
 
-import com.backend.immilog.post.application.services.InteractionCreationService;
-import com.backend.immilog.post.domain.enums.InteractionType;
-import com.backend.immilog.post.domain.enums.PostType;
+import com.backend.immilog.post.application.usecase.InteractionCreateUseCase;
+import com.backend.immilog.post.domain.model.interaction.InteractionType;
+import com.backend.immilog.post.domain.model.post.PostType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,10 +15,10 @@ import static org.springframework.http.HttpStatus.NO_CONTENT;
 @RequestMapping("/api/v1")
 @RestController
 public class InteractionController {
-    private final InteractionCreationService interactionCreationService;
+    private final InteractionCreateUseCase interactionCreateUseCase;
 
-    public InteractionController(InteractionCreationService interactionCreationService) {
-        this.interactionCreationService = interactionCreationService;
+    public InteractionController(InteractionCreateUseCase interactionCreateUseCase) {
+        this.interactionCreateUseCase = interactionCreateUseCase;
     }
 
     @PostMapping("/interaction/posts/{postSeq}")
@@ -29,7 +29,7 @@ public class InteractionController {
             @Parameter(description = "게시물 타입") @RequestParam("postType") PostType postType,
             @Parameter(description = "사용자 고유번호") @RequestParam("userSeq") Long userSeq
     ) {
-        interactionCreationService.createInteraction(userSeq, postSeq, postType, interactionType);
+        interactionCreateUseCase.createInteraction(userSeq, postSeq, postType, interactionType);
         return ResponseEntity.status(NO_CONTENT).build();
     }
 }

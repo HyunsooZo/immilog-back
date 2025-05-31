@@ -1,7 +1,7 @@
 package com.backend.immilog.post.application.result;
 
-import com.backend.immilog.post.domain.enums.PostStatus;
 import com.backend.immilog.post.domain.model.comment.Comment;
+import com.backend.immilog.post.domain.model.post.PostStatus;
 import com.backend.immilog.user.application.result.UserInfoResult;
 import com.backend.immilog.user.domain.model.user.User;
 
