@@ -18,9 +18,9 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/locations")
 @RestController
 public class LocationController {
-    private final LocationFetchUseCase.LocationFetcher locationFetcher;
+    private final LocationFetchUseCase locationFetcher;
 
-    public LocationController(LocationFetchUseCase.LocationFetcher locationFetcher) {
+    public LocationController(LocationFetchUseCase locationFetcher) {
         this.locationFetcher = locationFetcher;
     }
 

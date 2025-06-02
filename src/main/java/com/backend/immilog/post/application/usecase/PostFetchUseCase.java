@@ -1,6 +1,7 @@
 package com.backend.immilog.post.application.usecase;
 
 import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.post.application.mapper.PostResultAssembler;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.CommentQueryService;
 import com.backend.immilog.post.application.services.InteractionUserQueryService;
@@ -11,9 +12,9 @@ import com.backend.immilog.post.domain.model.post.PostType;
 import com.backend.immilog.post.domain.model.post.SortingMethods;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -54,15 +55,18 @@ public interface PostFetchUseCase {
         private final PostQueryService postQueryService;
         private final CommentQueryService commentQueryService;
         private final InteractionUserQueryService interactionUserQueryService;
+        private final PostResultAssembler postResultAssembler;
 
         public PostFetcher(
                 PostQueryService postQueryService,
                 CommentQueryService commentQueryService,
-                InteractionUserQueryService interactionUserQueryService
+                InteractionUserQueryService interactionUserQueryService,
+                PostResultAssembler postResultAssembler
         ) {
             this.postQueryService = postQueryService;
             this.commentQueryService = commentQueryService;
             this.interactionUserQueryService = interactionUserQueryService;
+            this.postResultAssembler = postResultAssembler;
         }
 
         public Page<PostResult> getPosts(
@@ -76,15 +80,12 @@ public interface PostFetchUseCase {
             return postQueryService.getPosts(country, sortingMethod, isPublic, category, pageable);
         }
 
-        @Transactional(readOnly = true)
         public PostResult getPostDetail(Long postSeq) {
             final var post = postQueryService.getPostDetail(postSeq);
             final var comments = commentQueryService.getComments(postSeq);
-            post.addComments(comments);
-            return post;
+            return postResultAssembler.assembleComments(post, comments);
         }
 
-        @Transactional(readOnly = true)
         public List<PostResult> getBookmarkedPosts(
                 Long userSeq,
                 PostType postType
@@ -101,8 +102,11 @@ public interface PostFetchUseCase {
         ) {
             final var pageable = PageRequest.of(page, 10);
             final var posts = postQueryService.getPostsByKeyword(keyword, pageable);
-            posts.getContent().forEach(post -> post.addKeywords(keyword));
-            return posts;
+            return new PageImpl<>(
+                    posts.getContent().stream().map(post -> postResultAssembler.assembleKeywords(post, keyword)).toList(),
+                    pageable,
+                    posts.getTotalElements()
+            );
         }
 
         public Page<PostResult> getUserPosts(

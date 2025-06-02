@@ -19,20 +19,20 @@ import static org.springframework.http.HttpStatus.*;
 @RequestMapping("/api/v1/users")
 @RestController
 public class UserController {
-    private final UserSignUpUseCase.UserSignUpProcessor userSignUpProcessor;
-    private final UserSignInUseCase.UserLoginProcessor userLoginProcessor;
-    private final UserUpdateUseCase.UserUpdater userUpdater;
-    private final UserRepostUseCase.UserReporter userReporter;
-    private final LocationFetchUseCase.LocationFetcher locationFetcher;
-    private final EmailSendUseCase.EmailSender emailSender;
+    private final UserSignUpUseCase userSignUpProcessor;
+    private final UserSignInUseCase userLoginProcessor;
+    private final UserUpdateUseCase userUpdater;
+    private final UserRepostUseCase userReporter;
+    private final LocationFetchUseCase locationFetcher;
+    private final EmailSendUseCase emailSender;
 
     public UserController(
-            UserSignUpUseCase.UserSignUpProcessor userSignUpProcessor,
-            UserSignInUseCase.UserLoginProcessor userLoginProcessor,
-            UserUpdateUseCase.UserUpdater userUpdater,
-            UserRepostUseCase.UserReporter userReporter,
-            LocationFetchUseCase.LocationFetcher locationFetcher,
-            EmailSendUseCase.EmailSender emailSender
+            UserSignUpUseCase userSignUpProcessor,
+            UserSignInUseCase userLoginProcessor,
+            UserUpdateUseCase userUpdater,
+            UserRepostUseCase userReporter,
+            LocationFetchUseCase locationFetcher,
+            EmailSendUseCase emailSender
     ) {
         this.userSignUpProcessor = userSignUpProcessor;
         this.userLoginProcessor = userLoginProcessor;

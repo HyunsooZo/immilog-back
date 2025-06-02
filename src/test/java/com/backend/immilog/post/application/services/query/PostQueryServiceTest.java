@@ -2,16 +2,13 @@ package com.backend.immilog.post.application.services.query;
 
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.global.infrastructure.persistence.repository.DataRepository;
+import com.backend.immilog.post.application.mapper.PostResultAssembler;
+import com.backend.immilog.post.application.result.CommentResult;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.InteractionUserQueryService;
 import com.backend.immilog.post.application.services.PostQueryService;
 import com.backend.immilog.post.application.services.PostResourceQueryService;
-import com.backend.immilog.post.domain.model.post.Badge;
-import com.backend.immilog.post.domain.model.post.Categories;
-import com.backend.immilog.post.domain.model.post.SortingMethods;
-import com.backend.immilog.post.domain.model.post.Post;
-import com.backend.immilog.post.domain.model.post.PostInfo;
-import com.backend.immilog.post.domain.model.post.PostUserInfo;
+import com.backend.immilog.post.domain.model.post.*;
 import com.backend.immilog.post.domain.repositories.PostRepository;
 import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.post.infrastructure.repositories.PostRepositoryImpl;
@@ -40,14 +37,16 @@ class PostQueryServiceTest {
     private final PostRepository postRepository = mock(PostRepositoryImpl.class);
     private final DataRepository redisDataRepository = mock(DataRepository.class);
     private final ObjectMapper objectMapper = mock(ObjectMapper.class);
-    private final com.backend.immilog.post.application.services.InteractionUserQueryService InteractionUserQueryService = mock(InteractionUserQueryService.class);
-    private final com.backend.immilog.post.application.services.PostResourceQueryService PostResourceQueryService = mock(PostResourceQueryService.class);
+    private final InteractionUserQueryService InteractionUserQueryService = mock(InteractionUserQueryService.class);
+    private final PostResourceQueryService PostResourceQueryService = mock(PostResourceQueryService.class);
+    private final PostResultAssembler postResultAssembler = new PostResultAssembler();
     private final PostQueryService postQueryService = new PostQueryService(
             objectMapper,
             postRepository,
             redisDataRepository,
             InteractionUserQueryService,
-            PostResourceQueryService
+            PostResourceQueryService,
+            postResultAssembler
     );
 
     @Test
@@ -84,15 +83,13 @@ class PostQueryServiceTest {
     @Test
     @DisplayName("getPosts 메서드가 PostResult 페이지를 성공적으로 반환")
     void getPostsReturnsPostResultsSuccessfully() {
-        Country country = Country.SOUTH_KOREA;
-        SortingMethods sortingMethod = SortingMethods.CREATED_DATE;
-        String isPublic = "true";
-        Categories category = Categories.COMMUNICATION;
-        Pageable pageable = mock(Pageable.class);
-        Page<PostResult> expectedPage = new PageImpl<>(List.of(new PostResult(
+        var country = Country.SOUTH_KOREA;
+        var sortingMethod = SortingMethods.CREATED_DATE;
+        var isPublic = "true";
+        var category = Categories.COMMUNICATION;
+        var pageable = mock(Pageable.class);
+        var expectedPage = new PageImpl<>(List.of(new PostResult(
                 1L,
-                "title",
-                "content",
                 1L,
                 "userProfileUrl",
                 "userNickName",
@@ -100,36 +97,38 @@ class PostQueryServiceTest {
                 0L,
                 0L,
                 0L,
+                List.of("tag1", "tag2"),
+                List.of("attachment1", "attachment2"),
                 List.of(),
                 List.of(),
-                List.of(),
-                List.of(),
-                "true",
-                "SOUTH_KOREA",
+                isPublic,
+                country.name(),
                 "region",
-                Categories.COMMUNICATION,
+                category,
                 null,
                 LocalDateTime.now().toString(),
                 LocalDateTime.now().toString(),
+                "title",
+                "content",
                 null
         )));
         when(postRepository.getPosts(country, sortingMethod, isPublic, category, pageable)).thenReturn(expectedPage.map(Post::from));
 
-        Page<PostResult> actualPage = postQueryService.getPosts(country, sortingMethod, isPublic, category, pageable);
-
+        var actualPage = postQueryService.getPosts(country, sortingMethod, isPublic, category, pageable);
         assertThat(actualPage).isNotEmpty();
-        assertThat(actualPage.get().findFirst().get().getSeq()).isEqualTo(expectedPage.get().findFirst().get().getSeq());
+        assertThat(actualPage.get().findFirst().get().seq()).isEqualTo(expectedPage.get().findFirst().get().seq());
     }
 
     @Test
     @DisplayName("getPostsByKeyword 메서드가 PostResult 페이지를 성공적으로 반환")
     void getPostsByKeywordReturnsPostResultsSuccessfully() {
-        String keyword = "test";
-        PageRequest pageRequest = PageRequest.of(0, 10);
-        Page<PostResult> expectedPage = new PageImpl<>(List.of(new PostResult(
+        var keyword = "test";
+        var pageRequest = PageRequest.of(0, 10);
+        var country = Country.SOUTH_KOREA;
+        var isPublic = "true";
+        var category = Categories.COMMUNICATION;
+        var expectedPage = new PageImpl<>(List.of(new PostResult(
                 1L,
-                "title",
-                "content",
                 1L,
                 "userProfileUrl",
                 "userNickName",
@@ -137,17 +136,19 @@ class PostQueryServiceTest {
                 0L,
                 0L,
                 0L,
+                List.of("tag1", "tag2"),
+                List.of("attachment1", "attachment2"),
                 List.of(),
                 List.of(),
-                List.of(),
-                List.of(),
-                "true",
-                "SOUTH_KOREA",
+                isPublic,
+                country.name(),
                 "region",
-                Categories.COMMUNICATION,
+                category,
                 null,
                 LocalDateTime.now().toString(),
                 LocalDateTime.now().toString(),
+                "title",
+                "content",
                 null
         )));
         when(postRepository.getPostsByKeyword(keyword, pageRequest)).thenReturn(expectedPage.map(Post::from));
@@ -155,7 +156,7 @@ class PostQueryServiceTest {
         Page<PostResult> actualPage = postQueryService.getPostsByKeyword(keyword, pageRequest);
 
         assertThat(actualPage).isNotEmpty();
-        assertThat(actualPage.get().findFirst().get().getSeq()).isEqualTo(expectedPage.get().findFirst().get().getSeq());
+        assertThat(actualPage.get().findFirst().get().seq()).isEqualTo(expectedPage.get().findFirst().get().seq());
     }
 
     @Test
@@ -179,27 +180,25 @@ class PostQueryServiceTest {
 
         PostResult actualPostResult = postQueryService.getPostDetail(postSeq);
 
-        assertThat(actualPostResult.getSeq()).isEqualTo(post.seq());
+        assertThat(actualPostResult.seq()).isEqualTo(post.seq());
     }
 
     @Test
     @DisplayName("getPostsByUserSeq 메서드가 PostResult 페이지를 성공적으로 반환")
     void getPostsByUserSeqReturnsPostResultsSuccessfully() {
-        Long userSeq = 1L;
-        Pageable pageable = mock(Pageable.class);
-        Page<PostResult> expectedPage = new PageImpl<>(List.of(new PostResult(
+        var userSeq = 1L;
+        var pageable = mock(Pageable.class);
+        var expectedPage = new PageImpl<>(List.of(new PostResult(
                 1L,
-                "title",
-                "content",
-                1L,
+                userSeq,
                 "userProfileUrl",
                 "userNickName",
                 List.of(),
                 0L,
                 0L,
                 0L,
-                List.of(),
-                List.of(),
+                List.of("tag1", "tag2"),
+                List.of("attachment1", "attachment2"),
                 List.of(),
                 List.of(),
                 "true",
@@ -209,13 +208,15 @@ class PostQueryServiceTest {
                 null,
                 LocalDateTime.now().toString(),
                 LocalDateTime.now().toString(),
+                "title",
+                "content",
                 null
         )));
         when(postRepository.getPostsByUserSeq(userSeq, pageable)).thenReturn(expectedPage.map(Post::from));
 
-        Page<PostResult> actualPage = postQueryService.getPostsByUserSeq(userSeq, pageable);
+        var actualPage = postQueryService.getPostsByUserSeq(userSeq, pageable);
 
-        assertThat(actualPage.get().findFirst().get().getSeq()).isEqualTo(expectedPage.get().findFirst().get().getSeq());
+        assertThat(actualPage.get().findFirst().get().seq()).isEqualTo(expectedPage.get().findFirst().get().seq());
     }
 
     @Test
@@ -225,8 +226,6 @@ class PostQueryServiceTest {
         String jsonData = "[{\"id\":1}]";
         List<PostResult> expectedPosts = List.of(new PostResult(
                 1L,
-                "title",
-                "content",
                 1L,
                 "userProfileUrl",
                 "userNickName",
@@ -234,8 +233,8 @@ class PostQueryServiceTest {
                 0L,
                 0L,
                 0L,
-                List.of(),
-                List.of(),
+                List.of("tag1", "tag2"),
+                List.of("attachment1", "attachment2"),
                 List.of(),
                 List.of(),
                 "true",
@@ -245,6 +244,8 @@ class PostQueryServiceTest {
                 null,
                 LocalDateTime.now().toString(),
                 LocalDateTime.now().toString(),
+                "title",
+                "content",
                 null
         ));
         when(redisDataRepository.findByKey(key)).thenReturn(jsonData);

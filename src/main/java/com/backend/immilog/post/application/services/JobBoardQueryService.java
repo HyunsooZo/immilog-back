@@ -2,6 +2,7 @@ package com.backend.immilog.post.application.services;
 
 import com.backend.immilog.global.aop.monitor.PerformanceMonitor;
 import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.post.application.mapper.JobBoardResultAssembler;
 import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.post.domain.model.post.Experience;
 import com.backend.immilog.post.domain.model.post.Industry;
@@ -21,15 +22,18 @@ public class JobBoardQueryService {
     private final JobBoardRepository jobBoardRepository;
     private final InteractionUserQueryService interactionUserQueryService;
     private final PostResourceQueryService postResourceQueryService;
+    private final JobBoardResultAssembler jobBoardResultAssembler;
 
     public JobBoardQueryService(
             JobBoardRepository jobBoardRepository,
             InteractionUserQueryService interactionUserQueryService,
-            PostResourceQueryService postResourceQueryService
+            PostResourceQueryService postResourceQueryService,
+            JobBoardResultAssembler jobBoardResultAssembler
     ) {
         this.jobBoardRepository = jobBoardRepository;
         this.interactionUserQueryService = interactionUserQueryService;
         this.postResourceQueryService = postResourceQueryService;
+        this.jobBoardResultAssembler = jobBoardResultAssembler;
     }
 
     @PerformanceMonitor
@@ -63,15 +67,15 @@ public class JobBoardQueryService {
 
         return jobBoardResults.map(jobBoardResult -> {
             var resources = postResources.stream()
-                    .filter(postResource -> postResource.postSeq().equals(jobBoardResult.getSeq()))
+                    .filter(postResource -> postResource.postSeq().equals(jobBoardResult.seq()))
                     .toList();
 
             var interactionUserList = interactionUsers.stream()
-                    .filter(interactionUser -> interactionUser.postSeq().equals(jobBoardResult.getSeq()))
+                    .filter(interactionUser -> interactionUser.postSeq().equals(jobBoardResult.seq()))
                     .toList();
 
-            jobBoardResult.addInteractionUsers(interactionUserList);
-            jobBoardResult.addResources(resources);
+            jobBoardResultAssembler.combineInteractionUsers(jobBoardResult, interactionUserList);
+            jobBoardResultAssembler.combineResources(jobBoardResult, resources);
             return jobBoardResult;
         });
     }

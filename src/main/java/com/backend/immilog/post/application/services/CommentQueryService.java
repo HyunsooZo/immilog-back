@@ -33,8 +33,8 @@ public class CommentQueryService {
         final Map<Long, Integer> likeCountMap = getLikeCountMap(interactionUsers);
         final Map<Long, List<Long>> likeUserMap = getLikeUsersMap(interactionUsers);
         return comments.stream().map(comment -> comment
-                        .updateLikeCount(likeCountMap.getOrDefault(comment.seq(), 0))
-                        .updateLikeUsers(likeUserMap.getOrDefault(comment.seq(), List.of())))
+                        .copyWithNewLikeCount(likeCountMap.getOrDefault(comment.seq(), 0))
+                        .copyWithNewLikeUsers(likeUserMap.getOrDefault(comment.seq(), List.of())))
                 .toList();
     }
 

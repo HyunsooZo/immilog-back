@@ -1,6 +1,7 @@
 package com.backend.immilog.post.application.usecase;
 
 import com.backend.immilog.global.enums.Country;
+import com.backend.immilog.post.application.mapper.PostResultAssembler;
 import com.backend.immilog.post.application.result.PostResult;
 import com.backend.immilog.post.application.services.CommentQueryService;
 import com.backend.immilog.post.application.services.InteractionUserQueryService;
@@ -26,10 +27,12 @@ class PostFetchUseCaseTest {
     private final PostQueryService postQueryService = mock(PostQueryService.class);
     private final CommentQueryService commentQueryService = mock(CommentQueryService.class);
     private final InteractionUserQueryService interactionUserQueryService = mock(InteractionUserQueryService.class);
+    private final PostResultAssembler postResultAssembler = new PostResultAssembler();
     private final PostFetchUseCase postFetchUseCase = new PostFetchUseCase.PostFetcher(
             postQueryService,
             commentQueryService,
-            interactionUserQueryService
+            interactionUserQueryService,
+            postResultAssembler
     );
 
     @Test
@@ -74,27 +77,27 @@ class PostFetchUseCaseTest {
         var pageable = PageRequest.of(page, 10);
         var postResult = new PostResult(
                 1L,
-                "title",
-                "content",
                 1L,
-                "url",
-                "nickname",
+                "profileUrl",
+                "nickName",
                 new ArrayList<>(),
-                1L,
-                1L,
-                1L,
-                new ArrayList<>(Arrays.asList("tag1", "tag2")),
-                new ArrayList<>(Arrays.asList("attachment1", "attachment2")),
-                new ArrayList<>(Arrays.asList(1L, 2L)),
-                new ArrayList<>(Arrays.asList(1L, 2L)),
+                0L,
+                0L,
+                0L,
+                Arrays.asList("tag1", "tag2"),
+                Arrays.asList("attachment1", "attachment2"),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 "Y",
-                "country",
+                Country.SOUTH_KOREA.name(),
                 "region",
                 Categories.ALL,
                 PostStatus.NORMAL,
-                "2021-01-01",
-                "2021-01-01",
-                "keyword"
+                "2023-10-01T00:00:00",
+                "2023-10-01T00:00:00",
+                "title",
+                "content",
+                keyword
         );
         var posts = new PageImpl<PostResult>(List.of(postResult));
         when(postQueryService.getPostsByKeyword(keyword, pageable)).thenReturn(posts);

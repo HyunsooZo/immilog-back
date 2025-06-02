@@ -13,11 +13,10 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class CommentJdbcRepository {
@@ -33,12 +32,13 @@ public class CommentJdbcRepository {
             UserInfoResult user
     ) {
         try {
-            final String prefix = commentSeq == rs.getLong("c.seq") ? "c" : "cc";
-            final String content = rs.getString(prefix + ".content");
+            final var prefix = (commentSeq == rs.getLong("c.seq")) ? "c" : "cc";
+            final var content = rs.getString(prefix + ".content");
             final int likeCount = rs.getInt(prefix + ".like_count");
             final int replyCount = rs.getInt(prefix + ".reply_count");
-            final PostStatus status = PostStatus.valueOf(rs.getString(prefix + ".status"));
-            final LocalDateTime localDateTime = rs.getTimestamp(prefix + ".created_at").toLocalDateTime();
+            final var status = PostStatus.valueOf(rs.getString(prefix + ".status"));
+            final var localDateTime = rs.getTimestamp(prefix + ".created_at").toLocalDateTime();
+
             return new CommentResult(
                     commentSeq,
                     user,
@@ -61,26 +61,26 @@ public class CommentJdbcRepository {
             String prefix
     ) {
         try {
-        return new UserInfoResult(
-                rs.getLong(prefix + ".seq"),
-                rs.getString(prefix + ".nickname"),
-                rs.getString(prefix + ".email"),
-                rs.getString(prefix + ".image_url"),
-                rs.getLong(prefix + ".reported_count"),
-                rs.getDate(prefix + ".reported_date"),
-                Country.valueOf(rs.getString(prefix + ".country")),
-                Country.valueOf(rs.getString(prefix + ".interest_country")),
-                rs.getString(prefix + ".region"),
-                UserRole.valueOf(rs.getString(prefix + ".user_role")),
-                UserStatus.valueOf(rs.getString(prefix + ".user_status"))
-        );
+            return new UserInfoResult(
+                    rs.getLong(prefix + ".seq"),
+                    rs.getString(prefix + ".nickname"),
+                    rs.getString(prefix + ".email"),
+                    rs.getString(prefix + ".image_url"),
+                    rs.getLong(prefix + ".reported_count"),
+                    rs.getDate(prefix + ".reported_date"),
+                    Country.valueOf(rs.getString(prefix + ".country")),
+                    Country.valueOf(rs.getString(prefix + ".interest_country")),
+                    rs.getString(prefix + ".region"),
+                    UserRole.valueOf(rs.getString(prefix + ".user_role")),
+                    UserStatus.valueOf(rs.getString(prefix + ".user_status"))
+            );
         } catch (SQLException e) {
             throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
         }
     }
 
     public List<CommentResult> getComments(Long postSeq) {
-        String sql = """
+        var sql = """
                 SELECT c.*, u.*, cc.*, cu.*
                 FROM comment c
                 LEFT JOIN user u ON c.user_seq = u.seq
@@ -104,21 +104,44 @@ public class CommentJdbcRepository {
     }
 
     private List<CommentResult> mapParentCommentWithChildren(ResultSet rs) {
-        Map<Long, CommentResult> commentMap = new LinkedHashMap<>();
+        var parentMap = new LinkedHashMap<Long, CommentResult>();
+        var childrenMap = new LinkedHashMap<Long, List<CommentResult>>();
+
         try {
             do {
-                Long commentSeq = rs.getLong("c.seq");
-                commentMap.putIfAbsent(commentSeq, getCommentEntityResult(rs, commentSeq, getUserInfoResult(rs, "u")));
+                long parentSeq = rs.getLong("c.seq");
+                parentMap.computeIfAbsent(parentSeq, key -> getCommentEntityResult(rs, parentSeq, getUserInfoResult(rs, "u")));
 
-                long childCommentSeq = rs.getLong("cc.seq");
-                if (childCommentSeq != 0) {
-                    CommentResult childComment = getCommentEntityResult(rs, childCommentSeq, getUserInfoResult(rs, "cu"));
-                    commentMap.get(commentSeq).addChildComment(childComment);
+                long childSeq = rs.getLong("cc.seq");
+                if (childSeq != 0) {
+                    var childComment = getCommentEntityResult(rs, childSeq, getUserInfoResult(rs, "cu"));
+                    childrenMap.computeIfAbsent(parentSeq, k -> new ArrayList<>()).add(childComment);
                 }
             } while (rs.next());
         } catch (Exception e) {
             throw new PostException(PostErrorCode.COMMENT_NOT_FOUND);
         }
-        return new ArrayList<>(commentMap.values());
+
+        var resultList = new ArrayList<CommentResult>();
+        for (var parentSeq : parentMap.keySet()) {
+            var parent = parentMap.get(parentSeq);
+            var childList = childrenMap.getOrDefault(parentSeq, Collections.emptyList());
+
+            var combined = new CommentResult(
+                    parent.seq(),
+                    parent.user(),
+                    parent.content(),
+                    childList,              // 여기에 미리 수집한 자식 리스트를 넣는다
+                    parent.upVotes(),
+                    parent.downVotes(),
+                    parent.replyCount(),
+                    parent.likeUsers(),
+                    parent.status(),
+                    parent.createdAt()
+            );
+            resultList.add(combined);
+        }
+
+        return resultList;
     }
 }

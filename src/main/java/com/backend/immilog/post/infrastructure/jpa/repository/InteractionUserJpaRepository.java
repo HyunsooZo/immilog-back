@@ -19,7 +19,7 @@ public interface InteractionUserJpaRepository extends JpaRepository<InteractionU
             InteractionType interactionType
     );
 
-    List<InteractionUser> findByUserSeqAndPostTypeAndInteractionType(
+    List<InteractionUserEntity> findByUserSeqAndPostTypeAndInteractionType(
             Long userSeq,
             PostType postType,
             InteractionType interactionType

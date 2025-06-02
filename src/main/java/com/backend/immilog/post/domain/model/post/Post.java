@@ -7,6 +7,7 @@ import com.backend.immilog.post.exception.PostException;
 import com.backend.immilog.user.domain.model.user.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 public class Post {
     private final Long seq;
@@ -187,53 +188,58 @@ public class Post {
     public String profileImage() {return this.postUserInfo.profileImage();}
 
     public String nickname() {return this.postUserInfo.nickname();}
-
     public PostResult toResult() {
         return new PostResult(
                 this.seq,
                 this.postUserInfo.userSeq(),
                 this.postUserInfo.profileImage(),
                 this.postUserInfo.nickname(),
+                new ArrayList<>(),
                 this.commentCount,
                 this.postInfo.viewCount(),
                 this.postInfo.likeCount(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
+                new ArrayList<>(),
                 this.isPublic,
-                this.countryName(),
-                this.region(),
+                this.postInfo.country().name(),
+                this.postInfo.region(),
                 this.category,
                 this.postInfo.status(),
-                this.title(),
-                this.content(),
                 this.createdAt.toString(),
-                this.updatedAt == null ? null : this.updatedAt.toString()
+                this.updatedAt.toString(),
+                this.postInfo.title(),
+                this.postInfo.content(),
+                null
         );
     }
 
     public static Post from(PostResult postResult) {
         final PostUserInfo userInfo = new PostUserInfo(
-                postResult.getUserSeq(),
-                postResult.getUserNickName(),
-                postResult.getUserProfileUrl()
+                postResult.userSeq(),
+                postResult.userNickName(),
+                postResult.userProfileUrl()
         );
         final PostInfo postInfo = new PostInfo(
-                postResult.getTitle(),
-                postResult.getContent(),
-                postResult.getViewCount(),
-                postResult.getLikeCount(),
-                postResult.getRegion(),
-                postResult.getStatus(),
-                Country.valueOf(postResult.getCountry())
+                postResult.title(),
+                postResult.content(),
+                postResult.viewCount(),
+                postResult.likeCount(),
+                postResult.region(),
+                postResult.status(),
+                Country.valueOf(postResult.country())
         );
         return new Post(
-                postResult.getSeq(),
+                postResult.seq(),
                 userInfo,
                 postInfo,
-                postResult.getCategory(),
-                postResult.getIsPublic(),
+                postResult.category(),
+                postResult.isPublic(),
                 null,
-                postResult.getCommentCount(),
-                LocalDateTime.parse(postResult.getCreatedAt()),
-                LocalDateTime.parse(postResult.getUpdatedAt())
+                postResult.commentCount(),
+                LocalDateTime.parse(postResult.createdAt()),
+                LocalDateTime.parse(postResult.updatedAt())
         );
     }
 

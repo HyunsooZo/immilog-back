@@ -1,5 +1,6 @@
 package com.backend.immilog.post.application.services.query;
 
+import com.backend.immilog.post.application.mapper.JobBoardResultAssembler;
 import com.backend.immilog.post.application.result.JobBoardResult;
 import com.backend.immilog.global.enums.Country;
 import com.backend.immilog.post.application.services.InteractionUserQueryService;
@@ -30,10 +31,12 @@ class JobBoardQueryServiceTest {
     private final JobBoardRepository jobBoardRepository = mock(JobBoardRepository.class);
     private final InteractionUserQueryService interactionUserQueryService = mock(InteractionUserQueryService.class);
     private final PostResourceQueryService postResourceQueryService = mock(PostResourceQueryService.class);
+    private final JobBoardResultAssembler jobBoardResultAssembler = mock(JobBoardResultAssembler.class);
     private final JobBoardQueryService jobBoardQueryService = new JobBoardQueryService(
             jobBoardRepository,
             interactionUserQueryService,
-            postResourceQueryService
+            postResourceQueryService,
+            jobBoardResultAssembler
     );
 
     @Test
@@ -75,7 +78,7 @@ class JobBoardQueryServiceTest {
 
         Page<JobBoardResult> actualPage = jobBoardQueryService.getJobBoards(countryEnum, sortingMethod, industryEnum, experienceEnum, pageable);
 
-        assertThat(actualPage.get().findFirst().get().getSeq()).isEqualTo(expectedPage.get().findFirst().get().getSeq());
+        assertThat(actualPage.get().findFirst().get().seq()).isEqualTo(expectedPage.get().findFirst().get().seq());
     }
 
     @Test
@@ -129,7 +132,7 @@ class JobBoardQueryServiceTest {
 
         JobBoardResult actualJobBoardResult = jobBoardQueryService.getJobBoardBySeq(jobBoardSeq);
 
-        assertThat(actualJobBoardResult.getSeq()).isEqualTo(expectedJobBoardResult.getSeq());
+        assertThat(actualJobBoardResult.seq()).isEqualTo(expectedJobBoardResult.seq());
     }
 
     @Test

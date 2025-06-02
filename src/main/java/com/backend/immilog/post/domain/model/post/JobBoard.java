@@ -113,7 +113,7 @@ public class JobBoard {
 
     public JobBoardResult toResult() {
         return new JobBoardResult(
-                this.seq,
+                this.seq(),
                 this.title(),
                 this.content(),
                 this.viewCount(),
@@ -132,38 +132,38 @@ public class JobBoard {
                 this.companyAddress(),
                 this.companyHomepage(),
                 this.companyLogo(),
-                this.userSeq,
-                this.createdAt
+                this.userSeq(),
+                this.createdAt()
         );
     }
 
     public static JobBoard from(JobBoardResult jobBoardResult) {
         return new JobBoard(
-                jobBoardResult.getSeq(),
-                jobBoardResult.getCompanyManagerUserSeq(),
+                jobBoardResult.seq(),
+                jobBoardResult.companyManagerUserSeq(),
                 new PostInfo(
-                        jobBoardResult.getTitle(),
-                        jobBoardResult.getContent(),
-                        jobBoardResult.getViewCount(),
-                        jobBoardResult.getLikeCount(),
-                        jobBoardResult.getRegion(),
-                        jobBoardResult.getStatus(),
-                        jobBoardResult.getCountry()
+                        jobBoardResult.title(),
+                        jobBoardResult.content(),
+                        jobBoardResult.viewCount(),
+                        jobBoardResult.likeCount(),
+                        jobBoardResult.region(),
+                        jobBoardResult.status(),
+                        jobBoardResult.country()
                 ),
                 new JobBoardCompany(
-                        jobBoardResult.getCompanySeq(),
-                        jobBoardResult.getIndustry(),
-                        jobBoardResult.getExperience(),
-                        jobBoardResult.getDeadline(),
-                        jobBoardResult.getSalary(),
-                        jobBoardResult.getCompanyName(),
-                        jobBoardResult.getCompanyEmail(),
-                        jobBoardResult.getCompanyPhone(),
-                        jobBoardResult.getCompanyAddress(),
-                        jobBoardResult.getCompanyHomepage(),
-                        jobBoardResult.getCompanyLogo()
+                        jobBoardResult.companySeq(),
+                        jobBoardResult.industry(),
+                        jobBoardResult.experience(),
+                        jobBoardResult.deadline(),
+                        jobBoardResult.salary(),
+                        jobBoardResult.companyName(),
+                        jobBoardResult.companyEmail(),
+                        jobBoardResult.companyPhone(),
+                        jobBoardResult.companyAddress(),
+                        jobBoardResult.companyHomepage(),
+                        jobBoardResult.companyLogo()
                 ),
-                jobBoardResult.getCreatedAt(),
+                jobBoardResult.createdAt(),
                 null
         );
     }

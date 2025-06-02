@@ -65,7 +65,7 @@ public interface JobBoardUpdateUseCase {
                 JobBoardUpdateCommand command
         ) {
             var jobBoard = jobBoardQueryService.getJobBoardBySeq(jobBoardSeq);
-            jobBoardValidator.validateOwner(userSeq, jobBoard.getCompanyManagerUserSeq());
+            jobBoardValidator.validateOwner(userSeq, jobBoard.companyManagerUserSeq());
             var updatedJobBoard = this.updatedJobBoard(command, jobBoard);
             jobBoardCommandService.save(updatedJobBoard);
         }
@@ -76,7 +76,7 @@ public interface JobBoardUpdateUseCase {
                 Long jobBoardSeq
         ) {
             var jobBoardResult = jobBoardQueryService.getJobBoardBySeq(jobBoardSeq);
-            jobBoardValidator.validateOwner(userSeq, jobBoardResult.getCompanyManagerUserSeq());
+            jobBoardValidator.validateOwner(userSeq, jobBoardResult.companyManagerUserSeq());
             var jobBoard = JobBoard.from(jobBoardResult);
             jobBoardCommandService.save(jobBoard.delete());
         }
@@ -87,33 +87,33 @@ public interface JobBoardUpdateUseCase {
                 JobBoardResult jobBoard
         ) {
             var postInfo = new PostInfo(
-                    command.title() != null ? command.title() : jobBoard.getTitle(),
-                    command.content() != null ? command.content() : jobBoard.getContent(),
-                    jobBoard.getViewCount(),
-                    jobBoard.getLikeCount(),
-                    jobBoard.getRegion(),
-                    jobBoard.getStatus(),
-                    jobBoard.getCountry()
+                    command.title() != null ? command.title() : jobBoard.title(),
+                    command.content() != null ? command.content() : jobBoard.content(),
+                    jobBoard.viewCount(),
+                    jobBoard.likeCount(),
+                    jobBoard.region(),
+                    jobBoard.status(),
+                    jobBoard.country()
             );
             this.updateTags(command, jobBoard);
             this.updateAttachments(command, jobBoard);
 
             return new JobBoard(
-                    jobBoard.getSeq(),
-                    jobBoard.getCompanyManagerUserSeq(),
+                    jobBoard.seq(),
+                    jobBoard.companyManagerUserSeq(),
                     postInfo,
                     JobBoardCompany.of(
-                            jobBoard.getCompanySeq(),
-                            jobBoard.getIndustry(),
-                            command.experience() != null ? command.experience() : jobBoard.getExperience(),
-                            command.deadline() != null ? command.deadline() : jobBoard.getDeadline(),
-                            command.salary() != null ? command.salary() : jobBoard.getSalary(),
-                            jobBoard.getCompanyName(),
-                            jobBoard.getCompanyEmail(),
-                            jobBoard.getCompanyPhone(),
-                            jobBoard.getCompanyAddress(),
-                            jobBoard.getCompanyHomepage(),
-                            jobBoard.getCompanyLogo()
+                            jobBoard.companySeq(),
+                            jobBoard.industry(),
+                            command.experience() != null ? command.experience() : jobBoard.experience(),
+                            command.deadline() != null ? command.deadline() : jobBoard.deadline(),
+                            command.salary() != null ? command.salary() : jobBoard.salary(),
+                            jobBoard.companyName(),
+                            jobBoard.companyEmail(),
+                            jobBoard.companyPhone(),
+                            jobBoard.companyAddress(),
+                            jobBoard.companyHomepage(),
+                            jobBoard.companyLogo()
                     ),
                     LocalDateTime.now(),
                     null
@@ -124,23 +124,23 @@ public interface JobBoardUpdateUseCase {
                 JobBoardUpdateCommand command,
                 JobBoardResult jobBoard
         ) {
-            var attachmentToDelete = jobBoard.getAttachments()
+            var attachmentToDelete = jobBoard.attachments()
                     .stream()
                     .filter(attachment -> command.deleteAttachments().contains(attachment))
                     .toList();
 
-            postResourceCommandService.deleteAllEntities(jobBoard.getSeq(), PostType.JOB_BOARD, ResourceType.ATTACHMENT, attachmentToDelete);
+            postResourceCommandService.deleteAllEntities(jobBoard.seq(), PostType.JOB_BOARD, ResourceType.ATTACHMENT, attachmentToDelete);
 
-            this.saveAllPostResources(jobBoard.getSeq(), ResourceType.ATTACHMENT, command.addAttachments());
+            this.saveAllPostResources(jobBoard.seq(), ResourceType.ATTACHMENT, command.addAttachments());
         }
 
         private void updateTags(
                 JobBoardUpdateCommand command,
                 JobBoardResult jobBoard
         ) {
-            var tagToDelete = jobBoard.getTags().stream().filter(tag -> command.deleteAttachments().contains(tag)).toList();
-            postResourceCommandService.deleteAllEntities(jobBoard.getSeq(), PostType.JOB_BOARD, ResourceType.TAG, tagToDelete);
-            this.saveAllPostResources(jobBoard.getSeq(), ResourceType.TAG, command.addTags());
+            var tagToDelete = jobBoard.tags().stream().filter(tag -> command.deleteAttachments().contains(tag)).toList();
+            postResourceCommandService.deleteAllEntities(jobBoard.seq(), PostType.JOB_BOARD, ResourceType.TAG, tagToDelete);
+            this.saveAllPostResources(jobBoard.seq(), ResourceType.TAG, command.addTags());
         }
 
         private void saveAllPostResources(

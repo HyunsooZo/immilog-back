@@ -15,12 +15,12 @@ import static org.springframework.http.HttpStatus.OK;
 @RequestMapping("/api/v1/auth")
 @RestController
 public class AuthController {
-    private final LocationFetchUseCase.LocationFetcher locationFetcher;
-    private final UserSignInUseCase.UserLoginProcessor userLoginProcessor;
+    private final LocationFetchUseCase locationFetcher;
+    private final UserSignInUseCase userLoginProcessor;
 
     public AuthController(
-            LocationFetchUseCase.LocationFetcher locationFetcher,
-            UserSignInUseCase.UserLoginProcessor userLoginProcessor
+            LocationFetchUseCase locationFetcher,
+            UserSignInUseCase userLoginProcessor
     ) {
         this.locationFetcher = locationFetcher;
         this.userLoginProcessor = userLoginProcessor;

@@ -72,10 +72,9 @@ public class InteractionUserRepositoryImpl implements InteractionUserRepository 
             PostType postType,
             InteractionType interactionType
     ) {
-        return interactionUserJpaRepository.findByUserSeqAndPostTypeAndInteractionType(
-                userSeq,
-                postType,
-                interactionType
-        );
+        return interactionUserJpaRepository
+                .findByUserSeqAndPostTypeAndInteractionType(userSeq, postType, interactionType).stream()
+                .map(InteractionUserEntity::toDomain)
+                .toList();
     }
 }
